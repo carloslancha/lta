@@ -5,7 +5,27 @@ var typeDefs = require("./prisma-schema").typeDefs;
 
 var models = [
   {
-    name: "Link",
+    name: "Academy",
+    embedded: false
+  },
+  {
+    name: "Clan",
+    embedded: false
+  },
+  {
+    name: "Form",
+    embedded: false
+  },
+  {
+    name: "Player",
+    embedded: false
+  },
+  {
+    name: "School",
+    embedded: false
+  },
+  {
+    name: "Tournament",
     embedded: false
   },
   {

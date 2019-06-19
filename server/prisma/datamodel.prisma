@@ -1,15 +1,54 @@
-type Link {
+type Academy {
+    country: String!
+    createdBy: User
     id: ID! @id
-    createdAt: DateTime! @createdAt
-    description: String!
-    url: String!
-    postedBy: User
+    name: String! @unique
+    schools: [School!] @relation(name: "SchoolOnAcademy", onDelete: CASCADE)
+}
+
+type Clan {
+    createdBy: User
+    id: ID! @id
+    name: String!
+    players: [Player!]
+    school: School! @relation(name: "ClanOnSchool", onDelete: SET_NULL)
+}
+
+type Form {
+    createdBy: User
+    id: ID! @id
+    name: String!
+}
+
+type Player {
+    clan: Clan!
+    createdBy: User
+    familyName: String!
+    forms: [Form!]
+    id: ID! @id
+    name: String!
+    nickname: String!
+}
+
+type School {
+    academy: Academy! @relation(name: "SchoolOnAcademy", onDelete: SET_NULL)
+    clans: [Clan!] @relation(name: "ClanOnSchool", onDelete: CASCADE)
+    createdBy: User
+    id: ID! @id
+    name: String!
+}
+
+type Tournament {
+    createdBy: User
+    id: ID! @id
+    name: String!
 }
 
 type User {
+    academies: [Academy!]
+    email: String! @unique
     id: ID! @id
     name: String!
-    email: String! @unique
     password: String!
-    links: [Link!]!
+    schools: [School!]
 }

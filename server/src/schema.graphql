@@ -1,28 +1,9 @@
-type Query {
-	info: String!
-	feed: [Link!]!
-	link(id: ID!): Link
-}
-
-type Mutation {
-	post(url: String!, description: String!): Link!
-	
-	# Update a link
-	updateLink(id: ID!, url: String, description: String): Link
-
-	# Delete a link
-	deleteLink(id: ID!): Link
-
-	signup(email: String!, password: String!, name: String!): AuthPayload
-
-	login(email: String!, password: String!): AuthPayload
-}
-
-type Link {
-	id: ID!
-	description: String!
-	url: String!
-	postedBy: User
+type Academy {
+    id: ID!
+    name: String!
+    country: String!
+	createdBy: User
+	schools: [School!]
 }
 
 type AuthPayload {
@@ -30,13 +11,104 @@ type AuthPayload {
 	user: User
 }
 
+type Clan {
+    createdBy: User
+    id: ID!
+    name: String!
+	players: [Player!]
+    school: School!
+}
+
+type Form {
+    createdBy: User
+    id: ID!
+    name: String!
+	player: [Player!]
+}
+
+type Mutation {
+	signup(email: String!, password: String!, name: String!): AuthPayload
+	login(email: String!, password: String!): AuthPayload
+
+	createAcademy(name: String!, country: String!): Academy!
+	deleteAcademy(id: ID!): Academy
+	updateAcademy(id: ID!, name: String, country: String): Academy
+
+	createSchool(name: String!, academyId: ID!): School!
+	deleteSchool(id: ID!): School
+	updateSchool(id: ID!, name: String, academyId: ID): School
+
+	createClan(name: String!, schoolId: ID!): Clan!
+	deleteClan(id: ID!): Clan
+	updateClan(id: ID!, name: String, schoolId: ID): Clan
+	
+	createForm(name: String!): Form!
+	deleteForm(id: ID!): Form
+	updateForm(id: ID!, name: String): Form
+
+	createPlayer(name: String!, familyName: String!, nickname: String!, formIds: [ID!], clanId: ID!): Player!
+	deletePlayer(id: ID!): Player
+	updatePlayer(id: ID!, name: String, familyName: String, nickname: String, formIds: [ID!], clanId: ID): Player
+
+	createTournament(name: String!): Tournament!
+	deleteTournament(id: ID!): Tournament
+	updateTournament(id: ID!, name: String): Tournament
+}
+
+type Player {
+    clan: Clan!
+    createdBy: User
+    familyName: String!
+    forms: [Form!]
+    id: ID!
+    name: String!
+    nickname: String!
+}
+
+type Query {
+	info: String!
+
+	academies: [Academy!]!
+	academy(id: ID!): Academy
+
+	forms: [Form!]!
+	form(id: ID!): Form
+
+	clans: [Clan!]!
+	clan(id: ID!): Clan
+
+	player(id: ID!): Player
+	players: [Player!]!
+
+	schools: [School!]!
+	school(id: ID!): School
+
+	tournaments: [Tournament!]!
+	tournament(id: ID!): Tournament
+}
+
+type School {
+    academy: Academy!
+	clans: [Clan!]
+    createdBy: User
+    id: ID!
+    name: String!
+}
+
+type Subscription {
+	newAcademy: Academy
+}
+
+type Tournament {
+    createdBy: User
+	id: ID!
+    name: String!
+}
+
 type User {
 	id: ID!
 	name: String!
 	email: String!
-	links: [Link!]!
-}
-
-type Subscription {
-	newLink: Link
+	academies: [Academy!]!
+	schools: [School!]!
 }

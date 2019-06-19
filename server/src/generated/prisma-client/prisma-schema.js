@@ -3,417 +3,87 @@ module.exports = {
   // Please don't change this file manually but run `prisma generate` to update it.
   // For more information, please read the docs: https://www.prisma.io/docs/prisma-client/
 
-/* GraphQL */ `type AggregateLink {
-  count: Int!
-}
-
-type AggregateUser {
-  count: Int!
-}
-
-type BatchPayload {
-  count: Long!
-}
-
-scalar DateTime
-
-type Link {
+/* GraphQL */ `type Academy {
+  country: String!
+  createdBy: User
   id: ID!
-  createdAt: DateTime!
-  description: String!
-  url: String!
-  postedBy: User
+  name: String!
+  schools(where: SchoolWhereInput, orderBy: SchoolOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [School!]
 }
 
-type LinkConnection {
+type AcademyConnection {
   pageInfo: PageInfo!
-  edges: [LinkEdge]!
-  aggregate: AggregateLink!
+  edges: [AcademyEdge]!
+  aggregate: AggregateAcademy!
 }
 
-input LinkCreateInput {
+input AcademyCreateInput {
+  country: String!
+  createdBy: UserCreateOneWithoutAcademiesInput
   id: ID
-  description: String!
-  url: String!
-  postedBy: UserCreateOneWithoutLinksInput
+  name: String!
+  schools: SchoolCreateManyWithoutAcademyInput
 }
 
-input LinkCreateManyWithoutPostedByInput {
-  create: [LinkCreateWithoutPostedByInput!]
-  connect: [LinkWhereUniqueInput!]
+input AcademyCreateManyWithoutCreatedByInput {
+  create: [AcademyCreateWithoutCreatedByInput!]
+  connect: [AcademyWhereUniqueInput!]
 }
 
-input LinkCreateWithoutPostedByInput {
+input AcademyCreateOneWithoutSchoolsInput {
+  create: AcademyCreateWithoutSchoolsInput
+  connect: AcademyWhereUniqueInput
+}
+
+input AcademyCreateWithoutCreatedByInput {
+  country: String!
   id: ID
-  description: String!
-  url: String!
+  name: String!
+  schools: SchoolCreateManyWithoutAcademyInput
 }
 
-type LinkEdge {
-  node: Link!
+input AcademyCreateWithoutSchoolsInput {
+  country: String!
+  createdBy: UserCreateOneWithoutAcademiesInput
+  id: ID
+  name: String!
+}
+
+type AcademyEdge {
+  node: Academy!
   cursor: String!
 }
 
-enum LinkOrderByInput {
-  id_ASC
-  id_DESC
-  createdAt_ASC
-  createdAt_DESC
-  description_ASC
-  description_DESC
-  url_ASC
-  url_DESC
-}
-
-type LinkPreviousValues {
-  id: ID!
-  createdAt: DateTime!
-  description: String!
-  url: String!
-}
-
-input LinkScalarWhereInput {
-  id: ID
-  id_not: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  id_lt: ID
-  id_lte: ID
-  id_gt: ID
-  id_gte: ID
-  id_contains: ID
-  id_not_contains: ID
-  id_starts_with: ID
-  id_not_starts_with: ID
-  id_ends_with: ID
-  id_not_ends_with: ID
-  createdAt: DateTime
-  createdAt_not: DateTime
-  createdAt_in: [DateTime!]
-  createdAt_not_in: [DateTime!]
-  createdAt_lt: DateTime
-  createdAt_lte: DateTime
-  createdAt_gt: DateTime
-  createdAt_gte: DateTime
-  description: String
-  description_not: String
-  description_in: [String!]
-  description_not_in: [String!]
-  description_lt: String
-  description_lte: String
-  description_gt: String
-  description_gte: String
-  description_contains: String
-  description_not_contains: String
-  description_starts_with: String
-  description_not_starts_with: String
-  description_ends_with: String
-  description_not_ends_with: String
-  url: String
-  url_not: String
-  url_in: [String!]
-  url_not_in: [String!]
-  url_lt: String
-  url_lte: String
-  url_gt: String
-  url_gte: String
-  url_contains: String
-  url_not_contains: String
-  url_starts_with: String
-  url_not_starts_with: String
-  url_ends_with: String
-  url_not_ends_with: String
-  AND: [LinkScalarWhereInput!]
-  OR: [LinkScalarWhereInput!]
-  NOT: [LinkScalarWhereInput!]
-}
-
-type LinkSubscriptionPayload {
-  mutation: MutationType!
-  node: Link
-  updatedFields: [String!]
-  previousValues: LinkPreviousValues
-}
-
-input LinkSubscriptionWhereInput {
-  mutation_in: [MutationType!]
-  updatedFields_contains: String
-  updatedFields_contains_every: [String!]
-  updatedFields_contains_some: [String!]
-  node: LinkWhereInput
-  AND: [LinkSubscriptionWhereInput!]
-  OR: [LinkSubscriptionWhereInput!]
-  NOT: [LinkSubscriptionWhereInput!]
-}
-
-input LinkUpdateInput {
-  description: String
-  url: String
-  postedBy: UserUpdateOneWithoutLinksInput
-}
-
-input LinkUpdateManyDataInput {
-  description: String
-  url: String
-}
-
-input LinkUpdateManyMutationInput {
-  description: String
-  url: String
-}
-
-input LinkUpdateManyWithoutPostedByInput {
-  create: [LinkCreateWithoutPostedByInput!]
-  delete: [LinkWhereUniqueInput!]
-  connect: [LinkWhereUniqueInput!]
-  set: [LinkWhereUniqueInput!]
-  disconnect: [LinkWhereUniqueInput!]
-  update: [LinkUpdateWithWhereUniqueWithoutPostedByInput!]
-  upsert: [LinkUpsertWithWhereUniqueWithoutPostedByInput!]
-  deleteMany: [LinkScalarWhereInput!]
-  updateMany: [LinkUpdateManyWithWhereNestedInput!]
-}
-
-input LinkUpdateManyWithWhereNestedInput {
-  where: LinkScalarWhereInput!
-  data: LinkUpdateManyDataInput!
-}
-
-input LinkUpdateWithoutPostedByDataInput {
-  description: String
-  url: String
-}
-
-input LinkUpdateWithWhereUniqueWithoutPostedByInput {
-  where: LinkWhereUniqueInput!
-  data: LinkUpdateWithoutPostedByDataInput!
-}
-
-input LinkUpsertWithWhereUniqueWithoutPostedByInput {
-  where: LinkWhereUniqueInput!
-  update: LinkUpdateWithoutPostedByDataInput!
-  create: LinkCreateWithoutPostedByInput!
-}
-
-input LinkWhereInput {
-  id: ID
-  id_not: ID
-  id_in: [ID!]
-  id_not_in: [ID!]
-  id_lt: ID
-  id_lte: ID
-  id_gt: ID
-  id_gte: ID
-  id_contains: ID
-  id_not_contains: ID
-  id_starts_with: ID
-  id_not_starts_with: ID
-  id_ends_with: ID
-  id_not_ends_with: ID
-  createdAt: DateTime
-  createdAt_not: DateTime
-  createdAt_in: [DateTime!]
-  createdAt_not_in: [DateTime!]
-  createdAt_lt: DateTime
-  createdAt_lte: DateTime
-  createdAt_gt: DateTime
-  createdAt_gte: DateTime
-  description: String
-  description_not: String
-  description_in: [String!]
-  description_not_in: [String!]
-  description_lt: String
-  description_lte: String
-  description_gt: String
-  description_gte: String
-  description_contains: String
-  description_not_contains: String
-  description_starts_with: String
-  description_not_starts_with: String
-  description_ends_with: String
-  description_not_ends_with: String
-  url: String
-  url_not: String
-  url_in: [String!]
-  url_not_in: [String!]
-  url_lt: String
-  url_lte: String
-  url_gt: String
-  url_gte: String
-  url_contains: String
-  url_not_contains: String
-  url_starts_with: String
-  url_not_starts_with: String
-  url_ends_with: String
-  url_not_ends_with: String
-  postedBy: UserWhereInput
-  AND: [LinkWhereInput!]
-  OR: [LinkWhereInput!]
-  NOT: [LinkWhereInput!]
-}
-
-input LinkWhereUniqueInput {
-  id: ID
-}
-
-scalar Long
-
-type Mutation {
-  createLink(data: LinkCreateInput!): Link!
-  updateLink(data: LinkUpdateInput!, where: LinkWhereUniqueInput!): Link
-  updateManyLinks(data: LinkUpdateManyMutationInput!, where: LinkWhereInput): BatchPayload!
-  upsertLink(where: LinkWhereUniqueInput!, create: LinkCreateInput!, update: LinkUpdateInput!): Link!
-  deleteLink(where: LinkWhereUniqueInput!): Link
-  deleteManyLinks(where: LinkWhereInput): BatchPayload!
-  createUser(data: UserCreateInput!): User!
-  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
-  updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
-  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
-  deleteUser(where: UserWhereUniqueInput!): User
-  deleteManyUsers(where: UserWhereInput): BatchPayload!
-}
-
-enum MutationType {
-  CREATED
-  UPDATED
-  DELETED
-}
-
-interface Node {
-  id: ID!
-}
-
-type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: String
-  endCursor: String
-}
-
-type Query {
-  link(where: LinkWhereUniqueInput!): Link
-  links(where: LinkWhereInput, orderBy: LinkOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Link]!
-  linksConnection(where: LinkWhereInput, orderBy: LinkOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): LinkConnection!
-  user(where: UserWhereUniqueInput!): User
-  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
-  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
-  node(id: ID!): Node
-}
-
-type Subscription {
-  link(where: LinkSubscriptionWhereInput): LinkSubscriptionPayload
-  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
-}
-
-type User {
-  id: ID!
-  name: String!
-  email: String!
-  password: String!
-  links(where: LinkWhereInput, orderBy: LinkOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Link!]
-}
-
-type UserConnection {
-  pageInfo: PageInfo!
-  edges: [UserEdge]!
-  aggregate: AggregateUser!
-}
-
-input UserCreateInput {
-  id: ID
-  name: String!
-  email: String!
-  password: String!
-  links: LinkCreateManyWithoutPostedByInput
-}
-
-input UserCreateOneWithoutLinksInput {
-  create: UserCreateWithoutLinksInput
-  connect: UserWhereUniqueInput
-}
-
-input UserCreateWithoutLinksInput {
-  id: ID
-  name: String!
-  email: String!
-  password: String!
-}
-
-type UserEdge {
-  node: User!
-  cursor: String!
-}
-
-enum UserOrderByInput {
+enum AcademyOrderByInput {
+  country_ASC
+  country_DESC
   id_ASC
   id_DESC
   name_ASC
   name_DESC
-  email_ASC
-  email_DESC
-  password_ASC
-  password_DESC
 }
 
-type UserPreviousValues {
+type AcademyPreviousValues {
+  country: String!
   id: ID!
   name: String!
-  email: String!
-  password: String!
 }
 
-type UserSubscriptionPayload {
-  mutation: MutationType!
-  node: User
-  updatedFields: [String!]
-  previousValues: UserPreviousValues
-}
-
-input UserSubscriptionWhereInput {
-  mutation_in: [MutationType!]
-  updatedFields_contains: String
-  updatedFields_contains_every: [String!]
-  updatedFields_contains_some: [String!]
-  node: UserWhereInput
-  AND: [UserSubscriptionWhereInput!]
-  OR: [UserSubscriptionWhereInput!]
-  NOT: [UserSubscriptionWhereInput!]
-}
-
-input UserUpdateInput {
-  name: String
-  email: String
-  password: String
-  links: LinkUpdateManyWithoutPostedByInput
-}
-
-input UserUpdateManyMutationInput {
-  name: String
-  email: String
-  password: String
-}
-
-input UserUpdateOneWithoutLinksInput {
-  create: UserCreateWithoutLinksInput
-  update: UserUpdateWithoutLinksDataInput
-  upsert: UserUpsertWithoutLinksInput
-  delete: Boolean
-  disconnect: Boolean
-  connect: UserWhereUniqueInput
-}
-
-input UserUpdateWithoutLinksDataInput {
-  name: String
-  email: String
-  password: String
-}
-
-input UserUpsertWithoutLinksInput {
-  update: UserUpdateWithoutLinksDataInput!
-  create: UserCreateWithoutLinksInput!
-}
-
-input UserWhereInput {
+input AcademyScalarWhereInput {
+  country: String
+  country_not: String
+  country_in: [String!]
+  country_not_in: [String!]
+  country_lt: String
+  country_lte: String
+  country_gt: String
+  country_gte: String
+  country_contains: String
+  country_not_contains: String
+  country_starts_with: String
+  country_not_starts_with: String
+  country_ends_with: String
+  country_not_ends_with: String
   id: ID
   id_not: ID
   id_in: [ID!]
@@ -442,6 +112,1504 @@ input UserWhereInput {
   name_not_starts_with: String
   name_ends_with: String
   name_not_ends_with: String
+  AND: [AcademyScalarWhereInput!]
+  OR: [AcademyScalarWhereInput!]
+  NOT: [AcademyScalarWhereInput!]
+}
+
+type AcademySubscriptionPayload {
+  mutation: MutationType!
+  node: Academy
+  updatedFields: [String!]
+  previousValues: AcademyPreviousValues
+}
+
+input AcademySubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: AcademyWhereInput
+  AND: [AcademySubscriptionWhereInput!]
+  OR: [AcademySubscriptionWhereInput!]
+  NOT: [AcademySubscriptionWhereInput!]
+}
+
+input AcademyUpdateInput {
+  country: String
+  createdBy: UserUpdateOneWithoutAcademiesInput
+  name: String
+  schools: SchoolUpdateManyWithoutAcademyInput
+}
+
+input AcademyUpdateManyDataInput {
+  country: String
+  name: String
+}
+
+input AcademyUpdateManyMutationInput {
+  country: String
+  name: String
+}
+
+input AcademyUpdateManyWithoutCreatedByInput {
+  create: [AcademyCreateWithoutCreatedByInput!]
+  delete: [AcademyWhereUniqueInput!]
+  connect: [AcademyWhereUniqueInput!]
+  set: [AcademyWhereUniqueInput!]
+  disconnect: [AcademyWhereUniqueInput!]
+  update: [AcademyUpdateWithWhereUniqueWithoutCreatedByInput!]
+  upsert: [AcademyUpsertWithWhereUniqueWithoutCreatedByInput!]
+  deleteMany: [AcademyScalarWhereInput!]
+  updateMany: [AcademyUpdateManyWithWhereNestedInput!]
+}
+
+input AcademyUpdateManyWithWhereNestedInput {
+  where: AcademyScalarWhereInput!
+  data: AcademyUpdateManyDataInput!
+}
+
+input AcademyUpdateOneRequiredWithoutSchoolsInput {
+  create: AcademyCreateWithoutSchoolsInput
+  update: AcademyUpdateWithoutSchoolsDataInput
+  upsert: AcademyUpsertWithoutSchoolsInput
+  connect: AcademyWhereUniqueInput
+}
+
+input AcademyUpdateWithoutCreatedByDataInput {
+  country: String
+  name: String
+  schools: SchoolUpdateManyWithoutAcademyInput
+}
+
+input AcademyUpdateWithoutSchoolsDataInput {
+  country: String
+  createdBy: UserUpdateOneWithoutAcademiesInput
+  name: String
+}
+
+input AcademyUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: AcademyWhereUniqueInput!
+  data: AcademyUpdateWithoutCreatedByDataInput!
+}
+
+input AcademyUpsertWithoutSchoolsInput {
+  update: AcademyUpdateWithoutSchoolsDataInput!
+  create: AcademyCreateWithoutSchoolsInput!
+}
+
+input AcademyUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: AcademyWhereUniqueInput!
+  update: AcademyUpdateWithoutCreatedByDataInput!
+  create: AcademyCreateWithoutCreatedByInput!
+}
+
+input AcademyWhereInput {
+  country: String
+  country_not: String
+  country_in: [String!]
+  country_not_in: [String!]
+  country_lt: String
+  country_lte: String
+  country_gt: String
+  country_gte: String
+  country_contains: String
+  country_not_contains: String
+  country_starts_with: String
+  country_not_starts_with: String
+  country_ends_with: String
+  country_not_ends_with: String
+  createdBy: UserWhereInput
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  schools_every: SchoolWhereInput
+  schools_some: SchoolWhereInput
+  schools_none: SchoolWhereInput
+  AND: [AcademyWhereInput!]
+  OR: [AcademyWhereInput!]
+  NOT: [AcademyWhereInput!]
+}
+
+input AcademyWhereUniqueInput {
+  id: ID
+  name: String
+}
+
+type AggregateAcademy {
+  count: Int!
+}
+
+type AggregateClan {
+  count: Int!
+}
+
+type AggregateForm {
+  count: Int!
+}
+
+type AggregatePlayer {
+  count: Int!
+}
+
+type AggregateSchool {
+  count: Int!
+}
+
+type AggregateTournament {
+  count: Int!
+}
+
+type AggregateUser {
+  count: Int!
+}
+
+type BatchPayload {
+  count: Long!
+}
+
+type Clan {
+  createdBy: User
+  id: ID!
+  name: String!
+  players(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Player!]
+  school: School!
+}
+
+type ClanConnection {
+  pageInfo: PageInfo!
+  edges: [ClanEdge]!
+  aggregate: AggregateClan!
+}
+
+input ClanCreateInput {
+  createdBy: UserCreateOneInput
+  id: ID
+  name: String!
+  players: PlayerCreateManyWithoutClanInput
+  school: SchoolCreateOneWithoutClansInput!
+}
+
+input ClanCreateManyWithoutSchoolInput {
+  create: [ClanCreateWithoutSchoolInput!]
+  connect: [ClanWhereUniqueInput!]
+}
+
+input ClanCreateOneWithoutPlayersInput {
+  create: ClanCreateWithoutPlayersInput
+  connect: ClanWhereUniqueInput
+}
+
+input ClanCreateWithoutPlayersInput {
+  createdBy: UserCreateOneInput
+  id: ID
+  name: String!
+  school: SchoolCreateOneWithoutClansInput!
+}
+
+input ClanCreateWithoutSchoolInput {
+  createdBy: UserCreateOneInput
+  id: ID
+  name: String!
+  players: PlayerCreateManyWithoutClanInput
+}
+
+type ClanEdge {
+  node: Clan!
+  cursor: String!
+}
+
+enum ClanOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+}
+
+type ClanPreviousValues {
+  id: ID!
+  name: String!
+}
+
+input ClanScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  AND: [ClanScalarWhereInput!]
+  OR: [ClanScalarWhereInput!]
+  NOT: [ClanScalarWhereInput!]
+}
+
+type ClanSubscriptionPayload {
+  mutation: MutationType!
+  node: Clan
+  updatedFields: [String!]
+  previousValues: ClanPreviousValues
+}
+
+input ClanSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: ClanWhereInput
+  AND: [ClanSubscriptionWhereInput!]
+  OR: [ClanSubscriptionWhereInput!]
+  NOT: [ClanSubscriptionWhereInput!]
+}
+
+input ClanUpdateInput {
+  createdBy: UserUpdateOneInput
+  name: String
+  players: PlayerUpdateManyWithoutClanInput
+  school: SchoolUpdateOneRequiredWithoutClansInput
+}
+
+input ClanUpdateManyDataInput {
+  name: String
+}
+
+input ClanUpdateManyMutationInput {
+  name: String
+}
+
+input ClanUpdateManyWithoutSchoolInput {
+  create: [ClanCreateWithoutSchoolInput!]
+  delete: [ClanWhereUniqueInput!]
+  connect: [ClanWhereUniqueInput!]
+  set: [ClanWhereUniqueInput!]
+  disconnect: [ClanWhereUniqueInput!]
+  update: [ClanUpdateWithWhereUniqueWithoutSchoolInput!]
+  upsert: [ClanUpsertWithWhereUniqueWithoutSchoolInput!]
+  deleteMany: [ClanScalarWhereInput!]
+  updateMany: [ClanUpdateManyWithWhereNestedInput!]
+}
+
+input ClanUpdateManyWithWhereNestedInput {
+  where: ClanScalarWhereInput!
+  data: ClanUpdateManyDataInput!
+}
+
+input ClanUpdateOneRequiredWithoutPlayersInput {
+  create: ClanCreateWithoutPlayersInput
+  update: ClanUpdateWithoutPlayersDataInput
+  upsert: ClanUpsertWithoutPlayersInput
+  connect: ClanWhereUniqueInput
+}
+
+input ClanUpdateWithoutPlayersDataInput {
+  createdBy: UserUpdateOneInput
+  name: String
+  school: SchoolUpdateOneRequiredWithoutClansInput
+}
+
+input ClanUpdateWithoutSchoolDataInput {
+  createdBy: UserUpdateOneInput
+  name: String
+  players: PlayerUpdateManyWithoutClanInput
+}
+
+input ClanUpdateWithWhereUniqueWithoutSchoolInput {
+  where: ClanWhereUniqueInput!
+  data: ClanUpdateWithoutSchoolDataInput!
+}
+
+input ClanUpsertWithoutPlayersInput {
+  update: ClanUpdateWithoutPlayersDataInput!
+  create: ClanCreateWithoutPlayersInput!
+}
+
+input ClanUpsertWithWhereUniqueWithoutSchoolInput {
+  where: ClanWhereUniqueInput!
+  update: ClanUpdateWithoutSchoolDataInput!
+  create: ClanCreateWithoutSchoolInput!
+}
+
+input ClanWhereInput {
+  createdBy: UserWhereInput
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  players_every: PlayerWhereInput
+  players_some: PlayerWhereInput
+  players_none: PlayerWhereInput
+  school: SchoolWhereInput
+  AND: [ClanWhereInput!]
+  OR: [ClanWhereInput!]
+  NOT: [ClanWhereInput!]
+}
+
+input ClanWhereUniqueInput {
+  id: ID
+}
+
+type Form {
+  createdBy: User
+  id: ID!
+  name: String!
+}
+
+type FormConnection {
+  pageInfo: PageInfo!
+  edges: [FormEdge]!
+  aggregate: AggregateForm!
+}
+
+input FormCreateInput {
+  createdBy: UserCreateOneInput
+  id: ID
+  name: String!
+}
+
+input FormCreateManyInput {
+  create: [FormCreateInput!]
+  connect: [FormWhereUniqueInput!]
+}
+
+type FormEdge {
+  node: Form!
+  cursor: String!
+}
+
+enum FormOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+}
+
+type FormPreviousValues {
+  id: ID!
+  name: String!
+}
+
+input FormScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  AND: [FormScalarWhereInput!]
+  OR: [FormScalarWhereInput!]
+  NOT: [FormScalarWhereInput!]
+}
+
+type FormSubscriptionPayload {
+  mutation: MutationType!
+  node: Form
+  updatedFields: [String!]
+  previousValues: FormPreviousValues
+}
+
+input FormSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: FormWhereInput
+  AND: [FormSubscriptionWhereInput!]
+  OR: [FormSubscriptionWhereInput!]
+  NOT: [FormSubscriptionWhereInput!]
+}
+
+input FormUpdateDataInput {
+  createdBy: UserUpdateOneInput
+  name: String
+}
+
+input FormUpdateInput {
+  createdBy: UserUpdateOneInput
+  name: String
+}
+
+input FormUpdateManyDataInput {
+  name: String
+}
+
+input FormUpdateManyInput {
+  create: [FormCreateInput!]
+  update: [FormUpdateWithWhereUniqueNestedInput!]
+  upsert: [FormUpsertWithWhereUniqueNestedInput!]
+  delete: [FormWhereUniqueInput!]
+  connect: [FormWhereUniqueInput!]
+  set: [FormWhereUniqueInput!]
+  disconnect: [FormWhereUniqueInput!]
+  deleteMany: [FormScalarWhereInput!]
+  updateMany: [FormUpdateManyWithWhereNestedInput!]
+}
+
+input FormUpdateManyMutationInput {
+  name: String
+}
+
+input FormUpdateManyWithWhereNestedInput {
+  where: FormScalarWhereInput!
+  data: FormUpdateManyDataInput!
+}
+
+input FormUpdateWithWhereUniqueNestedInput {
+  where: FormWhereUniqueInput!
+  data: FormUpdateDataInput!
+}
+
+input FormUpsertWithWhereUniqueNestedInput {
+  where: FormWhereUniqueInput!
+  update: FormUpdateDataInput!
+  create: FormCreateInput!
+}
+
+input FormWhereInput {
+  createdBy: UserWhereInput
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  AND: [FormWhereInput!]
+  OR: [FormWhereInput!]
+  NOT: [FormWhereInput!]
+}
+
+input FormWhereUniqueInput {
+  id: ID
+}
+
+scalar Long
+
+type Mutation {
+  createAcademy(data: AcademyCreateInput!): Academy!
+  updateAcademy(data: AcademyUpdateInput!, where: AcademyWhereUniqueInput!): Academy
+  updateManyAcademies(data: AcademyUpdateManyMutationInput!, where: AcademyWhereInput): BatchPayload!
+  upsertAcademy(where: AcademyWhereUniqueInput!, create: AcademyCreateInput!, update: AcademyUpdateInput!): Academy!
+  deleteAcademy(where: AcademyWhereUniqueInput!): Academy
+  deleteManyAcademies(where: AcademyWhereInput): BatchPayload!
+  createClan(data: ClanCreateInput!): Clan!
+  updateClan(data: ClanUpdateInput!, where: ClanWhereUniqueInput!): Clan
+  updateManyClans(data: ClanUpdateManyMutationInput!, where: ClanWhereInput): BatchPayload!
+  upsertClan(where: ClanWhereUniqueInput!, create: ClanCreateInput!, update: ClanUpdateInput!): Clan!
+  deleteClan(where: ClanWhereUniqueInput!): Clan
+  deleteManyClans(where: ClanWhereInput): BatchPayload!
+  createForm(data: FormCreateInput!): Form!
+  updateForm(data: FormUpdateInput!, where: FormWhereUniqueInput!): Form
+  updateManyForms(data: FormUpdateManyMutationInput!, where: FormWhereInput): BatchPayload!
+  upsertForm(where: FormWhereUniqueInput!, create: FormCreateInput!, update: FormUpdateInput!): Form!
+  deleteForm(where: FormWhereUniqueInput!): Form
+  deleteManyForms(where: FormWhereInput): BatchPayload!
+  createPlayer(data: PlayerCreateInput!): Player!
+  updatePlayer(data: PlayerUpdateInput!, where: PlayerWhereUniqueInput!): Player
+  updateManyPlayers(data: PlayerUpdateManyMutationInput!, where: PlayerWhereInput): BatchPayload!
+  upsertPlayer(where: PlayerWhereUniqueInput!, create: PlayerCreateInput!, update: PlayerUpdateInput!): Player!
+  deletePlayer(where: PlayerWhereUniqueInput!): Player
+  deleteManyPlayers(where: PlayerWhereInput): BatchPayload!
+  createSchool(data: SchoolCreateInput!): School!
+  updateSchool(data: SchoolUpdateInput!, where: SchoolWhereUniqueInput!): School
+  updateManySchools(data: SchoolUpdateManyMutationInput!, where: SchoolWhereInput): BatchPayload!
+  upsertSchool(where: SchoolWhereUniqueInput!, create: SchoolCreateInput!, update: SchoolUpdateInput!): School!
+  deleteSchool(where: SchoolWhereUniqueInput!): School
+  deleteManySchools(where: SchoolWhereInput): BatchPayload!
+  createTournament(data: TournamentCreateInput!): Tournament!
+  updateTournament(data: TournamentUpdateInput!, where: TournamentWhereUniqueInput!): Tournament
+  updateManyTournaments(data: TournamentUpdateManyMutationInput!, where: TournamentWhereInput): BatchPayload!
+  upsertTournament(where: TournamentWhereUniqueInput!, create: TournamentCreateInput!, update: TournamentUpdateInput!): Tournament!
+  deleteTournament(where: TournamentWhereUniqueInput!): Tournament
+  deleteManyTournaments(where: TournamentWhereInput): BatchPayload!
+  createUser(data: UserCreateInput!): User!
+  updateUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updateManyUsers(data: UserUpdateManyMutationInput!, where: UserWhereInput): BatchPayload!
+  upsertUser(where: UserWhereUniqueInput!, create: UserCreateInput!, update: UserUpdateInput!): User!
+  deleteUser(where: UserWhereUniqueInput!): User
+  deleteManyUsers(where: UserWhereInput): BatchPayload!
+}
+
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+type Player {
+  clan: Clan!
+  createdBy: User
+  familyName: String!
+  forms(where: FormWhereInput, orderBy: FormOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Form!]
+  id: ID!
+  name: String!
+  nickname: String!
+}
+
+type PlayerConnection {
+  pageInfo: PageInfo!
+  edges: [PlayerEdge]!
+  aggregate: AggregatePlayer!
+}
+
+input PlayerCreateInput {
+  clan: ClanCreateOneWithoutPlayersInput!
+  createdBy: UserCreateOneInput
+  familyName: String!
+  forms: FormCreateManyInput
+  id: ID
+  name: String!
+  nickname: String!
+}
+
+input PlayerCreateManyWithoutClanInput {
+  create: [PlayerCreateWithoutClanInput!]
+  connect: [PlayerWhereUniqueInput!]
+}
+
+input PlayerCreateWithoutClanInput {
+  createdBy: UserCreateOneInput
+  familyName: String!
+  forms: FormCreateManyInput
+  id: ID
+  name: String!
+  nickname: String!
+}
+
+type PlayerEdge {
+  node: Player!
+  cursor: String!
+}
+
+enum PlayerOrderByInput {
+  familyName_ASC
+  familyName_DESC
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  nickname_ASC
+  nickname_DESC
+}
+
+type PlayerPreviousValues {
+  familyName: String!
+  id: ID!
+  name: String!
+  nickname: String!
+}
+
+input PlayerScalarWhereInput {
+  familyName: String
+  familyName_not: String
+  familyName_in: [String!]
+  familyName_not_in: [String!]
+  familyName_lt: String
+  familyName_lte: String
+  familyName_gt: String
+  familyName_gte: String
+  familyName_contains: String
+  familyName_not_contains: String
+  familyName_starts_with: String
+  familyName_not_starts_with: String
+  familyName_ends_with: String
+  familyName_not_ends_with: String
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  nickname: String
+  nickname_not: String
+  nickname_in: [String!]
+  nickname_not_in: [String!]
+  nickname_lt: String
+  nickname_lte: String
+  nickname_gt: String
+  nickname_gte: String
+  nickname_contains: String
+  nickname_not_contains: String
+  nickname_starts_with: String
+  nickname_not_starts_with: String
+  nickname_ends_with: String
+  nickname_not_ends_with: String
+  AND: [PlayerScalarWhereInput!]
+  OR: [PlayerScalarWhereInput!]
+  NOT: [PlayerScalarWhereInput!]
+}
+
+type PlayerSubscriptionPayload {
+  mutation: MutationType!
+  node: Player
+  updatedFields: [String!]
+  previousValues: PlayerPreviousValues
+}
+
+input PlayerSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: PlayerWhereInput
+  AND: [PlayerSubscriptionWhereInput!]
+  OR: [PlayerSubscriptionWhereInput!]
+  NOT: [PlayerSubscriptionWhereInput!]
+}
+
+input PlayerUpdateInput {
+  clan: ClanUpdateOneRequiredWithoutPlayersInput
+  createdBy: UserUpdateOneInput
+  familyName: String
+  forms: FormUpdateManyInput
+  name: String
+  nickname: String
+}
+
+input PlayerUpdateManyDataInput {
+  familyName: String
+  name: String
+  nickname: String
+}
+
+input PlayerUpdateManyMutationInput {
+  familyName: String
+  name: String
+  nickname: String
+}
+
+input PlayerUpdateManyWithoutClanInput {
+  create: [PlayerCreateWithoutClanInput!]
+  delete: [PlayerWhereUniqueInput!]
+  connect: [PlayerWhereUniqueInput!]
+  set: [PlayerWhereUniqueInput!]
+  disconnect: [PlayerWhereUniqueInput!]
+  update: [PlayerUpdateWithWhereUniqueWithoutClanInput!]
+  upsert: [PlayerUpsertWithWhereUniqueWithoutClanInput!]
+  deleteMany: [PlayerScalarWhereInput!]
+  updateMany: [PlayerUpdateManyWithWhereNestedInput!]
+}
+
+input PlayerUpdateManyWithWhereNestedInput {
+  where: PlayerScalarWhereInput!
+  data: PlayerUpdateManyDataInput!
+}
+
+input PlayerUpdateWithoutClanDataInput {
+  createdBy: UserUpdateOneInput
+  familyName: String
+  forms: FormUpdateManyInput
+  name: String
+  nickname: String
+}
+
+input PlayerUpdateWithWhereUniqueWithoutClanInput {
+  where: PlayerWhereUniqueInput!
+  data: PlayerUpdateWithoutClanDataInput!
+}
+
+input PlayerUpsertWithWhereUniqueWithoutClanInput {
+  where: PlayerWhereUniqueInput!
+  update: PlayerUpdateWithoutClanDataInput!
+  create: PlayerCreateWithoutClanInput!
+}
+
+input PlayerWhereInput {
+  clan: ClanWhereInput
+  createdBy: UserWhereInput
+  familyName: String
+  familyName_not: String
+  familyName_in: [String!]
+  familyName_not_in: [String!]
+  familyName_lt: String
+  familyName_lte: String
+  familyName_gt: String
+  familyName_gte: String
+  familyName_contains: String
+  familyName_not_contains: String
+  familyName_starts_with: String
+  familyName_not_starts_with: String
+  familyName_ends_with: String
+  familyName_not_ends_with: String
+  forms_every: FormWhereInput
+  forms_some: FormWhereInput
+  forms_none: FormWhereInput
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  nickname: String
+  nickname_not: String
+  nickname_in: [String!]
+  nickname_not_in: [String!]
+  nickname_lt: String
+  nickname_lte: String
+  nickname_gt: String
+  nickname_gte: String
+  nickname_contains: String
+  nickname_not_contains: String
+  nickname_starts_with: String
+  nickname_not_starts_with: String
+  nickname_ends_with: String
+  nickname_not_ends_with: String
+  AND: [PlayerWhereInput!]
+  OR: [PlayerWhereInput!]
+  NOT: [PlayerWhereInput!]
+}
+
+input PlayerWhereUniqueInput {
+  id: ID
+}
+
+type Query {
+  academy(where: AcademyWhereUniqueInput!): Academy
+  academies(where: AcademyWhereInput, orderBy: AcademyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Academy]!
+  academiesConnection(where: AcademyWhereInput, orderBy: AcademyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): AcademyConnection!
+  clan(where: ClanWhereUniqueInput!): Clan
+  clans(where: ClanWhereInput, orderBy: ClanOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Clan]!
+  clansConnection(where: ClanWhereInput, orderBy: ClanOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ClanConnection!
+  form(where: FormWhereUniqueInput!): Form
+  forms(where: FormWhereInput, orderBy: FormOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Form]!
+  formsConnection(where: FormWhereInput, orderBy: FormOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FormConnection!
+  player(where: PlayerWhereUniqueInput!): Player
+  players(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Player]!
+  playersConnection(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PlayerConnection!
+  school(where: SchoolWhereUniqueInput!): School
+  schools(where: SchoolWhereInput, orderBy: SchoolOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [School]!
+  schoolsConnection(where: SchoolWhereInput, orderBy: SchoolOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): SchoolConnection!
+  tournament(where: TournamentWhereUniqueInput!): Tournament
+  tournaments(where: TournamentWhereInput, orderBy: TournamentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Tournament]!
+  tournamentsConnection(where: TournamentWhereInput, orderBy: TournamentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): TournamentConnection!
+  user(where: UserWhereUniqueInput!): User
+  users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
+  usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
+  node(id: ID!): Node
+}
+
+type School {
+  academy: Academy!
+  clans(where: ClanWhereInput, orderBy: ClanOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Clan!]
+  createdBy: User
+  id: ID!
+  name: String!
+}
+
+type SchoolConnection {
+  pageInfo: PageInfo!
+  edges: [SchoolEdge]!
+  aggregate: AggregateSchool!
+}
+
+input SchoolCreateInput {
+  academy: AcademyCreateOneWithoutSchoolsInput!
+  clans: ClanCreateManyWithoutSchoolInput
+  createdBy: UserCreateOneWithoutSchoolsInput
+  id: ID
+  name: String!
+}
+
+input SchoolCreateManyWithoutAcademyInput {
+  create: [SchoolCreateWithoutAcademyInput!]
+  connect: [SchoolWhereUniqueInput!]
+}
+
+input SchoolCreateManyWithoutCreatedByInput {
+  create: [SchoolCreateWithoutCreatedByInput!]
+  connect: [SchoolWhereUniqueInput!]
+}
+
+input SchoolCreateOneWithoutClansInput {
+  create: SchoolCreateWithoutClansInput
+  connect: SchoolWhereUniqueInput
+}
+
+input SchoolCreateWithoutAcademyInput {
+  clans: ClanCreateManyWithoutSchoolInput
+  createdBy: UserCreateOneWithoutSchoolsInput
+  id: ID
+  name: String!
+}
+
+input SchoolCreateWithoutClansInput {
+  academy: AcademyCreateOneWithoutSchoolsInput!
+  createdBy: UserCreateOneWithoutSchoolsInput
+  id: ID
+  name: String!
+}
+
+input SchoolCreateWithoutCreatedByInput {
+  academy: AcademyCreateOneWithoutSchoolsInput!
+  clans: ClanCreateManyWithoutSchoolInput
+  id: ID
+  name: String!
+}
+
+type SchoolEdge {
+  node: School!
+  cursor: String!
+}
+
+enum SchoolOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+}
+
+type SchoolPreviousValues {
+  id: ID!
+  name: String!
+}
+
+input SchoolScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  AND: [SchoolScalarWhereInput!]
+  OR: [SchoolScalarWhereInput!]
+  NOT: [SchoolScalarWhereInput!]
+}
+
+type SchoolSubscriptionPayload {
+  mutation: MutationType!
+  node: School
+  updatedFields: [String!]
+  previousValues: SchoolPreviousValues
+}
+
+input SchoolSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: SchoolWhereInput
+  AND: [SchoolSubscriptionWhereInput!]
+  OR: [SchoolSubscriptionWhereInput!]
+  NOT: [SchoolSubscriptionWhereInput!]
+}
+
+input SchoolUpdateInput {
+  academy: AcademyUpdateOneRequiredWithoutSchoolsInput
+  clans: ClanUpdateManyWithoutSchoolInput
+  createdBy: UserUpdateOneWithoutSchoolsInput
+  name: String
+}
+
+input SchoolUpdateManyDataInput {
+  name: String
+}
+
+input SchoolUpdateManyMutationInput {
+  name: String
+}
+
+input SchoolUpdateManyWithoutAcademyInput {
+  create: [SchoolCreateWithoutAcademyInput!]
+  delete: [SchoolWhereUniqueInput!]
+  connect: [SchoolWhereUniqueInput!]
+  set: [SchoolWhereUniqueInput!]
+  disconnect: [SchoolWhereUniqueInput!]
+  update: [SchoolUpdateWithWhereUniqueWithoutAcademyInput!]
+  upsert: [SchoolUpsertWithWhereUniqueWithoutAcademyInput!]
+  deleteMany: [SchoolScalarWhereInput!]
+  updateMany: [SchoolUpdateManyWithWhereNestedInput!]
+}
+
+input SchoolUpdateManyWithoutCreatedByInput {
+  create: [SchoolCreateWithoutCreatedByInput!]
+  delete: [SchoolWhereUniqueInput!]
+  connect: [SchoolWhereUniqueInput!]
+  set: [SchoolWhereUniqueInput!]
+  disconnect: [SchoolWhereUniqueInput!]
+  update: [SchoolUpdateWithWhereUniqueWithoutCreatedByInput!]
+  upsert: [SchoolUpsertWithWhereUniqueWithoutCreatedByInput!]
+  deleteMany: [SchoolScalarWhereInput!]
+  updateMany: [SchoolUpdateManyWithWhereNestedInput!]
+}
+
+input SchoolUpdateManyWithWhereNestedInput {
+  where: SchoolScalarWhereInput!
+  data: SchoolUpdateManyDataInput!
+}
+
+input SchoolUpdateOneRequiredWithoutClansInput {
+  create: SchoolCreateWithoutClansInput
+  update: SchoolUpdateWithoutClansDataInput
+  upsert: SchoolUpsertWithoutClansInput
+  connect: SchoolWhereUniqueInput
+}
+
+input SchoolUpdateWithoutAcademyDataInput {
+  clans: ClanUpdateManyWithoutSchoolInput
+  createdBy: UserUpdateOneWithoutSchoolsInput
+  name: String
+}
+
+input SchoolUpdateWithoutClansDataInput {
+  academy: AcademyUpdateOneRequiredWithoutSchoolsInput
+  createdBy: UserUpdateOneWithoutSchoolsInput
+  name: String
+}
+
+input SchoolUpdateWithoutCreatedByDataInput {
+  academy: AcademyUpdateOneRequiredWithoutSchoolsInput
+  clans: ClanUpdateManyWithoutSchoolInput
+  name: String
+}
+
+input SchoolUpdateWithWhereUniqueWithoutAcademyInput {
+  where: SchoolWhereUniqueInput!
+  data: SchoolUpdateWithoutAcademyDataInput!
+}
+
+input SchoolUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: SchoolWhereUniqueInput!
+  data: SchoolUpdateWithoutCreatedByDataInput!
+}
+
+input SchoolUpsertWithoutClansInput {
+  update: SchoolUpdateWithoutClansDataInput!
+  create: SchoolCreateWithoutClansInput!
+}
+
+input SchoolUpsertWithWhereUniqueWithoutAcademyInput {
+  where: SchoolWhereUniqueInput!
+  update: SchoolUpdateWithoutAcademyDataInput!
+  create: SchoolCreateWithoutAcademyInput!
+}
+
+input SchoolUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: SchoolWhereUniqueInput!
+  update: SchoolUpdateWithoutCreatedByDataInput!
+  create: SchoolCreateWithoutCreatedByInput!
+}
+
+input SchoolWhereInput {
+  academy: AcademyWhereInput
+  clans_every: ClanWhereInput
+  clans_some: ClanWhereInput
+  clans_none: ClanWhereInput
+  createdBy: UserWhereInput
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  AND: [SchoolWhereInput!]
+  OR: [SchoolWhereInput!]
+  NOT: [SchoolWhereInput!]
+}
+
+input SchoolWhereUniqueInput {
+  id: ID
+}
+
+type Subscription {
+  academy(where: AcademySubscriptionWhereInput): AcademySubscriptionPayload
+  clan(where: ClanSubscriptionWhereInput): ClanSubscriptionPayload
+  form(where: FormSubscriptionWhereInput): FormSubscriptionPayload
+  player(where: PlayerSubscriptionWhereInput): PlayerSubscriptionPayload
+  school(where: SchoolSubscriptionWhereInput): SchoolSubscriptionPayload
+  tournament(where: TournamentSubscriptionWhereInput): TournamentSubscriptionPayload
+  user(where: UserSubscriptionWhereInput): UserSubscriptionPayload
+}
+
+type Tournament {
+  createdBy: User
+  id: ID!
+  name: String!
+}
+
+type TournamentConnection {
+  pageInfo: PageInfo!
+  edges: [TournamentEdge]!
+  aggregate: AggregateTournament!
+}
+
+input TournamentCreateInput {
+  createdBy: UserCreateOneInput
+  id: ID
+  name: String!
+}
+
+type TournamentEdge {
+  node: Tournament!
+  cursor: String!
+}
+
+enum TournamentOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+}
+
+type TournamentPreviousValues {
+  id: ID!
+  name: String!
+}
+
+type TournamentSubscriptionPayload {
+  mutation: MutationType!
+  node: Tournament
+  updatedFields: [String!]
+  previousValues: TournamentPreviousValues
+}
+
+input TournamentSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: TournamentWhereInput
+  AND: [TournamentSubscriptionWhereInput!]
+  OR: [TournamentSubscriptionWhereInput!]
+  NOT: [TournamentSubscriptionWhereInput!]
+}
+
+input TournamentUpdateInput {
+  createdBy: UserUpdateOneInput
+  name: String
+}
+
+input TournamentUpdateManyMutationInput {
+  name: String
+}
+
+input TournamentWhereInput {
+  createdBy: UserWhereInput
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  AND: [TournamentWhereInput!]
+  OR: [TournamentWhereInput!]
+  NOT: [TournamentWhereInput!]
+}
+
+input TournamentWhereUniqueInput {
+  id: ID
+}
+
+type User {
+  academies(where: AcademyWhereInput, orderBy: AcademyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Academy!]
+  email: String!
+  id: ID!
+  name: String!
+  password: String!
+  schools(where: SchoolWhereInput, orderBy: SchoolOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [School!]
+}
+
+type UserConnection {
+  pageInfo: PageInfo!
+  edges: [UserEdge]!
+  aggregate: AggregateUser!
+}
+
+input UserCreateInput {
+  academies: AcademyCreateManyWithoutCreatedByInput
+  email: String!
+  id: ID
+  name: String!
+  password: String!
+  schools: SchoolCreateManyWithoutCreatedByInput
+}
+
+input UserCreateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateOneWithoutAcademiesInput {
+  create: UserCreateWithoutAcademiesInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateOneWithoutSchoolsInput {
+  create: UserCreateWithoutSchoolsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateWithoutAcademiesInput {
+  email: String!
+  id: ID
+  name: String!
+  password: String!
+  schools: SchoolCreateManyWithoutCreatedByInput
+}
+
+input UserCreateWithoutSchoolsInput {
+  academies: AcademyCreateManyWithoutCreatedByInput
+  email: String!
+  id: ID
+  name: String!
+  password: String!
+}
+
+type UserEdge {
+  node: User!
+  cursor: String!
+}
+
+enum UserOrderByInput {
+  email_ASC
+  email_DESC
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  password_ASC
+  password_DESC
+}
+
+type UserPreviousValues {
+  email: String!
+  id: ID!
+  name: String!
+  password: String!
+}
+
+type UserSubscriptionPayload {
+  mutation: MutationType!
+  node: User
+  updatedFields: [String!]
+  previousValues: UserPreviousValues
+}
+
+input UserSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: UserWhereInput
+  AND: [UserSubscriptionWhereInput!]
+  OR: [UserSubscriptionWhereInput!]
+  NOT: [UserSubscriptionWhereInput!]
+}
+
+input UserUpdateDataInput {
+  academies: AcademyUpdateManyWithoutCreatedByInput
+  email: String
+  name: String
+  password: String
+  schools: SchoolUpdateManyWithoutCreatedByInput
+}
+
+input UserUpdateInput {
+  academies: AcademyUpdateManyWithoutCreatedByInput
+  email: String
+  name: String
+  password: String
+  schools: SchoolUpdateManyWithoutCreatedByInput
+}
+
+input UserUpdateManyMutationInput {
+  email: String
+  name: String
+  password: String
+}
+
+input UserUpdateOneInput {
+  create: UserCreateInput
+  update: UserUpdateDataInput
+  upsert: UserUpsertNestedInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: UserWhereUniqueInput
+}
+
+input UserUpdateOneWithoutAcademiesInput {
+  create: UserCreateWithoutAcademiesInput
+  update: UserUpdateWithoutAcademiesDataInput
+  upsert: UserUpsertWithoutAcademiesInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: UserWhereUniqueInput
+}
+
+input UserUpdateOneWithoutSchoolsInput {
+  create: UserCreateWithoutSchoolsInput
+  update: UserUpdateWithoutSchoolsDataInput
+  upsert: UserUpsertWithoutSchoolsInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: UserWhereUniqueInput
+}
+
+input UserUpdateWithoutAcademiesDataInput {
+  email: String
+  name: String
+  password: String
+  schools: SchoolUpdateManyWithoutCreatedByInput
+}
+
+input UserUpdateWithoutSchoolsDataInput {
+  academies: AcademyUpdateManyWithoutCreatedByInput
+  email: String
+  name: String
+  password: String
+}
+
+input UserUpsertNestedInput {
+  update: UserUpdateDataInput!
+  create: UserCreateInput!
+}
+
+input UserUpsertWithoutAcademiesInput {
+  update: UserUpdateWithoutAcademiesDataInput!
+  create: UserCreateWithoutAcademiesInput!
+}
+
+input UserUpsertWithoutSchoolsInput {
+  update: UserUpdateWithoutSchoolsDataInput!
+  create: UserCreateWithoutSchoolsInput!
+}
+
+input UserWhereInput {
+  academies_every: AcademyWhereInput
+  academies_some: AcademyWhereInput
+  academies_none: AcademyWhereInput
   email: String
   email_not: String
   email_in: [String!]
@@ -456,6 +1624,34 @@ input UserWhereInput {
   email_not_starts_with: String
   email_ends_with: String
   email_not_ends_with: String
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
   password: String
   password_not: String
   password_in: [String!]
@@ -470,17 +1666,17 @@ input UserWhereInput {
   password_not_starts_with: String
   password_ends_with: String
   password_not_ends_with: String
-  links_every: LinkWhereInput
-  links_some: LinkWhereInput
-  links_none: LinkWhereInput
+  schools_every: SchoolWhereInput
+  schools_some: SchoolWhereInput
+  schools_none: SchoolWhereInput
   AND: [UserWhereInput!]
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]
 }
 
 input UserWhereUniqueInput {
-  id: ID
   email: String
+  id: ID
 }
 `
       }

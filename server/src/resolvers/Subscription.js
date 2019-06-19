@@ -1,14 +1,14 @@
-function newLinkSubscribe(parent, args, context, info) {
-	return context.prisma.$subscribe.link({ mutation_in: ['CREATED'] }).node()
+function newAcademySubscribe(parent, args, context, info) {
+	return context.prisma.$subscribe.academy({ mutation_in: ['CREATED'] }).node()
 }
   
-const newLink = {
-	subscribe: newLinkSubscribe,
+const newAcademy = {
+	subscribe: newAcademySubscribe,
 	resolve: payload => {
-	return payload
+		return payload
 	},
 }
 
 module.exports = {
-	newLink,
+	newAcademy,
 }
