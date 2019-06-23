@@ -132,6 +132,7 @@ async function createTournament(parent, args, context, info) {
 		createdBy: { connect: { id: userId } },
 		name: args.name,
 		players: args.playerIds ? { connect: args.playerIds.map(playerId => { return { id: playerId } } ) } : null,
+		poulesType: args.poulesType,
 	})
 }
 

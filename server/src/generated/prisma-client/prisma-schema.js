@@ -1085,6 +1085,11 @@ input PlayerWhereUniqueInput {
   id: ID
 }
 
+enum PoulesType {
+  POSITIONING
+  QUALIFICATION
+}
+
 type Query {
   academy(where: AcademyWhereUniqueInput!): Academy
   academies(where: AcademyWhereInput, orderBy: AcademyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Academy]!
@@ -1391,6 +1396,7 @@ type Tournament {
   id: ID!
   name: String!
   players(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Player!]
+  poulesType: PoulesType!
 }
 
 type TournamentConnection {
@@ -1404,6 +1410,7 @@ input TournamentCreateInput {
   id: ID
   name: String!
   players: PlayerCreateManyWithoutTournamentsInput
+  poulesType: PoulesType!
 }
 
 input TournamentCreateManyWithoutPlayersInput {
@@ -1415,6 +1422,7 @@ input TournamentCreateWithoutPlayersInput {
   createdBy: UserCreateOneInput
   id: ID
   name: String!
+  poulesType: PoulesType!
 }
 
 type TournamentEdge {
@@ -1427,11 +1435,14 @@ enum TournamentOrderByInput {
   id_DESC
   name_ASC
   name_DESC
+  poulesType_ASC
+  poulesType_DESC
 }
 
 type TournamentPreviousValues {
   id: ID!
   name: String!
+  poulesType: PoulesType!
 }
 
 input TournamentScalarWhereInput {
@@ -1463,6 +1474,10 @@ input TournamentScalarWhereInput {
   name_not_starts_with: String
   name_ends_with: String
   name_not_ends_with: String
+  poulesType: PoulesType
+  poulesType_not: PoulesType
+  poulesType_in: [PoulesType!]
+  poulesType_not_in: [PoulesType!]
   AND: [TournamentScalarWhereInput!]
   OR: [TournamentScalarWhereInput!]
   NOT: [TournamentScalarWhereInput!]
@@ -1490,14 +1505,17 @@ input TournamentUpdateInput {
   createdBy: UserUpdateOneInput
   name: String
   players: PlayerUpdateManyWithoutTournamentsInput
+  poulesType: PoulesType
 }
 
 input TournamentUpdateManyDataInput {
   name: String
+  poulesType: PoulesType
 }
 
 input TournamentUpdateManyMutationInput {
   name: String
+  poulesType: PoulesType
 }
 
 input TournamentUpdateManyWithoutPlayersInput {
@@ -1520,6 +1538,7 @@ input TournamentUpdateManyWithWhereNestedInput {
 input TournamentUpdateWithoutPlayersDataInput {
   createdBy: UserUpdateOneInput
   name: String
+  poulesType: PoulesType
 }
 
 input TournamentUpdateWithWhereUniqueWithoutPlayersInput {
@@ -1566,6 +1585,10 @@ input TournamentWhereInput {
   players_every: PlayerWhereInput
   players_some: PlayerWhereInput
   players_none: PlayerWhereInput
+  poulesType: PoulesType
+  poulesType_not: PoulesType
+  poulesType_in: [PoulesType!]
+  poulesType_not_in: [PoulesType!]
   AND: [TournamentWhereInput!]
   OR: [TournamentWhereInput!]
   NOT: [TournamentWhereInput!]

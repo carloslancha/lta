@@ -1,3 +1,8 @@
+enum PoulesType {
+  POSITIONING
+  QUALIFICATION
+}
+
 type Academy {
     id: ID!
     name: String!
@@ -50,7 +55,7 @@ type Mutation {
 	deletePlayer(id: ID!): Player
 	updatePlayer(id: ID!, name: String, familyName: String, nickname: String, formIds: [ID!], clanId: ID): Player
 
-	createTournament(name: String!, playerIds: [ID!]): Tournament!
+	createTournament(name: String!, playerIds: [ID!], poulesType: PoulesType!): Tournament!
 	deleteTournament(id: ID!): Tournament
 	updateTournament(id: ID!, name: String): Tournament
 }
@@ -105,6 +110,7 @@ type Tournament {
 	id: ID!
     name: String!
 	players: [Player!]
+	poulesType: PoulesType!
 }
 
 type User {

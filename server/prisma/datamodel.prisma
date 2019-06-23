@@ -1,3 +1,8 @@
+enum PoulesType {
+  POSITIONING
+  QUALIFICATION
+}
+
 type Academy {
     country: String!
     createdBy: User
@@ -43,7 +48,8 @@ type Tournament {
     createdBy: User
     id: ID! @id
     name: String!
-    players: [Player!] @relation(name: "PlayerOnTournament", onDelete: CASCADE)
+    players: [Player!] @relation(name: "PlayerOnTournament", onDelete: SET_NULL)
+    poulesType: PoulesType!
 }
 
 type User {
