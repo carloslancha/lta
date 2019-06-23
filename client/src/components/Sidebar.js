@@ -18,6 +18,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import ListSubheader from '@material-ui/core/ListSubheader'
 import PeopleIcon from '@material-ui/icons/People'
 import FlagIcon from '@material-ui/icons/Flag'
+import GolfCourseIcon from '@material-ui/icons/GolfCourse'
 import React from 'react'
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
 import styles from '../styles/styles'
@@ -98,6 +99,13 @@ export const adminListItems = (
 				<PersonIcon />
 			</ListItemIcon>
 			<ListItemText primary="Players" />
+		</ListItem>
+
+		<ListItem button component={Link} to="/tournaments">
+			<ListItemIcon>
+				<GolfCourseIcon />
+			</ListItemIcon>
+			<ListItemText primary="Tournaments" />
 		</ListItem>
 	</div>
 )
