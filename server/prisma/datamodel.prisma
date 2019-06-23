@@ -28,6 +28,7 @@ type Player {
     id: ID! @id
     name: String!
     nickname: String!
+    tournaments: [Tournament!] @relation(name: "PlayerOnTournament", onDelete: SET_NULL)
 }
 
 type School {
@@ -42,6 +43,7 @@ type Tournament {
     createdBy: User
     id: ID! @id
     name: String!
+    players: [Player!] @relation(name: "PlayerOnTournament", onDelete: CASCADE)
 }
 
 type User {

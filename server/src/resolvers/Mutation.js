@@ -120,9 +120,18 @@ async function createSchool(parent, args, context, info) {
 async function createTournament(parent, args, context, info) {
 	const userId = getUserId(context)
 
+	const playersExists = await context.prisma.$exists.player({
+		id_in: args.playerIds
+	})
+
+	if(!playersExists) {
+		throw new Error(`The player doesn't exists`)
+	}
+
 	return context.prisma.createTournament({
-		name: args.name,
 		createdBy: { connect: { id: userId } },
+		name: args.name,
+		players: args.playerIds ? { connect: args.playerIds.map(playerId => { return { id: playerId } } ) } : null,
 	})
 }
 

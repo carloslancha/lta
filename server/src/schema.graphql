@@ -50,7 +50,7 @@ type Mutation {
 	deletePlayer(id: ID!): Player
 	updatePlayer(id: ID!, name: String, familyName: String, nickname: String, formIds: [ID!], clanId: ID): Player
 
-	createTournament(name: String!): Tournament!
+	createTournament(name: String!, playerIds: [ID!]): Tournament!
 	deleteTournament(id: ID!): Tournament
 	updateTournament(id: ID!, name: String): Tournament
 }
@@ -63,6 +63,7 @@ type Player {
     id: ID!
     name: String!
     nickname: String!
+	tournaments: [Tournament!]
 }
 
 type Query {
@@ -103,6 +104,7 @@ type Tournament {
     createdBy: User
 	id: ID!
     name: String!
+	players: [Player!]
 }
 
 type User {

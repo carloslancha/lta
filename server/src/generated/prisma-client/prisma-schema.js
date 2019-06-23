@@ -767,6 +767,7 @@ type Player {
   id: ID!
   name: String!
   nickname: String!
+  tournaments(where: TournamentWhereInput, orderBy: TournamentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Tournament!]
 }
 
 type PlayerConnection {
@@ -783,6 +784,7 @@ input PlayerCreateInput {
   id: ID
   name: String!
   nickname: String!
+  tournaments: TournamentCreateManyWithoutPlayersInput
 }
 
 input PlayerCreateManyWithoutClanInput {
@@ -790,7 +792,23 @@ input PlayerCreateManyWithoutClanInput {
   connect: [PlayerWhereUniqueInput!]
 }
 
+input PlayerCreateManyWithoutTournamentsInput {
+  create: [PlayerCreateWithoutTournamentsInput!]
+  connect: [PlayerWhereUniqueInput!]
+}
+
 input PlayerCreateWithoutClanInput {
+  createdBy: UserCreateOneInput
+  familyName: String!
+  forms: FormCreateManyInput
+  id: ID
+  name: String!
+  nickname: String!
+  tournaments: TournamentCreateManyWithoutPlayersInput
+}
+
+input PlayerCreateWithoutTournamentsInput {
+  clan: ClanCreateOneWithoutPlayersInput!
   createdBy: UserCreateOneInput
   familyName: String!
   forms: FormCreateManyInput
@@ -909,6 +927,7 @@ input PlayerUpdateInput {
   forms: FormUpdateManyInput
   name: String
   nickname: String
+  tournaments: TournamentUpdateManyWithoutPlayersInput
 }
 
 input PlayerUpdateManyDataInput {
@@ -935,12 +954,34 @@ input PlayerUpdateManyWithoutClanInput {
   updateMany: [PlayerUpdateManyWithWhereNestedInput!]
 }
 
+input PlayerUpdateManyWithoutTournamentsInput {
+  create: [PlayerCreateWithoutTournamentsInput!]
+  delete: [PlayerWhereUniqueInput!]
+  connect: [PlayerWhereUniqueInput!]
+  set: [PlayerWhereUniqueInput!]
+  disconnect: [PlayerWhereUniqueInput!]
+  update: [PlayerUpdateWithWhereUniqueWithoutTournamentsInput!]
+  upsert: [PlayerUpsertWithWhereUniqueWithoutTournamentsInput!]
+  deleteMany: [PlayerScalarWhereInput!]
+  updateMany: [PlayerUpdateManyWithWhereNestedInput!]
+}
+
 input PlayerUpdateManyWithWhereNestedInput {
   where: PlayerScalarWhereInput!
   data: PlayerUpdateManyDataInput!
 }
 
 input PlayerUpdateWithoutClanDataInput {
+  createdBy: UserUpdateOneInput
+  familyName: String
+  forms: FormUpdateManyInput
+  name: String
+  nickname: String
+  tournaments: TournamentUpdateManyWithoutPlayersInput
+}
+
+input PlayerUpdateWithoutTournamentsDataInput {
+  clan: ClanUpdateOneRequiredWithoutPlayersInput
   createdBy: UserUpdateOneInput
   familyName: String
   forms: FormUpdateManyInput
@@ -953,10 +994,21 @@ input PlayerUpdateWithWhereUniqueWithoutClanInput {
   data: PlayerUpdateWithoutClanDataInput!
 }
 
+input PlayerUpdateWithWhereUniqueWithoutTournamentsInput {
+  where: PlayerWhereUniqueInput!
+  data: PlayerUpdateWithoutTournamentsDataInput!
+}
+
 input PlayerUpsertWithWhereUniqueWithoutClanInput {
   where: PlayerWhereUniqueInput!
   update: PlayerUpdateWithoutClanDataInput!
   create: PlayerCreateWithoutClanInput!
+}
+
+input PlayerUpsertWithWhereUniqueWithoutTournamentsInput {
+  where: PlayerWhereUniqueInput!
+  update: PlayerUpdateWithoutTournamentsDataInput!
+  create: PlayerCreateWithoutTournamentsInput!
 }
 
 input PlayerWhereInput {
@@ -1021,6 +1073,9 @@ input PlayerWhereInput {
   nickname_not_starts_with: String
   nickname_ends_with: String
   nickname_not_ends_with: String
+  tournaments_every: TournamentWhereInput
+  tournaments_some: TournamentWhereInput
+  tournaments_none: TournamentWhereInput
   AND: [PlayerWhereInput!]
   OR: [PlayerWhereInput!]
   NOT: [PlayerWhereInput!]
@@ -1335,6 +1390,7 @@ type Tournament {
   createdBy: User
   id: ID!
   name: String!
+  players(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Player!]
 }
 
 type TournamentConnection {
@@ -1344,6 +1400,18 @@ type TournamentConnection {
 }
 
 input TournamentCreateInput {
+  createdBy: UserCreateOneInput
+  id: ID
+  name: String!
+  players: PlayerCreateManyWithoutTournamentsInput
+}
+
+input TournamentCreateManyWithoutPlayersInput {
+  create: [TournamentCreateWithoutPlayersInput!]
+  connect: [TournamentWhereUniqueInput!]
+}
+
+input TournamentCreateWithoutPlayersInput {
   createdBy: UserCreateOneInput
   id: ID
   name: String!
@@ -1364,6 +1432,40 @@ enum TournamentOrderByInput {
 type TournamentPreviousValues {
   id: ID!
   name: String!
+}
+
+input TournamentScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  AND: [TournamentScalarWhereInput!]
+  OR: [TournamentScalarWhereInput!]
+  NOT: [TournamentScalarWhereInput!]
 }
 
 type TournamentSubscriptionPayload {
@@ -1387,10 +1489,48 @@ input TournamentSubscriptionWhereInput {
 input TournamentUpdateInput {
   createdBy: UserUpdateOneInput
   name: String
+  players: PlayerUpdateManyWithoutTournamentsInput
+}
+
+input TournamentUpdateManyDataInput {
+  name: String
 }
 
 input TournamentUpdateManyMutationInput {
   name: String
+}
+
+input TournamentUpdateManyWithoutPlayersInput {
+  create: [TournamentCreateWithoutPlayersInput!]
+  delete: [TournamentWhereUniqueInput!]
+  connect: [TournamentWhereUniqueInput!]
+  set: [TournamentWhereUniqueInput!]
+  disconnect: [TournamentWhereUniqueInput!]
+  update: [TournamentUpdateWithWhereUniqueWithoutPlayersInput!]
+  upsert: [TournamentUpsertWithWhereUniqueWithoutPlayersInput!]
+  deleteMany: [TournamentScalarWhereInput!]
+  updateMany: [TournamentUpdateManyWithWhereNestedInput!]
+}
+
+input TournamentUpdateManyWithWhereNestedInput {
+  where: TournamentScalarWhereInput!
+  data: TournamentUpdateManyDataInput!
+}
+
+input TournamentUpdateWithoutPlayersDataInput {
+  createdBy: UserUpdateOneInput
+  name: String
+}
+
+input TournamentUpdateWithWhereUniqueWithoutPlayersInput {
+  where: TournamentWhereUniqueInput!
+  data: TournamentUpdateWithoutPlayersDataInput!
+}
+
+input TournamentUpsertWithWhereUniqueWithoutPlayersInput {
+  where: TournamentWhereUniqueInput!
+  update: TournamentUpdateWithoutPlayersDataInput!
+  create: TournamentCreateWithoutPlayersInput!
 }
 
 input TournamentWhereInput {
@@ -1423,6 +1563,9 @@ input TournamentWhereInput {
   name_not_starts_with: String
   name_ends_with: String
   name_not_ends_with: String
+  players_every: PlayerWhereInput
+  players_some: PlayerWhereInput
+  players_none: PlayerWhereInput
   AND: [TournamentWhereInput!]
   OR: [TournamentWhereInput!]
   NOT: [TournamentWhereInput!]
