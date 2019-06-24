@@ -25,6 +25,13 @@ type Form {
     name: String!
 }
 
+type Poule {
+	id: ID! @id
+	name: String!
+	players: [Player!]!
+	tournament: Tournament! @relation(name: "PouleOnTournament", onDelete: SET_NULL)
+}
+
 type Player {
     clan: Clan!
     createdBy: User
@@ -33,6 +40,7 @@ type Player {
     id: ID! @id
     name: String!
     nickname: String!
+    poules: [Poule!]
     tournaments: [Tournament!] @relation(name: "PlayerOnTournament", onDelete: SET_NULL)
 }
 
@@ -49,6 +57,7 @@ type Tournament {
     id: ID! @id
     name: String!
     players: [Player!] @relation(name: "PlayerOnTournament", onDelete: SET_NULL)
+    poules: [Poule!] @relation(name: "PouleOnTournament", onDelete: CASCADE)
     poulesType: PoulesType!
 }
 

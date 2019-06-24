@@ -58,6 +58,8 @@ type Mutation {
 	createTournament(name: String!, playerIds: [ID!], poulesType: PoulesType!): Tournament!
 	deleteTournament(id: ID!): Tournament
 	updateTournament(id: ID!, name: String): Tournament
+	generateTournamentPoules(tournamentId: ID!): Tournament!
+
 }
 
 type Player {
@@ -68,7 +70,15 @@ type Player {
     id: ID!
     name: String!
     nickname: String!
+	poules: [Poule!]
 	tournaments: [Tournament!]
+}
+
+type Poule {
+	id: ID!
+	name: String!
+	players: [Player!]!
+	tournament: Tournament!
 }
 
 type Query {
@@ -85,6 +95,9 @@ type Query {
 
 	player(id: ID!): Player
 	players: [Player!]!
+
+	poule(id: ID!): Poule
+	poules: [Poule!]!
 
 	schools: [School!]!
 	school(id: ID!): School
@@ -110,6 +123,7 @@ type Tournament {
 	id: ID!
     name: String!
 	players: [Player!]
+	poules: [Poule!]
 	poulesType: PoulesType!
 }
 

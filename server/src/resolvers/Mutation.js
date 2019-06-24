@@ -1,6 +1,6 @@
+const { APP_SECRET, getUserId, shuffleArray } = require('../utils')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const { APP_SECRET, getById, getUserId } = require('../utils')
 
 async function signup(parent, args, context, info) {
 	const password = await bcrypt.hash(args.password, 10)
@@ -202,6 +202,118 @@ async function deleteTournament(parent, args, context, info) {
 	)
 }
 
+async function generateTournamentPoules(parent, args, context, info) {
+	const userId = getUserId(context)
+
+	const POULE_NAMES = [
+		'A',
+		'B',
+		'C',
+		'D',
+		'E',
+		'F',
+		'G',
+		'H',
+		'I',
+		'J',
+		'K',
+		'L',
+		'M',
+		'N',
+		'O',
+		'P'
+	];
+
+	const fragment = `
+		fragment TournamentWithPlayers on Tournament {
+			id
+			name
+			poulesType
+			players {
+				id
+				name
+				familyName
+				forms {
+					id
+					name
+				}
+				clan {
+					id
+					name
+					school {
+						id
+						name 
+						academy {
+							id
+							name
+							country
+						}
+					}
+				}
+			}
+	}
+	`
+
+	const tournamentWithPlayers = await context.prisma.tournament({id: args.tournamentId}).$fragment(fragment)
+
+	let players = tournamentWithPlayers.players
+
+	players = shuffleArray(players)
+
+	/** CREATE POULES */
+	const numberOfPoules = Math.ceil(players.length / 8)
+
+	let poules = {}
+
+	for (let i = 0; i < numberOfPoules; i++) {
+		const pouleName = POULE_NAMES[i]
+
+		let poule = {
+			name: `POULE ${pouleName}`,
+			tournamentId: args.tournamentId,
+			type: 'POULE',
+			players: []
+		}
+
+		poules[pouleName] = poule
+	}
+
+	const playersGroupedByNumberOfForms = players.reduce((prev, curr) => {
+		(prev[curr['forms'].length] = prev[curr['forms'].length] || []).push(curr)
+		return prev
+	}, {})
+
+
+	/** ASSIGN PLAYERS TO POULES */
+	let currentPoule = 0
+	Object.keys(playersGroupedByNumberOfForms).map(key => {
+		playersGroupedByNumberOfForms[key].map(player => {
+			poules[POULE_NAMES[currentPoule]].players.push({ id: player.id })
+			currentPoule = (currentPoule === numberOfPoules - 1) ? 0 : currentPoule +1
+		})
+	})
+
+	/** SAVE TO DB */
+	return context.prisma.updateTournament(
+		{
+			data: {
+				poules: {
+					create: Object.keys(poules).map(key => { 
+						return {
+							name: poules[key].name,
+							players: { connect: poules[key].players }
+						}
+					}),
+				}
+			},
+			where: {
+				id: tournamentWithPlayers.id
+			}
+		},
+		info
+	)
+}
+
 async function updateAcademy(parent, args, context, info) {
 	const userId = getUserId(context)
 
@@ -342,6 +454,7 @@ module.exports = {
 	deletePlayer,
 	deleteSchool,
 	deleteTournament,
+	generateTournamentPoules,
 	updateAcademy,
 	updateClan,
 	updateForm,

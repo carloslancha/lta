@@ -32,6 +32,14 @@ function players(parent, args, context, info) {
 	return context.prisma.players()
 }
 
+function poule(parent, args, context, info) {
+	return context.prisma.poule({id: args.id})
+}
+
+function poules(parent, args, context, info) {
+	return context.prisma.poules()
+}
+
 function school(parent, args, context, info) {
 	return context.prisma.school({id: args.id})
 }
@@ -58,6 +66,8 @@ module.exports = {
 	forms,
 	player,
 	players,
+	poule,
+	poules,
 	school,
 	schools,
 	tournament,

@@ -21,6 +21,10 @@ var models = [
     embedded: false
   },
   {
+    name: "Poule",
+    embedded: false
+  },
+  {
     name: "Player",
     embedded: false
   },

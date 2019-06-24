@@ -7,6 +7,7 @@ const Form = require('./resolvers/Form')
 const Mutation = require('./resolvers/Mutation')
 const Query = require('./resolvers/Query')
 const Player = require('./resolvers/Player')
+const Poule = require('./resolvers/Poule')
 const School = require('./resolvers/School')
 const Tournament = require('./resolvers/Tournament')
 const User = require('./resolvers/User')
@@ -19,6 +20,7 @@ const resolvers = {
 	Form,
 	Mutation,
 	Player,
+	Poule,
 	Query,
 	School,
 	Subscription,
