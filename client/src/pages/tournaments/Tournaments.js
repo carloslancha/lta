@@ -13,6 +13,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Paper from '@material-ui/core/Paper'
 import React, { useState } from 'react'
 import Select from '@material-ui/core/Select'
+import SettingsIcon from '@material-ui/icons/Settings'
 import styles from '../../styles/styles'
 import Table from '@material-ui/core/Table'
 import TableBody from '@material-ui/core/TableBody'
@@ -43,6 +44,7 @@ const QUERY = gql`
 				}
 			}
 		}
+
 		tournaments {
 			id
 			name
@@ -65,13 +67,21 @@ const QUERY = gql`
 					}
 				}
 			}
+			poulesType
+		}
+
+		poulesTypes: __type(name: "PoulesType") {
+			name
+			enumValues {
+				name
+			}
 		}
 	}
 `
 
 const CREATE_TOURNAMENT_MUTATION = gql`
-	mutation CreateTournamentMutation($name: String!, $playerIds: [ID!]) {
-		createTournament(name: $name, playerIds: $playerIds) {
+	mutation CreateTournamentMutation($name: String!, $playerIds: [ID!], $poulesType: PoulesType!) {
+		createTournament(name: $name, playerIds: $playerIds, poulesType: $poulesType) {
 			id
 			name
 			players {
@@ -93,6 +103,7 @@ const CREATE_TOURNAMENT_MUTATION = gql`
 					}
 				}
 			}
+			poulesType
 		}
 	}
 `
@@ -111,6 +122,7 @@ export default function Tournaments(props) {
 
 	const [tournamentName, setTournamentName] = useState('')
 	const [tournamentPlayers, setTournamentPlayers] = useState([])
+	const [tournamentPoulesType, setTournamentPoulesType] = useState('')
 
 	const createTournamentMutation = useMutation(CREATE_TOURNAMENT_MUTATION, {
 		update: (cache, { data: { createTournament } }) => {
@@ -126,11 +138,13 @@ export default function Tournaments(props) {
 			
 			setTournamentName('')
 			setTournamentPlayers([])
+			setTournamentPoulesType('')
 		},
 
 		variables: {
 			name: tournamentName,
 			playerIds: tournamentPlayers,
+			poulesType: tournamentPoulesType,
 		},
 	})
 	
@@ -151,10 +165,11 @@ export default function Tournaments(props) {
 		}
 	})
 
-	const { 
+	const {
 		data: {
 			players,
 			tournaments,
+			poulesTypes,
 		},
 		error,
 		loading,
@@ -219,6 +234,30 @@ export default function Tournaments(props) {
 									</FormControl>
 								</Grid>
 
+								<Grid item xs={12}>
+									<FormControl fullWidth>
+										<InputLabel htmlFor="tournamentPoulesType">Poules Type</InputLabel>
+
+										<Select
+											inputProps={{
+												name: 'tournamentPoulesType',
+												id: 'tournamentPoulesType',
+											}}
+											onChange={(e) => {setTournamentPoulesType(e.target.value)}}
+											value={tournamentPoulesType}
+										>
+											{poulesTypes.enumValues.map(pouleType => (
+												<MenuItem 
+													key={pouleType.name}
+													value={pouleType.name}
+												>
+													{pouleType.name}
+												</MenuItem>
+											))}
+										</Select>
+									</FormControl>
+								</Grid>
+
 								<Grid item xs={12} align="center">
 									<Button
 										color="primary"
@@ -247,6 +286,7 @@ export default function Tournaments(props) {
 							<TableHead>
 								<TableRow>
 									<TableCell>Name</TableCell>
+									<TableCell align="center">Poules Type</TableCell>
 									<TableCell align="right">Operations</TableCell>
 								</TableRow>
 							</TableHead>
@@ -255,7 +295,16 @@ export default function Tournaments(props) {
 								{tournaments.map(tournament => (
 									<TableRow key={tournament.id}>
 										<TableCell>{tournament.name}</TableCell>
+										<TableCell align="center">{tournament.poulesType}</TableCell>
 										<TableCell align="right">
+											<IconButton 
+												aria-label="Manage"
+												component={Link}
+												to={`${props.match.url}/manage/${tournament.id}`}
+											>
+												<SettingsIcon />
+											</IconButton>
+
 											<IconButton 
 												aria-label="Edit"
 												component={Link}
