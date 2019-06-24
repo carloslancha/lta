@@ -75,6 +75,7 @@ type Player {
 }
 
 type Poule {
+	createdBy: User
 	id: ID!
 	name: String!
 	players: [Player!]!
@@ -128,9 +129,15 @@ type Tournament {
 }
 
 type User {
-	id: ID!
-	name: String!
-	email: String!
-	academies: [Academy!]!
-	schools: [School!]!
+    academies: [Academy!]
+    clans: [Clan!]
+    email: String!
+    forms: [Form!]
+    id: ID!
+    name: String!
+    password: String!
+    players: [Player!]
+    poules: [Poule!]
+    schools: [School!]
+    tournaments: [Tournament!]
 }

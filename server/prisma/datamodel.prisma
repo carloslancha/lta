@@ -5,55 +5,57 @@ enum PoulesType {
 
 type Academy {
     country: String!
-    createdBy: User
+    createdBy: User @relation(name: "AcademiesOnUser", onDelete: SET_NULL)
     id: ID! @id
     name: String! @unique
     schools: [School!] @relation(name: "SchoolOnAcademy", onDelete: CASCADE)
 }
 
 type Clan {
-    createdBy: User
+    createdBy: User @relation(name: "ClanOnUser", onDelete: SET_NULL)
     id: ID! @id
     name: String!
-    players: [Player!]
+    players: [Player!] @relation(name: "PlayerOnClan", onDelete: CASCADE)
     school: School! @relation(name: "ClanOnSchool", onDelete: SET_NULL)
 }
 
 type Form {
-    createdBy: User
+    createdBy: User @relation(name: "FormOnUser", onDelete: SET_NULL)
     id: ID! @id
     name: String!
+    players: [Player!] @relation(name: "FormOnPlayer", onDelete: SET_NULL)
 }
 
 type Poule {
+    createdBy: User @relation(name: "PouleOnUser", onDelete: SET_NULL)
 	id: ID! @id
 	name: String!
-	players: [Player!]!
+	players: [Player!]! @relation(name: "PlayerOnPoule", onDelete: SET_NULL)
 	tournament: Tournament! @relation(name: "PouleOnTournament", onDelete: SET_NULL)
 }
 
 type Player {
-    clan: Clan!
-    createdBy: User
+    clan: Clan! @relation(name: "PlayerOnClan", onDelete: SET_NULL)
+    createdBy: User @relation(name: "PlayerOnUser", onDelete: SET_NULL)
     familyName: String!
-    forms: [Form!]
+    forms: [Form!] @relation(name: "FormOnPlayer", onDelete: SET_NULL)
     id: ID! @id
     name: String!
     nickname: String!
-    poules: [Poule!]
+    poules: [Poule!] @relation(name: "PlayerOnPoule", onDelete: SET_NULL)
     tournaments: [Tournament!] @relation(name: "PlayerOnTournament", onDelete: SET_NULL)
 }
 
 type School {
     academy: Academy! @relation(name: "SchoolOnAcademy", onDelete: SET_NULL)
     clans: [Clan!] @relation(name: "ClanOnSchool", onDelete: CASCADE)
-    createdBy: User
+    createdBy: User @relation(name: "SchoolOnUser", onDelete: SET_NULL)
     id: ID! @id
     name: String!
 }
 
 type Tournament {
-    createdBy: User
+    createdBy: User @relation(name: "TournamentOnUser", onDelete: SET_NULL)
     id: ID! @id
     name: String!
     players: [Player!] @relation(name: "PlayerOnTournament", onDelete: SET_NULL)
@@ -62,10 +64,15 @@ type Tournament {
 }
 
 type User {
-    academies: [Academy!]
+    academies: [Academy!] @relation(name: "AcademiesOnUser", onDelete: SET_NULL)
+    clans: [Clan!] @relation(name: "ClanOnUser", onDelete: SET_NULL)
     email: String! @unique
+    forms: [Form!] @relation(name: "FormOnUser", onDelete: SET_NULL)
     id: ID! @id
     name: String!
     password: String!
-    schools: [School!]
+    players: [Player!] @relation(name: "PlayerOnUser", onDelete: SET_NULL)
+    poules: [Poule!] @relation(name: "PouleOnUser", onDelete: SET_NULL)
+    schools: [School!] @relation(name: "SchoolOnUser", onDelete: SET_NULL)
+    tournaments: [Tournament!] @relation(name: "TournamentOnUser", onDelete: SET_NULL)
 }

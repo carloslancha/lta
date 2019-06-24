@@ -300,6 +300,7 @@ async function generateTournamentPoules(parent, args, context, info) {
 				poules: {
 					create: Object.keys(poules).map(key => { 
 						return {
+							createdBy: { connect: { id: userId } },
 							name: poules[key].name,
 							players: { connect: poules[key].players }
 						}

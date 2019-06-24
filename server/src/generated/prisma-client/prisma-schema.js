@@ -312,11 +312,16 @@ type ClanConnection {
 }
 
 input ClanCreateInput {
-  createdBy: UserCreateOneInput
+  createdBy: UserCreateOneWithoutClansInput
   id: ID
   name: String!
   players: PlayerCreateManyWithoutClanInput
   school: SchoolCreateOneWithoutClansInput!
+}
+
+input ClanCreateManyWithoutCreatedByInput {
+  create: [ClanCreateWithoutCreatedByInput!]
+  connect: [ClanWhereUniqueInput!]
 }
 
 input ClanCreateManyWithoutSchoolInput {
@@ -329,15 +334,22 @@ input ClanCreateOneWithoutPlayersInput {
   connect: ClanWhereUniqueInput
 }
 
+input ClanCreateWithoutCreatedByInput {
+  id: ID
+  name: String!
+  players: PlayerCreateManyWithoutClanInput
+  school: SchoolCreateOneWithoutClansInput!
+}
+
 input ClanCreateWithoutPlayersInput {
-  createdBy: UserCreateOneInput
+  createdBy: UserCreateOneWithoutClansInput
   id: ID
   name: String!
   school: SchoolCreateOneWithoutClansInput!
 }
 
 input ClanCreateWithoutSchoolInput {
-  createdBy: UserCreateOneInput
+  createdBy: UserCreateOneWithoutClansInput
   id: ID
   name: String!
   players: PlayerCreateManyWithoutClanInput
@@ -413,7 +425,7 @@ input ClanSubscriptionWhereInput {
 }
 
 input ClanUpdateInput {
-  createdBy: UserUpdateOneInput
+  createdBy: UserUpdateOneWithoutClansInput
   name: String
   players: PlayerUpdateManyWithoutClanInput
   school: SchoolUpdateOneRequiredWithoutClansInput
@@ -425,6 +437,18 @@ input ClanUpdateManyDataInput {
 
 input ClanUpdateManyMutationInput {
   name: String
+}
+
+input ClanUpdateManyWithoutCreatedByInput {
+  create: [ClanCreateWithoutCreatedByInput!]
+  delete: [ClanWhereUniqueInput!]
+  connect: [ClanWhereUniqueInput!]
+  set: [ClanWhereUniqueInput!]
+  disconnect: [ClanWhereUniqueInput!]
+  update: [ClanUpdateWithWhereUniqueWithoutCreatedByInput!]
+  upsert: [ClanUpsertWithWhereUniqueWithoutCreatedByInput!]
+  deleteMany: [ClanScalarWhereInput!]
+  updateMany: [ClanUpdateManyWithWhereNestedInput!]
 }
 
 input ClanUpdateManyWithoutSchoolInput {
@@ -451,16 +475,27 @@ input ClanUpdateOneRequiredWithoutPlayersInput {
   connect: ClanWhereUniqueInput
 }
 
+input ClanUpdateWithoutCreatedByDataInput {
+  name: String
+  players: PlayerUpdateManyWithoutClanInput
+  school: SchoolUpdateOneRequiredWithoutClansInput
+}
+
 input ClanUpdateWithoutPlayersDataInput {
-  createdBy: UserUpdateOneInput
+  createdBy: UserUpdateOneWithoutClansInput
   name: String
   school: SchoolUpdateOneRequiredWithoutClansInput
 }
 
 input ClanUpdateWithoutSchoolDataInput {
-  createdBy: UserUpdateOneInput
+  createdBy: UserUpdateOneWithoutClansInput
   name: String
   players: PlayerUpdateManyWithoutClanInput
+}
+
+input ClanUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: ClanWhereUniqueInput!
+  data: ClanUpdateWithoutCreatedByDataInput!
 }
 
 input ClanUpdateWithWhereUniqueWithoutSchoolInput {
@@ -471,6 +506,12 @@ input ClanUpdateWithWhereUniqueWithoutSchoolInput {
 input ClanUpsertWithoutPlayersInput {
   update: ClanUpdateWithoutPlayersDataInput!
   create: ClanCreateWithoutPlayersInput!
+}
+
+input ClanUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: ClanWhereUniqueInput!
+  update: ClanUpdateWithoutCreatedByDataInput!
+  create: ClanCreateWithoutCreatedByInput!
 }
 
 input ClanUpsertWithWhereUniqueWithoutSchoolInput {
@@ -526,6 +567,7 @@ type Form {
   createdBy: User
   id: ID!
   name: String!
+  players(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Player!]
 }
 
 type FormConnection {
@@ -535,14 +577,32 @@ type FormConnection {
 }
 
 input FormCreateInput {
-  createdBy: UserCreateOneInput
+  createdBy: UserCreateOneWithoutFormsInput
   id: ID
   name: String!
+  players: PlayerCreateManyWithoutFormsInput
 }
 
-input FormCreateManyInput {
-  create: [FormCreateInput!]
+input FormCreateManyWithoutCreatedByInput {
+  create: [FormCreateWithoutCreatedByInput!]
   connect: [FormWhereUniqueInput!]
+}
+
+input FormCreateManyWithoutPlayersInput {
+  create: [FormCreateWithoutPlayersInput!]
+  connect: [FormWhereUniqueInput!]
+}
+
+input FormCreateWithoutCreatedByInput {
+  id: ID
+  name: String!
+  players: PlayerCreateManyWithoutFormsInput
+}
+
+input FormCreateWithoutPlayersInput {
+  createdBy: UserCreateOneWithoutFormsInput
+  id: ID
+  name: String!
 }
 
 type FormEdge {
@@ -614,34 +674,42 @@ input FormSubscriptionWhereInput {
   NOT: [FormSubscriptionWhereInput!]
 }
 
-input FormUpdateDataInput {
-  createdBy: UserUpdateOneInput
-  name: String
-}
-
 input FormUpdateInput {
-  createdBy: UserUpdateOneInput
+  createdBy: UserUpdateOneWithoutFormsInput
   name: String
+  players: PlayerUpdateManyWithoutFormsInput
 }
 
 input FormUpdateManyDataInput {
   name: String
 }
 
-input FormUpdateManyInput {
-  create: [FormCreateInput!]
-  update: [FormUpdateWithWhereUniqueNestedInput!]
-  upsert: [FormUpsertWithWhereUniqueNestedInput!]
+input FormUpdateManyMutationInput {
+  name: String
+}
+
+input FormUpdateManyWithoutCreatedByInput {
+  create: [FormCreateWithoutCreatedByInput!]
   delete: [FormWhereUniqueInput!]
   connect: [FormWhereUniqueInput!]
   set: [FormWhereUniqueInput!]
   disconnect: [FormWhereUniqueInput!]
+  update: [FormUpdateWithWhereUniqueWithoutCreatedByInput!]
+  upsert: [FormUpsertWithWhereUniqueWithoutCreatedByInput!]
   deleteMany: [FormScalarWhereInput!]
   updateMany: [FormUpdateManyWithWhereNestedInput!]
 }
 
-input FormUpdateManyMutationInput {
-  name: String
+input FormUpdateManyWithoutPlayersInput {
+  create: [FormCreateWithoutPlayersInput!]
+  delete: [FormWhereUniqueInput!]
+  connect: [FormWhereUniqueInput!]
+  set: [FormWhereUniqueInput!]
+  disconnect: [FormWhereUniqueInput!]
+  update: [FormUpdateWithWhereUniqueWithoutPlayersInput!]
+  upsert: [FormUpsertWithWhereUniqueWithoutPlayersInput!]
+  deleteMany: [FormScalarWhereInput!]
+  updateMany: [FormUpdateManyWithWhereNestedInput!]
 }
 
 input FormUpdateManyWithWhereNestedInput {
@@ -649,15 +717,36 @@ input FormUpdateManyWithWhereNestedInput {
   data: FormUpdateManyDataInput!
 }
 
-input FormUpdateWithWhereUniqueNestedInput {
-  where: FormWhereUniqueInput!
-  data: FormUpdateDataInput!
+input FormUpdateWithoutCreatedByDataInput {
+  name: String
+  players: PlayerUpdateManyWithoutFormsInput
 }
 
-input FormUpsertWithWhereUniqueNestedInput {
+input FormUpdateWithoutPlayersDataInput {
+  createdBy: UserUpdateOneWithoutFormsInput
+  name: String
+}
+
+input FormUpdateWithWhereUniqueWithoutCreatedByInput {
   where: FormWhereUniqueInput!
-  update: FormUpdateDataInput!
-  create: FormCreateInput!
+  data: FormUpdateWithoutCreatedByDataInput!
+}
+
+input FormUpdateWithWhereUniqueWithoutPlayersInput {
+  where: FormWhereUniqueInput!
+  data: FormUpdateWithoutPlayersDataInput!
+}
+
+input FormUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: FormWhereUniqueInput!
+  update: FormUpdateWithoutCreatedByDataInput!
+  create: FormCreateWithoutCreatedByInput!
+}
+
+input FormUpsertWithWhereUniqueWithoutPlayersInput {
+  where: FormWhereUniqueInput!
+  update: FormUpdateWithoutPlayersDataInput!
+  create: FormCreateWithoutPlayersInput!
 }
 
 input FormWhereInput {
@@ -690,6 +779,9 @@ input FormWhereInput {
   name_not_starts_with: String
   name_ends_with: String
   name_not_ends_with: String
+  players_every: PlayerWhereInput
+  players_some: PlayerWhereInput
+  players_none: PlayerWhereInput
   AND: [FormWhereInput!]
   OR: [FormWhereInput!]
   NOT: [FormWhereInput!]
@@ -789,9 +881,9 @@ type PlayerConnection {
 
 input PlayerCreateInput {
   clan: ClanCreateOneWithoutPlayersInput!
-  createdBy: UserCreateOneInput
+  createdBy: UserCreateOneWithoutPlayersInput
   familyName: String!
-  forms: FormCreateManyInput
+  forms: FormCreateManyWithoutPlayersInput
   id: ID
   name: String!
   nickname: String!
@@ -801,6 +893,16 @@ input PlayerCreateInput {
 
 input PlayerCreateManyWithoutClanInput {
   create: [PlayerCreateWithoutClanInput!]
+  connect: [PlayerWhereUniqueInput!]
+}
+
+input PlayerCreateManyWithoutCreatedByInput {
+  create: [PlayerCreateWithoutCreatedByInput!]
+  connect: [PlayerWhereUniqueInput!]
+}
+
+input PlayerCreateManyWithoutFormsInput {
+  create: [PlayerCreateWithoutFormsInput!]
   connect: [PlayerWhereUniqueInput!]
 }
 
@@ -815,9 +917,31 @@ input PlayerCreateManyWithoutTournamentsInput {
 }
 
 input PlayerCreateWithoutClanInput {
-  createdBy: UserCreateOneInput
+  createdBy: UserCreateOneWithoutPlayersInput
   familyName: String!
-  forms: FormCreateManyInput
+  forms: FormCreateManyWithoutPlayersInput
+  id: ID
+  name: String!
+  nickname: String!
+  poules: PouleCreateManyWithoutPlayersInput
+  tournaments: TournamentCreateManyWithoutPlayersInput
+}
+
+input PlayerCreateWithoutCreatedByInput {
+  clan: ClanCreateOneWithoutPlayersInput!
+  familyName: String!
+  forms: FormCreateManyWithoutPlayersInput
+  id: ID
+  name: String!
+  nickname: String!
+  poules: PouleCreateManyWithoutPlayersInput
+  tournaments: TournamentCreateManyWithoutPlayersInput
+}
+
+input PlayerCreateWithoutFormsInput {
+  clan: ClanCreateOneWithoutPlayersInput!
+  createdBy: UserCreateOneWithoutPlayersInput
+  familyName: String!
   id: ID
   name: String!
   nickname: String!
@@ -827,9 +951,9 @@ input PlayerCreateWithoutClanInput {
 
 input PlayerCreateWithoutPoulesInput {
   clan: ClanCreateOneWithoutPlayersInput!
-  createdBy: UserCreateOneInput
+  createdBy: UserCreateOneWithoutPlayersInput
   familyName: String!
-  forms: FormCreateManyInput
+  forms: FormCreateManyWithoutPlayersInput
   id: ID
   name: String!
   nickname: String!
@@ -838,9 +962,9 @@ input PlayerCreateWithoutPoulesInput {
 
 input PlayerCreateWithoutTournamentsInput {
   clan: ClanCreateOneWithoutPlayersInput!
-  createdBy: UserCreateOneInput
+  createdBy: UserCreateOneWithoutPlayersInput
   familyName: String!
-  forms: FormCreateManyInput
+  forms: FormCreateManyWithoutPlayersInput
   id: ID
   name: String!
   nickname: String!
@@ -952,9 +1076,9 @@ input PlayerSubscriptionWhereInput {
 
 input PlayerUpdateInput {
   clan: ClanUpdateOneRequiredWithoutPlayersInput
-  createdBy: UserUpdateOneInput
+  createdBy: UserUpdateOneWithoutPlayersInput
   familyName: String
-  forms: FormUpdateManyInput
+  forms: FormUpdateManyWithoutPlayersInput
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
@@ -981,6 +1105,30 @@ input PlayerUpdateManyWithoutClanInput {
   disconnect: [PlayerWhereUniqueInput!]
   update: [PlayerUpdateWithWhereUniqueWithoutClanInput!]
   upsert: [PlayerUpsertWithWhereUniqueWithoutClanInput!]
+  deleteMany: [PlayerScalarWhereInput!]
+  updateMany: [PlayerUpdateManyWithWhereNestedInput!]
+}
+
+input PlayerUpdateManyWithoutCreatedByInput {
+  create: [PlayerCreateWithoutCreatedByInput!]
+  delete: [PlayerWhereUniqueInput!]
+  connect: [PlayerWhereUniqueInput!]
+  set: [PlayerWhereUniqueInput!]
+  disconnect: [PlayerWhereUniqueInput!]
+  update: [PlayerUpdateWithWhereUniqueWithoutCreatedByInput!]
+  upsert: [PlayerUpsertWithWhereUniqueWithoutCreatedByInput!]
+  deleteMany: [PlayerScalarWhereInput!]
+  updateMany: [PlayerUpdateManyWithWhereNestedInput!]
+}
+
+input PlayerUpdateManyWithoutFormsInput {
+  create: [PlayerCreateWithoutFormsInput!]
+  delete: [PlayerWhereUniqueInput!]
+  connect: [PlayerWhereUniqueInput!]
+  set: [PlayerWhereUniqueInput!]
+  disconnect: [PlayerWhereUniqueInput!]
+  update: [PlayerUpdateWithWhereUniqueWithoutFormsInput!]
+  upsert: [PlayerUpsertWithWhereUniqueWithoutFormsInput!]
   deleteMany: [PlayerScalarWhereInput!]
   updateMany: [PlayerUpdateManyWithWhereNestedInput!]
 }
@@ -1015,9 +1163,29 @@ input PlayerUpdateManyWithWhereNestedInput {
 }
 
 input PlayerUpdateWithoutClanDataInput {
-  createdBy: UserUpdateOneInput
+  createdBy: UserUpdateOneWithoutPlayersInput
   familyName: String
-  forms: FormUpdateManyInput
+  forms: FormUpdateManyWithoutPlayersInput
+  name: String
+  nickname: String
+  poules: PouleUpdateManyWithoutPlayersInput
+  tournaments: TournamentUpdateManyWithoutPlayersInput
+}
+
+input PlayerUpdateWithoutCreatedByDataInput {
+  clan: ClanUpdateOneRequiredWithoutPlayersInput
+  familyName: String
+  forms: FormUpdateManyWithoutPlayersInput
+  name: String
+  nickname: String
+  poules: PouleUpdateManyWithoutPlayersInput
+  tournaments: TournamentUpdateManyWithoutPlayersInput
+}
+
+input PlayerUpdateWithoutFormsDataInput {
+  clan: ClanUpdateOneRequiredWithoutPlayersInput
+  createdBy: UserUpdateOneWithoutPlayersInput
+  familyName: String
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
@@ -1026,9 +1194,9 @@ input PlayerUpdateWithoutClanDataInput {
 
 input PlayerUpdateWithoutPoulesDataInput {
   clan: ClanUpdateOneRequiredWithoutPlayersInput
-  createdBy: UserUpdateOneInput
+  createdBy: UserUpdateOneWithoutPlayersInput
   familyName: String
-  forms: FormUpdateManyInput
+  forms: FormUpdateManyWithoutPlayersInput
   name: String
   nickname: String
   tournaments: TournamentUpdateManyWithoutPlayersInput
@@ -1036,9 +1204,9 @@ input PlayerUpdateWithoutPoulesDataInput {
 
 input PlayerUpdateWithoutTournamentsDataInput {
   clan: ClanUpdateOneRequiredWithoutPlayersInput
-  createdBy: UserUpdateOneInput
+  createdBy: UserUpdateOneWithoutPlayersInput
   familyName: String
-  forms: FormUpdateManyInput
+  forms: FormUpdateManyWithoutPlayersInput
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
@@ -1047,6 +1215,16 @@ input PlayerUpdateWithoutTournamentsDataInput {
 input PlayerUpdateWithWhereUniqueWithoutClanInput {
   where: PlayerWhereUniqueInput!
   data: PlayerUpdateWithoutClanDataInput!
+}
+
+input PlayerUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: PlayerWhereUniqueInput!
+  data: PlayerUpdateWithoutCreatedByDataInput!
+}
+
+input PlayerUpdateWithWhereUniqueWithoutFormsInput {
+  where: PlayerWhereUniqueInput!
+  data: PlayerUpdateWithoutFormsDataInput!
 }
 
 input PlayerUpdateWithWhereUniqueWithoutPoulesInput {
@@ -1063,6 +1241,18 @@ input PlayerUpsertWithWhereUniqueWithoutClanInput {
   where: PlayerWhereUniqueInput!
   update: PlayerUpdateWithoutClanDataInput!
   create: PlayerCreateWithoutClanInput!
+}
+
+input PlayerUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: PlayerWhereUniqueInput!
+  update: PlayerUpdateWithoutCreatedByDataInput!
+  create: PlayerCreateWithoutCreatedByInput!
+}
+
+input PlayerUpsertWithWhereUniqueWithoutFormsInput {
+  where: PlayerWhereUniqueInput!
+  update: PlayerUpdateWithoutFormsDataInput!
+  create: PlayerCreateWithoutFormsInput!
 }
 
 input PlayerUpsertWithWhereUniqueWithoutPoulesInput {
@@ -1155,6 +1345,7 @@ input PlayerWhereUniqueInput {
 }
 
 type Poule {
+  createdBy: User
   id: ID!
   name: String!
   players(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Player!]
@@ -1168,10 +1359,16 @@ type PouleConnection {
 }
 
 input PouleCreateInput {
+  createdBy: UserCreateOneWithoutPoulesInput
   id: ID
   name: String!
   players: PlayerCreateManyWithoutPoulesInput
   tournament: TournamentCreateOneWithoutPoulesInput!
+}
+
+input PouleCreateManyWithoutCreatedByInput {
+  create: [PouleCreateWithoutCreatedByInput!]
+  connect: [PouleWhereUniqueInput!]
 }
 
 input PouleCreateManyWithoutPlayersInput {
@@ -1184,13 +1381,22 @@ input PouleCreateManyWithoutTournamentInput {
   connect: [PouleWhereUniqueInput!]
 }
 
+input PouleCreateWithoutCreatedByInput {
+  id: ID
+  name: String!
+  players: PlayerCreateManyWithoutPoulesInput
+  tournament: TournamentCreateOneWithoutPoulesInput!
+}
+
 input PouleCreateWithoutPlayersInput {
+  createdBy: UserCreateOneWithoutPoulesInput
   id: ID
   name: String!
   tournament: TournamentCreateOneWithoutPoulesInput!
 }
 
 input PouleCreateWithoutTournamentInput {
+  createdBy: UserCreateOneWithoutPoulesInput
   id: ID
   name: String!
   players: PlayerCreateManyWithoutPoulesInput
@@ -1271,6 +1477,7 @@ input PouleSubscriptionWhereInput {
 }
 
 input PouleUpdateInput {
+  createdBy: UserUpdateOneWithoutPoulesInput
   name: String
   players: PlayerUpdateManyWithoutPoulesInput
   tournament: TournamentUpdateOneRequiredWithoutPoulesInput
@@ -1282,6 +1489,18 @@ input PouleUpdateManyDataInput {
 
 input PouleUpdateManyMutationInput {
   name: String
+}
+
+input PouleUpdateManyWithoutCreatedByInput {
+  create: [PouleCreateWithoutCreatedByInput!]
+  delete: [PouleWhereUniqueInput!]
+  connect: [PouleWhereUniqueInput!]
+  set: [PouleWhereUniqueInput!]
+  disconnect: [PouleWhereUniqueInput!]
+  update: [PouleUpdateWithWhereUniqueWithoutCreatedByInput!]
+  upsert: [PouleUpsertWithWhereUniqueWithoutCreatedByInput!]
+  deleteMany: [PouleScalarWhereInput!]
+  updateMany: [PouleUpdateManyWithWhereNestedInput!]
 }
 
 input PouleUpdateManyWithoutPlayersInput {
@@ -1313,14 +1532,27 @@ input PouleUpdateManyWithWhereNestedInput {
   data: PouleUpdateManyDataInput!
 }
 
+input PouleUpdateWithoutCreatedByDataInput {
+  name: String
+  players: PlayerUpdateManyWithoutPoulesInput
+  tournament: TournamentUpdateOneRequiredWithoutPoulesInput
+}
+
 input PouleUpdateWithoutPlayersDataInput {
+  createdBy: UserUpdateOneWithoutPoulesInput
   name: String
   tournament: TournamentUpdateOneRequiredWithoutPoulesInput
 }
 
 input PouleUpdateWithoutTournamentDataInput {
+  createdBy: UserUpdateOneWithoutPoulesInput
   name: String
   players: PlayerUpdateManyWithoutPoulesInput
+}
+
+input PouleUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: PouleWhereUniqueInput!
+  data: PouleUpdateWithoutCreatedByDataInput!
 }
 
 input PouleUpdateWithWhereUniqueWithoutPlayersInput {
@@ -1331,6 +1563,12 @@ input PouleUpdateWithWhereUniqueWithoutPlayersInput {
 input PouleUpdateWithWhereUniqueWithoutTournamentInput {
   where: PouleWhereUniqueInput!
   data: PouleUpdateWithoutTournamentDataInput!
+}
+
+input PouleUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: PouleWhereUniqueInput!
+  update: PouleUpdateWithoutCreatedByDataInput!
+  create: PouleCreateWithoutCreatedByInput!
 }
 
 input PouleUpsertWithWhereUniqueWithoutPlayersInput {
@@ -1346,6 +1584,7 @@ input PouleUpsertWithWhereUniqueWithoutTournamentInput {
 }
 
 input PouleWhereInput {
+  createdBy: UserWhereInput
   id: ID
   id_not: ID
   id_in: [ID!]
@@ -1708,12 +1947,17 @@ type TournamentConnection {
 }
 
 input TournamentCreateInput {
-  createdBy: UserCreateOneInput
+  createdBy: UserCreateOneWithoutTournamentsInput
   id: ID
   name: String!
   players: PlayerCreateManyWithoutTournamentsInput
   poules: PouleCreateManyWithoutTournamentInput
   poulesType: PoulesType!
+}
+
+input TournamentCreateManyWithoutCreatedByInput {
+  create: [TournamentCreateWithoutCreatedByInput!]
+  connect: [TournamentWhereUniqueInput!]
 }
 
 input TournamentCreateManyWithoutPlayersInput {
@@ -1726,8 +1970,16 @@ input TournamentCreateOneWithoutPoulesInput {
   connect: TournamentWhereUniqueInput
 }
 
+input TournamentCreateWithoutCreatedByInput {
+  id: ID
+  name: String!
+  players: PlayerCreateManyWithoutTournamentsInput
+  poules: PouleCreateManyWithoutTournamentInput
+  poulesType: PoulesType!
+}
+
 input TournamentCreateWithoutPlayersInput {
-  createdBy: UserCreateOneInput
+  createdBy: UserCreateOneWithoutTournamentsInput
   id: ID
   name: String!
   poules: PouleCreateManyWithoutTournamentInput
@@ -1735,7 +1987,7 @@ input TournamentCreateWithoutPlayersInput {
 }
 
 input TournamentCreateWithoutPoulesInput {
-  createdBy: UserCreateOneInput
+  createdBy: UserCreateOneWithoutTournamentsInput
   id: ID
   name: String!
   players: PlayerCreateManyWithoutTournamentsInput
@@ -1819,7 +2071,7 @@ input TournamentSubscriptionWhereInput {
 }
 
 input TournamentUpdateInput {
-  createdBy: UserUpdateOneInput
+  createdBy: UserUpdateOneWithoutTournamentsInput
   name: String
   players: PlayerUpdateManyWithoutTournamentsInput
   poules: PouleUpdateManyWithoutTournamentInput
@@ -1834,6 +2086,18 @@ input TournamentUpdateManyDataInput {
 input TournamentUpdateManyMutationInput {
   name: String
   poulesType: PoulesType
+}
+
+input TournamentUpdateManyWithoutCreatedByInput {
+  create: [TournamentCreateWithoutCreatedByInput!]
+  delete: [TournamentWhereUniqueInput!]
+  connect: [TournamentWhereUniqueInput!]
+  set: [TournamentWhereUniqueInput!]
+  disconnect: [TournamentWhereUniqueInput!]
+  update: [TournamentUpdateWithWhereUniqueWithoutCreatedByInput!]
+  upsert: [TournamentUpsertWithWhereUniqueWithoutCreatedByInput!]
+  deleteMany: [TournamentScalarWhereInput!]
+  updateMany: [TournamentUpdateManyWithWhereNestedInput!]
 }
 
 input TournamentUpdateManyWithoutPlayersInput {
@@ -1860,18 +2124,30 @@ input TournamentUpdateOneRequiredWithoutPoulesInput {
   connect: TournamentWhereUniqueInput
 }
 
+input TournamentUpdateWithoutCreatedByDataInput {
+  name: String
+  players: PlayerUpdateManyWithoutTournamentsInput
+  poules: PouleUpdateManyWithoutTournamentInput
+  poulesType: PoulesType
+}
+
 input TournamentUpdateWithoutPlayersDataInput {
-  createdBy: UserUpdateOneInput
+  createdBy: UserUpdateOneWithoutTournamentsInput
   name: String
   poules: PouleUpdateManyWithoutTournamentInput
   poulesType: PoulesType
 }
 
 input TournamentUpdateWithoutPoulesDataInput {
-  createdBy: UserUpdateOneInput
+  createdBy: UserUpdateOneWithoutTournamentsInput
   name: String
   players: PlayerUpdateManyWithoutTournamentsInput
   poulesType: PoulesType
+}
+
+input TournamentUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: TournamentWhereUniqueInput!
+  data: TournamentUpdateWithoutCreatedByDataInput!
 }
 
 input TournamentUpdateWithWhereUniqueWithoutPlayersInput {
@@ -1882,6 +2158,12 @@ input TournamentUpdateWithWhereUniqueWithoutPlayersInput {
 input TournamentUpsertWithoutPoulesInput {
   update: TournamentUpdateWithoutPoulesDataInput!
   create: TournamentCreateWithoutPoulesInput!
+}
+
+input TournamentUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: TournamentWhereUniqueInput!
+  update: TournamentUpdateWithoutCreatedByDataInput!
+  create: TournamentCreateWithoutCreatedByInput!
 }
 
 input TournamentUpsertWithWhereUniqueWithoutPlayersInput {
@@ -1941,11 +2223,16 @@ input TournamentWhereUniqueInput {
 
 type User {
   academies(where: AcademyWhereInput, orderBy: AcademyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Academy!]
+  clans(where: ClanWhereInput, orderBy: ClanOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Clan!]
   email: String!
+  forms(where: FormWhereInput, orderBy: FormOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Form!]
   id: ID!
   name: String!
   password: String!
+  players(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Player!]
+  poules(where: PouleWhereInput, orderBy: PouleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Poule!]
   schools(where: SchoolWhereInput, orderBy: SchoolOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [School!]
+  tournaments(where: TournamentWhereInput, orderBy: TournamentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Tournament!]
 }
 
 type UserConnection {
@@ -1956,20 +2243,40 @@ type UserConnection {
 
 input UserCreateInput {
   academies: AcademyCreateManyWithoutCreatedByInput
+  clans: ClanCreateManyWithoutCreatedByInput
   email: String!
+  forms: FormCreateManyWithoutCreatedByInput
   id: ID
   name: String!
   password: String!
+  players: PlayerCreateManyWithoutCreatedByInput
+  poules: PouleCreateManyWithoutCreatedByInput
   schools: SchoolCreateManyWithoutCreatedByInput
-}
-
-input UserCreateOneInput {
-  create: UserCreateInput
-  connect: UserWhereUniqueInput
+  tournaments: TournamentCreateManyWithoutCreatedByInput
 }
 
 input UserCreateOneWithoutAcademiesInput {
   create: UserCreateWithoutAcademiesInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateOneWithoutClansInput {
+  create: UserCreateWithoutClansInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateOneWithoutFormsInput {
+  create: UserCreateWithoutFormsInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateOneWithoutPlayersInput {
+  create: UserCreateWithoutPlayersInput
+  connect: UserWhereUniqueInput
+}
+
+input UserCreateOneWithoutPoulesInput {
+  create: UserCreateWithoutPoulesInput
   connect: UserWhereUniqueInput
 }
 
@@ -1978,20 +2285,100 @@ input UserCreateOneWithoutSchoolsInput {
   connect: UserWhereUniqueInput
 }
 
+input UserCreateOneWithoutTournamentsInput {
+  create: UserCreateWithoutTournamentsInput
+  connect: UserWhereUniqueInput
+}
+
 input UserCreateWithoutAcademiesInput {
+  clans: ClanCreateManyWithoutCreatedByInput
+  email: String!
+  forms: FormCreateManyWithoutCreatedByInput
+  id: ID
+  name: String!
+  password: String!
+  players: PlayerCreateManyWithoutCreatedByInput
+  poules: PouleCreateManyWithoutCreatedByInput
+  schools: SchoolCreateManyWithoutCreatedByInput
+  tournaments: TournamentCreateManyWithoutCreatedByInput
+}
+
+input UserCreateWithoutClansInput {
+  academies: AcademyCreateManyWithoutCreatedByInput
+  email: String!
+  forms: FormCreateManyWithoutCreatedByInput
+  id: ID
+  name: String!
+  password: String!
+  players: PlayerCreateManyWithoutCreatedByInput
+  poules: PouleCreateManyWithoutCreatedByInput
+  schools: SchoolCreateManyWithoutCreatedByInput
+  tournaments: TournamentCreateManyWithoutCreatedByInput
+}
+
+input UserCreateWithoutFormsInput {
+  academies: AcademyCreateManyWithoutCreatedByInput
+  clans: ClanCreateManyWithoutCreatedByInput
   email: String!
   id: ID
   name: String!
   password: String!
+  players: PlayerCreateManyWithoutCreatedByInput
+  poules: PouleCreateManyWithoutCreatedByInput
   schools: SchoolCreateManyWithoutCreatedByInput
+  tournaments: TournamentCreateManyWithoutCreatedByInput
+}
+
+input UserCreateWithoutPlayersInput {
+  academies: AcademyCreateManyWithoutCreatedByInput
+  clans: ClanCreateManyWithoutCreatedByInput
+  email: String!
+  forms: FormCreateManyWithoutCreatedByInput
+  id: ID
+  name: String!
+  password: String!
+  poules: PouleCreateManyWithoutCreatedByInput
+  schools: SchoolCreateManyWithoutCreatedByInput
+  tournaments: TournamentCreateManyWithoutCreatedByInput
+}
+
+input UserCreateWithoutPoulesInput {
+  academies: AcademyCreateManyWithoutCreatedByInput
+  clans: ClanCreateManyWithoutCreatedByInput
+  email: String!
+  forms: FormCreateManyWithoutCreatedByInput
+  id: ID
+  name: String!
+  password: String!
+  players: PlayerCreateManyWithoutCreatedByInput
+  schools: SchoolCreateManyWithoutCreatedByInput
+  tournaments: TournamentCreateManyWithoutCreatedByInput
 }
 
 input UserCreateWithoutSchoolsInput {
   academies: AcademyCreateManyWithoutCreatedByInput
+  clans: ClanCreateManyWithoutCreatedByInput
   email: String!
+  forms: FormCreateManyWithoutCreatedByInput
   id: ID
   name: String!
   password: String!
+  players: PlayerCreateManyWithoutCreatedByInput
+  poules: PouleCreateManyWithoutCreatedByInput
+  tournaments: TournamentCreateManyWithoutCreatedByInput
+}
+
+input UserCreateWithoutTournamentsInput {
+  academies: AcademyCreateManyWithoutCreatedByInput
+  clans: ClanCreateManyWithoutCreatedByInput
+  email: String!
+  forms: FormCreateManyWithoutCreatedByInput
+  id: ID
+  name: String!
+  password: String!
+  players: PlayerCreateManyWithoutCreatedByInput
+  poules: PouleCreateManyWithoutCreatedByInput
+  schools: SchoolCreateManyWithoutCreatedByInput
 }
 
 type UserEdge {
@@ -2035,20 +2422,17 @@ input UserSubscriptionWhereInput {
   NOT: [UserSubscriptionWhereInput!]
 }
 
-input UserUpdateDataInput {
-  academies: AcademyUpdateManyWithoutCreatedByInput
-  email: String
-  name: String
-  password: String
-  schools: SchoolUpdateManyWithoutCreatedByInput
-}
-
 input UserUpdateInput {
   academies: AcademyUpdateManyWithoutCreatedByInput
+  clans: ClanUpdateManyWithoutCreatedByInput
   email: String
+  forms: FormUpdateManyWithoutCreatedByInput
   name: String
   password: String
+  players: PlayerUpdateManyWithoutCreatedByInput
+  poules: PouleUpdateManyWithoutCreatedByInput
   schools: SchoolUpdateManyWithoutCreatedByInput
+  tournaments: TournamentUpdateManyWithoutCreatedByInput
 }
 
 input UserUpdateManyMutationInput {
@@ -2057,19 +2441,46 @@ input UserUpdateManyMutationInput {
   password: String
 }
 
-input UserUpdateOneInput {
-  create: UserCreateInput
-  update: UserUpdateDataInput
-  upsert: UserUpsertNestedInput
+input UserUpdateOneWithoutAcademiesInput {
+  create: UserCreateWithoutAcademiesInput
+  update: UserUpdateWithoutAcademiesDataInput
+  upsert: UserUpsertWithoutAcademiesInput
   delete: Boolean
   disconnect: Boolean
   connect: UserWhereUniqueInput
 }
 
-input UserUpdateOneWithoutAcademiesInput {
-  create: UserCreateWithoutAcademiesInput
-  update: UserUpdateWithoutAcademiesDataInput
-  upsert: UserUpsertWithoutAcademiesInput
+input UserUpdateOneWithoutClansInput {
+  create: UserCreateWithoutClansInput
+  update: UserUpdateWithoutClansDataInput
+  upsert: UserUpsertWithoutClansInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: UserWhereUniqueInput
+}
+
+input UserUpdateOneWithoutFormsInput {
+  create: UserCreateWithoutFormsInput
+  update: UserUpdateWithoutFormsDataInput
+  upsert: UserUpsertWithoutFormsInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: UserWhereUniqueInput
+}
+
+input UserUpdateOneWithoutPlayersInput {
+  create: UserCreateWithoutPlayersInput
+  update: UserUpdateWithoutPlayersDataInput
+  upsert: UserUpsertWithoutPlayersInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: UserWhereUniqueInput
+}
+
+input UserUpdateOneWithoutPoulesInput {
+  create: UserCreateWithoutPoulesInput
+  update: UserUpdateWithoutPoulesDataInput
+  upsert: UserUpsertWithoutPoulesInput
   delete: Boolean
   disconnect: Boolean
   connect: UserWhereUniqueInput
@@ -2084,23 +2495,97 @@ input UserUpdateOneWithoutSchoolsInput {
   connect: UserWhereUniqueInput
 }
 
+input UserUpdateOneWithoutTournamentsInput {
+  create: UserCreateWithoutTournamentsInput
+  update: UserUpdateWithoutTournamentsDataInput
+  upsert: UserUpsertWithoutTournamentsInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: UserWhereUniqueInput
+}
+
 input UserUpdateWithoutAcademiesDataInput {
+  clans: ClanUpdateManyWithoutCreatedByInput
+  email: String
+  forms: FormUpdateManyWithoutCreatedByInput
+  name: String
+  password: String
+  players: PlayerUpdateManyWithoutCreatedByInput
+  poules: PouleUpdateManyWithoutCreatedByInput
+  schools: SchoolUpdateManyWithoutCreatedByInput
+  tournaments: TournamentUpdateManyWithoutCreatedByInput
+}
+
+input UserUpdateWithoutClansDataInput {
+  academies: AcademyUpdateManyWithoutCreatedByInput
+  email: String
+  forms: FormUpdateManyWithoutCreatedByInput
+  name: String
+  password: String
+  players: PlayerUpdateManyWithoutCreatedByInput
+  poules: PouleUpdateManyWithoutCreatedByInput
+  schools: SchoolUpdateManyWithoutCreatedByInput
+  tournaments: TournamentUpdateManyWithoutCreatedByInput
+}
+
+input UserUpdateWithoutFormsDataInput {
+  academies: AcademyUpdateManyWithoutCreatedByInput
+  clans: ClanUpdateManyWithoutCreatedByInput
   email: String
   name: String
   password: String
+  players: PlayerUpdateManyWithoutCreatedByInput
+  poules: PouleUpdateManyWithoutCreatedByInput
   schools: SchoolUpdateManyWithoutCreatedByInput
+  tournaments: TournamentUpdateManyWithoutCreatedByInput
+}
+
+input UserUpdateWithoutPlayersDataInput {
+  academies: AcademyUpdateManyWithoutCreatedByInput
+  clans: ClanUpdateManyWithoutCreatedByInput
+  email: String
+  forms: FormUpdateManyWithoutCreatedByInput
+  name: String
+  password: String
+  poules: PouleUpdateManyWithoutCreatedByInput
+  schools: SchoolUpdateManyWithoutCreatedByInput
+  tournaments: TournamentUpdateManyWithoutCreatedByInput
+}
+
+input UserUpdateWithoutPoulesDataInput {
+  academies: AcademyUpdateManyWithoutCreatedByInput
+  clans: ClanUpdateManyWithoutCreatedByInput
+  email: String
+  forms: FormUpdateManyWithoutCreatedByInput
+  name: String
+  password: String
+  players: PlayerUpdateManyWithoutCreatedByInput
+  schools: SchoolUpdateManyWithoutCreatedByInput
+  tournaments: TournamentUpdateManyWithoutCreatedByInput
 }
 
 input UserUpdateWithoutSchoolsDataInput {
   academies: AcademyUpdateManyWithoutCreatedByInput
+  clans: ClanUpdateManyWithoutCreatedByInput
   email: String
+  forms: FormUpdateManyWithoutCreatedByInput
   name: String
   password: String
+  players: PlayerUpdateManyWithoutCreatedByInput
+  poules: PouleUpdateManyWithoutCreatedByInput
+  tournaments: TournamentUpdateManyWithoutCreatedByInput
 }
 
-input UserUpsertNestedInput {
-  update: UserUpdateDataInput!
-  create: UserCreateInput!
+input UserUpdateWithoutTournamentsDataInput {
+  academies: AcademyUpdateManyWithoutCreatedByInput
+  clans: ClanUpdateManyWithoutCreatedByInput
+  email: String
+  forms: FormUpdateManyWithoutCreatedByInput
+  name: String
+  password: String
+  players: PlayerUpdateManyWithoutCreatedByInput
+  poules: PouleUpdateManyWithoutCreatedByInput
+  schools: SchoolUpdateManyWithoutCreatedByInput
 }
 
 input UserUpsertWithoutAcademiesInput {
@@ -2108,15 +2593,43 @@ input UserUpsertWithoutAcademiesInput {
   create: UserCreateWithoutAcademiesInput!
 }
 
+input UserUpsertWithoutClansInput {
+  update: UserUpdateWithoutClansDataInput!
+  create: UserCreateWithoutClansInput!
+}
+
+input UserUpsertWithoutFormsInput {
+  update: UserUpdateWithoutFormsDataInput!
+  create: UserCreateWithoutFormsInput!
+}
+
+input UserUpsertWithoutPlayersInput {
+  update: UserUpdateWithoutPlayersDataInput!
+  create: UserCreateWithoutPlayersInput!
+}
+
+input UserUpsertWithoutPoulesInput {
+  update: UserUpdateWithoutPoulesDataInput!
+  create: UserCreateWithoutPoulesInput!
+}
+
 input UserUpsertWithoutSchoolsInput {
   update: UserUpdateWithoutSchoolsDataInput!
   create: UserCreateWithoutSchoolsInput!
+}
+
+input UserUpsertWithoutTournamentsInput {
+  update: UserUpdateWithoutTournamentsDataInput!
+  create: UserCreateWithoutTournamentsInput!
 }
 
 input UserWhereInput {
   academies_every: AcademyWhereInput
   academies_some: AcademyWhereInput
   academies_none: AcademyWhereInput
+  clans_every: ClanWhereInput
+  clans_some: ClanWhereInput
+  clans_none: ClanWhereInput
   email: String
   email_not: String
   email_in: [String!]
@@ -2131,6 +2644,9 @@ input UserWhereInput {
   email_not_starts_with: String
   email_ends_with: String
   email_not_ends_with: String
+  forms_every: FormWhereInput
+  forms_some: FormWhereInput
+  forms_none: FormWhereInput
   id: ID
   id_not: ID
   id_in: [ID!]
@@ -2173,9 +2689,18 @@ input UserWhereInput {
   password_not_starts_with: String
   password_ends_with: String
   password_not_ends_with: String
+  players_every: PlayerWhereInput
+  players_some: PlayerWhereInput
+  players_none: PlayerWhereInput
+  poules_every: PouleWhereInput
+  poules_some: PouleWhereInput
+  poules_none: PouleWhereInput
   schools_every: SchoolWhereInput
   schools_some: SchoolWhereInput
   schools_none: SchoolWhereInput
+  tournaments_every: TournamentWhereInput
+  tournaments_some: TournamentWhereInput
+  tournaments_none: TournamentWhereInput
   AND: [UserWhereInput!]
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]
