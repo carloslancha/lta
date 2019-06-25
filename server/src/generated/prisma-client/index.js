@@ -5,6 +5,10 @@ var typeDefs = require("./prisma-schema").typeDefs;
 
 var models = [
   {
+    name: "CardsType",
+    embedded: false
+  },
+  {
     name: "PoulesType",
     embedded: false
   },
@@ -13,11 +17,23 @@ var models = [
     embedded: false
   },
   {
+    name: "Assault",
+    embedded: false
+  },
+  {
+    name: "Card",
+    embedded: false
+  },
+  {
     name: "Clan",
     embedded: false
   },
   {
     name: "Form",
+    embedded: false
+  },
+  {
+    name: "Match",
     embedded: false
   },
   {

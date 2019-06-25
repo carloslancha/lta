@@ -1,3 +1,10 @@
+enum CardsType {
+    WHITE
+    YELLOW
+    RED
+    BLACK
+}
+
 enum PoulesType {
   POSITIONING
   QUALIFICATION
@@ -9,6 +16,24 @@ type Academy {
     id: ID! @id
     name: String! @unique
     schools: [School!] @relation(name: "SchoolOnAcademy", onDelete: CASCADE)
+}
+
+type Assault {
+    cards: [Card!] @relation(name: "CardOnMatch", onDelete: CASCADE)
+    doppio: Boolean
+    id: ID! @id
+    match: Match @relation(name: "AssaultOnMatch", onDelete: SET_NULL)
+    nullo: Boolean
+    number: Int!
+    winner: Player @relation(name: "WinnerOnAssault", onDelete: SET_NULL)
+}
+
+type Card {
+    assault: Assault! @relation(name: "CardOnMatch", onDelete: SET_NULL)
+    id: ID! @id
+    reason: String
+    type: CardsType!
+    player: Player! @relation(name: "CardOnPlayer", onDelete: SET_NULL)
 }
 
 type Clan {
@@ -26,20 +51,37 @@ type Form {
     players: [Player!] @relation(name: "FormOnPlayer", onDelete: SET_NULL)
 }
 
+type Match {
+    assaults: [Assault!] @relation(name: "AssaultOnMatch", onDelete: CASCADE)
+    createdBy: User @relation(name: "MatchOnUser", onDelete: SET_NULL)
+    duration: Int
+    id: ID! @id
+    order: Int!
+    player1: Player! @relation(name: "Player1OnMatch", onDelete: SET_NULL)
+    player2: Player! @relation(name: "Player2OnMatch", onDelete: SET_NULL)
+    poule: Poule! @relation(name: "MatchOnPoule", onDelete: SET_NULL)
+    resultPlayer1: Int
+    resultPlayer2: Int
+}
+
 type Poule {
     createdBy: User @relation(name: "PouleOnUser", onDelete: SET_NULL)
 	id: ID! @id
+    matches: [Match!] @relation(name: "MatchOnPoule", onDelete: CASCADE)
 	name: String!
 	players: [Player!]! @relation(name: "PlayerOnPoule", onDelete: SET_NULL)
 	tournament: Tournament! @relation(name: "PouleOnTournament", onDelete: SET_NULL)
 }
 
 type Player {
+    assaultsWon: [Assault!] @relation(name: "WinnerOnAssault", onDelete: CASCADE)
+    cards: [Card!] @relation(name: "CardOnPlayer", onDelete: CASCADE)
     clan: Clan! @relation(name: "PlayerOnClan", onDelete: SET_NULL)
     createdBy: User @relation(name: "PlayerOnUser", onDelete: SET_NULL)
     familyName: String!
     forms: [Form!] @relation(name: "FormOnPlayer", onDelete: SET_NULL)
     id: ID! @id
+    matches: [Match!] @relation(name: "PlayerOnMatch", onUpdate: CASCADE)
     name: String!
     nickname: String!
     poules: [Poule!] @relation(name: "PlayerOnPoule", onDelete: SET_NULL)

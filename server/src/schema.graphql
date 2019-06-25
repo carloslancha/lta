@@ -1,3 +1,10 @@
+enum CardsType {
+    WHITE
+    YELLOW
+    RED
+    BLACK
+}
+
 enum PoulesType {
   POSITIONING
   QUALIFICATION
@@ -11,9 +18,27 @@ type Academy {
 	schools: [School!]
 }
 
+type Assault {
+    cards: [Card!]
+    doppio: Boolean
+    id: ID!
+    match: Match
+    nullo: Boolean
+    number: Int!
+    winner: Player
+}
+
 type AuthPayload {
 	token: String
 	user: User
+}
+
+type Card {
+    assault: Assault!
+    id: ID!
+    reason: String
+    type: CardsType!
+    player: Player!
 }
 
 type Clan {
@@ -29,6 +54,19 @@ type Form {
     id: ID!
     name: String!
 	player: [Player!]
+}
+
+type Match {
+    assaults: [Assault!]
+    createdBy: User
+    duration: Int
+    id: ID!
+    order: Int!
+    player1: Player!
+    player2: Player!
+    poule: Poule!
+    resultPlayer1: Int
+    resultPlayer2: Int
 }
 
 type Mutation {
@@ -68,6 +106,7 @@ type Player {
     familyName: String!
     forms: [Form!]
     id: ID!
+	matches: [Match!]
     name: String!
     nickname: String!
 	poules: [Poule!]
@@ -75,8 +114,9 @@ type Player {
 }
 
 type Poule {
-	createdBy: User
+    createdBy: User
 	id: ID!
+    matches: [Match!]
 	name: String!
 	players: [Player!]!
 	tournament: Tournament!

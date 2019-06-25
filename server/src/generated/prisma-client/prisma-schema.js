@@ -265,11 +265,23 @@ type AggregateAcademy {
   count: Int!
 }
 
+type AggregateAssault {
+  count: Int!
+}
+
+type AggregateCard {
+  count: Int!
+}
+
 type AggregateClan {
   count: Int!
 }
 
 type AggregateForm {
+  count: Int!
+}
+
+type AggregateMatch {
   count: Int!
 }
 
@@ -293,8 +305,551 @@ type AggregateUser {
   count: Int!
 }
 
+type Assault {
+  cards(where: CardWhereInput, orderBy: CardOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Card!]
+  doppio: Boolean
+  id: ID!
+  match: Match
+  nullo: Boolean
+  number: Int!
+  winner: Player
+}
+
+type AssaultConnection {
+  pageInfo: PageInfo!
+  edges: [AssaultEdge]!
+  aggregate: AggregateAssault!
+}
+
+input AssaultCreateInput {
+  cards: CardCreateManyWithoutAssaultInput
+  doppio: Boolean
+  id: ID
+  match: MatchCreateOneWithoutAssaultsInput
+  nullo: Boolean
+  number: Int!
+  winner: PlayerCreateOneWithoutAssaultsWonInput
+}
+
+input AssaultCreateManyWithoutMatchInput {
+  create: [AssaultCreateWithoutMatchInput!]
+  connect: [AssaultWhereUniqueInput!]
+}
+
+input AssaultCreateManyWithoutWinnerInput {
+  create: [AssaultCreateWithoutWinnerInput!]
+  connect: [AssaultWhereUniqueInput!]
+}
+
+input AssaultCreateOneWithoutCardsInput {
+  create: AssaultCreateWithoutCardsInput
+  connect: AssaultWhereUniqueInput
+}
+
+input AssaultCreateWithoutCardsInput {
+  doppio: Boolean
+  id: ID
+  match: MatchCreateOneWithoutAssaultsInput
+  nullo: Boolean
+  number: Int!
+  winner: PlayerCreateOneWithoutAssaultsWonInput
+}
+
+input AssaultCreateWithoutMatchInput {
+  cards: CardCreateManyWithoutAssaultInput
+  doppio: Boolean
+  id: ID
+  nullo: Boolean
+  number: Int!
+  winner: PlayerCreateOneWithoutAssaultsWonInput
+}
+
+input AssaultCreateWithoutWinnerInput {
+  cards: CardCreateManyWithoutAssaultInput
+  doppio: Boolean
+  id: ID
+  match: MatchCreateOneWithoutAssaultsInput
+  nullo: Boolean
+  number: Int!
+}
+
+type AssaultEdge {
+  node: Assault!
+  cursor: String!
+}
+
+enum AssaultOrderByInput {
+  doppio_ASC
+  doppio_DESC
+  id_ASC
+  id_DESC
+  nullo_ASC
+  nullo_DESC
+  number_ASC
+  number_DESC
+}
+
+type AssaultPreviousValues {
+  doppio: Boolean
+  id: ID!
+  nullo: Boolean
+  number: Int!
+}
+
+input AssaultScalarWhereInput {
+  doppio: Boolean
+  doppio_not: Boolean
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  nullo: Boolean
+  nullo_not: Boolean
+  number: Int
+  number_not: Int
+  number_in: [Int!]
+  number_not_in: [Int!]
+  number_lt: Int
+  number_lte: Int
+  number_gt: Int
+  number_gte: Int
+  AND: [AssaultScalarWhereInput!]
+  OR: [AssaultScalarWhereInput!]
+  NOT: [AssaultScalarWhereInput!]
+}
+
+type AssaultSubscriptionPayload {
+  mutation: MutationType!
+  node: Assault
+  updatedFields: [String!]
+  previousValues: AssaultPreviousValues
+}
+
+input AssaultSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: AssaultWhereInput
+  AND: [AssaultSubscriptionWhereInput!]
+  OR: [AssaultSubscriptionWhereInput!]
+  NOT: [AssaultSubscriptionWhereInput!]
+}
+
+input AssaultUpdateInput {
+  cards: CardUpdateManyWithoutAssaultInput
+  doppio: Boolean
+  match: MatchUpdateOneWithoutAssaultsInput
+  nullo: Boolean
+  number: Int
+  winner: PlayerUpdateOneWithoutAssaultsWonInput
+}
+
+input AssaultUpdateManyDataInput {
+  doppio: Boolean
+  nullo: Boolean
+  number: Int
+}
+
+input AssaultUpdateManyMutationInput {
+  doppio: Boolean
+  nullo: Boolean
+  number: Int
+}
+
+input AssaultUpdateManyWithoutMatchInput {
+  create: [AssaultCreateWithoutMatchInput!]
+  delete: [AssaultWhereUniqueInput!]
+  connect: [AssaultWhereUniqueInput!]
+  set: [AssaultWhereUniqueInput!]
+  disconnect: [AssaultWhereUniqueInput!]
+  update: [AssaultUpdateWithWhereUniqueWithoutMatchInput!]
+  upsert: [AssaultUpsertWithWhereUniqueWithoutMatchInput!]
+  deleteMany: [AssaultScalarWhereInput!]
+  updateMany: [AssaultUpdateManyWithWhereNestedInput!]
+}
+
+input AssaultUpdateManyWithoutWinnerInput {
+  create: [AssaultCreateWithoutWinnerInput!]
+  delete: [AssaultWhereUniqueInput!]
+  connect: [AssaultWhereUniqueInput!]
+  set: [AssaultWhereUniqueInput!]
+  disconnect: [AssaultWhereUniqueInput!]
+  update: [AssaultUpdateWithWhereUniqueWithoutWinnerInput!]
+  upsert: [AssaultUpsertWithWhereUniqueWithoutWinnerInput!]
+  deleteMany: [AssaultScalarWhereInput!]
+  updateMany: [AssaultUpdateManyWithWhereNestedInput!]
+}
+
+input AssaultUpdateManyWithWhereNestedInput {
+  where: AssaultScalarWhereInput!
+  data: AssaultUpdateManyDataInput!
+}
+
+input AssaultUpdateOneRequiredWithoutCardsInput {
+  create: AssaultCreateWithoutCardsInput
+  update: AssaultUpdateWithoutCardsDataInput
+  upsert: AssaultUpsertWithoutCardsInput
+  connect: AssaultWhereUniqueInput
+}
+
+input AssaultUpdateWithoutCardsDataInput {
+  doppio: Boolean
+  match: MatchUpdateOneWithoutAssaultsInput
+  nullo: Boolean
+  number: Int
+  winner: PlayerUpdateOneWithoutAssaultsWonInput
+}
+
+input AssaultUpdateWithoutMatchDataInput {
+  cards: CardUpdateManyWithoutAssaultInput
+  doppio: Boolean
+  nullo: Boolean
+  number: Int
+  winner: PlayerUpdateOneWithoutAssaultsWonInput
+}
+
+input AssaultUpdateWithoutWinnerDataInput {
+  cards: CardUpdateManyWithoutAssaultInput
+  doppio: Boolean
+  match: MatchUpdateOneWithoutAssaultsInput
+  nullo: Boolean
+  number: Int
+}
+
+input AssaultUpdateWithWhereUniqueWithoutMatchInput {
+  where: AssaultWhereUniqueInput!
+  data: AssaultUpdateWithoutMatchDataInput!
+}
+
+input AssaultUpdateWithWhereUniqueWithoutWinnerInput {
+  where: AssaultWhereUniqueInput!
+  data: AssaultUpdateWithoutWinnerDataInput!
+}
+
+input AssaultUpsertWithoutCardsInput {
+  update: AssaultUpdateWithoutCardsDataInput!
+  create: AssaultCreateWithoutCardsInput!
+}
+
+input AssaultUpsertWithWhereUniqueWithoutMatchInput {
+  where: AssaultWhereUniqueInput!
+  update: AssaultUpdateWithoutMatchDataInput!
+  create: AssaultCreateWithoutMatchInput!
+}
+
+input AssaultUpsertWithWhereUniqueWithoutWinnerInput {
+  where: AssaultWhereUniqueInput!
+  update: AssaultUpdateWithoutWinnerDataInput!
+  create: AssaultCreateWithoutWinnerInput!
+}
+
+input AssaultWhereInput {
+  cards_every: CardWhereInput
+  cards_some: CardWhereInput
+  cards_none: CardWhereInput
+  doppio: Boolean
+  doppio_not: Boolean
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  match: MatchWhereInput
+  nullo: Boolean
+  nullo_not: Boolean
+  number: Int
+  number_not: Int
+  number_in: [Int!]
+  number_not_in: [Int!]
+  number_lt: Int
+  number_lte: Int
+  number_gt: Int
+  number_gte: Int
+  winner: PlayerWhereInput
+  AND: [AssaultWhereInput!]
+  OR: [AssaultWhereInput!]
+  NOT: [AssaultWhereInput!]
+}
+
+input AssaultWhereUniqueInput {
+  id: ID
+}
+
 type BatchPayload {
   count: Long!
+}
+
+type Card {
+  assault: Assault!
+  id: ID!
+  reason: String
+  type: CardsType!
+  player: Player!
+}
+
+type CardConnection {
+  pageInfo: PageInfo!
+  edges: [CardEdge]!
+  aggregate: AggregateCard!
+}
+
+input CardCreateInput {
+  assault: AssaultCreateOneWithoutCardsInput!
+  id: ID
+  reason: String
+  type: CardsType!
+  player: PlayerCreateOneWithoutCardsInput!
+}
+
+input CardCreateManyWithoutAssaultInput {
+  create: [CardCreateWithoutAssaultInput!]
+  connect: [CardWhereUniqueInput!]
+}
+
+input CardCreateManyWithoutPlayerInput {
+  create: [CardCreateWithoutPlayerInput!]
+  connect: [CardWhereUniqueInput!]
+}
+
+input CardCreateWithoutAssaultInput {
+  id: ID
+  reason: String
+  type: CardsType!
+  player: PlayerCreateOneWithoutCardsInput!
+}
+
+input CardCreateWithoutPlayerInput {
+  assault: AssaultCreateOneWithoutCardsInput!
+  id: ID
+  reason: String
+  type: CardsType!
+}
+
+type CardEdge {
+  node: Card!
+  cursor: String!
+}
+
+enum CardOrderByInput {
+  id_ASC
+  id_DESC
+  reason_ASC
+  reason_DESC
+  type_ASC
+  type_DESC
+}
+
+type CardPreviousValues {
+  id: ID!
+  reason: String
+  type: CardsType!
+}
+
+input CardScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  reason: String
+  reason_not: String
+  reason_in: [String!]
+  reason_not_in: [String!]
+  reason_lt: String
+  reason_lte: String
+  reason_gt: String
+  reason_gte: String
+  reason_contains: String
+  reason_not_contains: String
+  reason_starts_with: String
+  reason_not_starts_with: String
+  reason_ends_with: String
+  reason_not_ends_with: String
+  type: CardsType
+  type_not: CardsType
+  type_in: [CardsType!]
+  type_not_in: [CardsType!]
+  AND: [CardScalarWhereInput!]
+  OR: [CardScalarWhereInput!]
+  NOT: [CardScalarWhereInput!]
+}
+
+enum CardsType {
+  WHITE
+  YELLOW
+  RED
+  BLACK
+}
+
+type CardSubscriptionPayload {
+  mutation: MutationType!
+  node: Card
+  updatedFields: [String!]
+  previousValues: CardPreviousValues
+}
+
+input CardSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: CardWhereInput
+  AND: [CardSubscriptionWhereInput!]
+  OR: [CardSubscriptionWhereInput!]
+  NOT: [CardSubscriptionWhereInput!]
+}
+
+input CardUpdateInput {
+  assault: AssaultUpdateOneRequiredWithoutCardsInput
+  reason: String
+  type: CardsType
+  player: PlayerUpdateOneRequiredWithoutCardsInput
+}
+
+input CardUpdateManyDataInput {
+  reason: String
+  type: CardsType
+}
+
+input CardUpdateManyMutationInput {
+  reason: String
+  type: CardsType
+}
+
+input CardUpdateManyWithoutAssaultInput {
+  create: [CardCreateWithoutAssaultInput!]
+  delete: [CardWhereUniqueInput!]
+  connect: [CardWhereUniqueInput!]
+  set: [CardWhereUniqueInput!]
+  disconnect: [CardWhereUniqueInput!]
+  update: [CardUpdateWithWhereUniqueWithoutAssaultInput!]
+  upsert: [CardUpsertWithWhereUniqueWithoutAssaultInput!]
+  deleteMany: [CardScalarWhereInput!]
+  updateMany: [CardUpdateManyWithWhereNestedInput!]
+}
+
+input CardUpdateManyWithoutPlayerInput {
+  create: [CardCreateWithoutPlayerInput!]
+  delete: [CardWhereUniqueInput!]
+  connect: [CardWhereUniqueInput!]
+  set: [CardWhereUniqueInput!]
+  disconnect: [CardWhereUniqueInput!]
+  update: [CardUpdateWithWhereUniqueWithoutPlayerInput!]
+  upsert: [CardUpsertWithWhereUniqueWithoutPlayerInput!]
+  deleteMany: [CardScalarWhereInput!]
+  updateMany: [CardUpdateManyWithWhereNestedInput!]
+}
+
+input CardUpdateManyWithWhereNestedInput {
+  where: CardScalarWhereInput!
+  data: CardUpdateManyDataInput!
+}
+
+input CardUpdateWithoutAssaultDataInput {
+  reason: String
+  type: CardsType
+  player: PlayerUpdateOneRequiredWithoutCardsInput
+}
+
+input CardUpdateWithoutPlayerDataInput {
+  assault: AssaultUpdateOneRequiredWithoutCardsInput
+  reason: String
+  type: CardsType
+}
+
+input CardUpdateWithWhereUniqueWithoutAssaultInput {
+  where: CardWhereUniqueInput!
+  data: CardUpdateWithoutAssaultDataInput!
+}
+
+input CardUpdateWithWhereUniqueWithoutPlayerInput {
+  where: CardWhereUniqueInput!
+  data: CardUpdateWithoutPlayerDataInput!
+}
+
+input CardUpsertWithWhereUniqueWithoutAssaultInput {
+  where: CardWhereUniqueInput!
+  update: CardUpdateWithoutAssaultDataInput!
+  create: CardCreateWithoutAssaultInput!
+}
+
+input CardUpsertWithWhereUniqueWithoutPlayerInput {
+  where: CardWhereUniqueInput!
+  update: CardUpdateWithoutPlayerDataInput!
+  create: CardCreateWithoutPlayerInput!
+}
+
+input CardWhereInput {
+  assault: AssaultWhereInput
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  reason: String
+  reason_not: String
+  reason_in: [String!]
+  reason_not_in: [String!]
+  reason_lt: String
+  reason_lte: String
+  reason_gt: String
+  reason_gte: String
+  reason_contains: String
+  reason_not_contains: String
+  reason_starts_with: String
+  reason_not_starts_with: String
+  reason_ends_with: String
+  reason_not_ends_with: String
+  type: CardsType
+  type_not: CardsType
+  type_in: [CardsType!]
+  type_not_in: [CardsType!]
+  player: PlayerWhereInput
+  AND: [CardWhereInput!]
+  OR: [CardWhereInput!]
+  NOT: [CardWhereInput!]
+}
+
+input CardWhereUniqueInput {
+  id: ID
 }
 
 type Clan {
@@ -793,6 +1348,361 @@ input FormWhereUniqueInput {
 
 scalar Long
 
+type Match {
+  assaults(where: AssaultWhereInput, orderBy: AssaultOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Assault!]
+  createdBy: User
+  duration: Int
+  id: ID!
+  order: Int!
+  player1: Player!
+  player2: Player!
+  poule: Poule!
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+type MatchConnection {
+  pageInfo: PageInfo!
+  edges: [MatchEdge]!
+  aggregate: AggregateMatch!
+}
+
+input MatchCreateInput {
+  assaults: AssaultCreateManyWithoutMatchInput
+  createdBy: UserCreateOneInput
+  duration: Int
+  id: ID
+  order: Int!
+  player1: PlayerCreateOneInput!
+  player2: PlayerCreateOneInput!
+  poule: PouleCreateOneWithoutMatchesInput!
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+input MatchCreateManyInput {
+  create: [MatchCreateInput!]
+  connect: [MatchWhereUniqueInput!]
+}
+
+input MatchCreateManyWithoutPouleInput {
+  create: [MatchCreateWithoutPouleInput!]
+  connect: [MatchWhereUniqueInput!]
+}
+
+input MatchCreateOneWithoutAssaultsInput {
+  create: MatchCreateWithoutAssaultsInput
+  connect: MatchWhereUniqueInput
+}
+
+input MatchCreateWithoutAssaultsInput {
+  createdBy: UserCreateOneInput
+  duration: Int
+  id: ID
+  order: Int!
+  player1: PlayerCreateOneInput!
+  player2: PlayerCreateOneInput!
+  poule: PouleCreateOneWithoutMatchesInput!
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+input MatchCreateWithoutPouleInput {
+  assaults: AssaultCreateManyWithoutMatchInput
+  createdBy: UserCreateOneInput
+  duration: Int
+  id: ID
+  order: Int!
+  player1: PlayerCreateOneInput!
+  player2: PlayerCreateOneInput!
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+type MatchEdge {
+  node: Match!
+  cursor: String!
+}
+
+enum MatchOrderByInput {
+  duration_ASC
+  duration_DESC
+  id_ASC
+  id_DESC
+  order_ASC
+  order_DESC
+  resultPlayer1_ASC
+  resultPlayer1_DESC
+  resultPlayer2_ASC
+  resultPlayer2_DESC
+}
+
+type MatchPreviousValues {
+  duration: Int
+  id: ID!
+  order: Int!
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+input MatchScalarWhereInput {
+  duration: Int
+  duration_not: Int
+  duration_in: [Int!]
+  duration_not_in: [Int!]
+  duration_lt: Int
+  duration_lte: Int
+  duration_gt: Int
+  duration_gte: Int
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  order: Int
+  order_not: Int
+  order_in: [Int!]
+  order_not_in: [Int!]
+  order_lt: Int
+  order_lte: Int
+  order_gt: Int
+  order_gte: Int
+  resultPlayer1: Int
+  resultPlayer1_not: Int
+  resultPlayer1_in: [Int!]
+  resultPlayer1_not_in: [Int!]
+  resultPlayer1_lt: Int
+  resultPlayer1_lte: Int
+  resultPlayer1_gt: Int
+  resultPlayer1_gte: Int
+  resultPlayer2: Int
+  resultPlayer2_not: Int
+  resultPlayer2_in: [Int!]
+  resultPlayer2_not_in: [Int!]
+  resultPlayer2_lt: Int
+  resultPlayer2_lte: Int
+  resultPlayer2_gt: Int
+  resultPlayer2_gte: Int
+  AND: [MatchScalarWhereInput!]
+  OR: [MatchScalarWhereInput!]
+  NOT: [MatchScalarWhereInput!]
+}
+
+type MatchSubscriptionPayload {
+  mutation: MutationType!
+  node: Match
+  updatedFields: [String!]
+  previousValues: MatchPreviousValues
+}
+
+input MatchSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: MatchWhereInput
+  AND: [MatchSubscriptionWhereInput!]
+  OR: [MatchSubscriptionWhereInput!]
+  NOT: [MatchSubscriptionWhereInput!]
+}
+
+input MatchUpdateDataInput {
+  assaults: AssaultUpdateManyWithoutMatchInput
+  createdBy: UserUpdateOneInput
+  duration: Int
+  order: Int
+  player1: PlayerUpdateOneRequiredInput
+  player2: PlayerUpdateOneRequiredInput
+  poule: PouleUpdateOneRequiredWithoutMatchesInput
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+input MatchUpdateInput {
+  assaults: AssaultUpdateManyWithoutMatchInput
+  createdBy: UserUpdateOneInput
+  duration: Int
+  order: Int
+  player1: PlayerUpdateOneRequiredInput
+  player2: PlayerUpdateOneRequiredInput
+  poule: PouleUpdateOneRequiredWithoutMatchesInput
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+input MatchUpdateManyDataInput {
+  duration: Int
+  order: Int
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+input MatchUpdateManyInput {
+  create: [MatchCreateInput!]
+  update: [MatchUpdateWithWhereUniqueNestedInput!]
+  upsert: [MatchUpsertWithWhereUniqueNestedInput!]
+  delete: [MatchWhereUniqueInput!]
+  connect: [MatchWhereUniqueInput!]
+  set: [MatchWhereUniqueInput!]
+  disconnect: [MatchWhereUniqueInput!]
+  deleteMany: [MatchScalarWhereInput!]
+  updateMany: [MatchUpdateManyWithWhereNestedInput!]
+}
+
+input MatchUpdateManyMutationInput {
+  duration: Int
+  order: Int
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+input MatchUpdateManyWithoutPouleInput {
+  create: [MatchCreateWithoutPouleInput!]
+  delete: [MatchWhereUniqueInput!]
+  connect: [MatchWhereUniqueInput!]
+  set: [MatchWhereUniqueInput!]
+  disconnect: [MatchWhereUniqueInput!]
+  update: [MatchUpdateWithWhereUniqueWithoutPouleInput!]
+  upsert: [MatchUpsertWithWhereUniqueWithoutPouleInput!]
+  deleteMany: [MatchScalarWhereInput!]
+  updateMany: [MatchUpdateManyWithWhereNestedInput!]
+}
+
+input MatchUpdateManyWithWhereNestedInput {
+  where: MatchScalarWhereInput!
+  data: MatchUpdateManyDataInput!
+}
+
+input MatchUpdateOneWithoutAssaultsInput {
+  create: MatchCreateWithoutAssaultsInput
+  update: MatchUpdateWithoutAssaultsDataInput
+  upsert: MatchUpsertWithoutAssaultsInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: MatchWhereUniqueInput
+}
+
+input MatchUpdateWithoutAssaultsDataInput {
+  createdBy: UserUpdateOneInput
+  duration: Int
+  order: Int
+  player1: PlayerUpdateOneRequiredInput
+  player2: PlayerUpdateOneRequiredInput
+  poule: PouleUpdateOneRequiredWithoutMatchesInput
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+input MatchUpdateWithoutPouleDataInput {
+  assaults: AssaultUpdateManyWithoutMatchInput
+  createdBy: UserUpdateOneInput
+  duration: Int
+  order: Int
+  player1: PlayerUpdateOneRequiredInput
+  player2: PlayerUpdateOneRequiredInput
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+input MatchUpdateWithWhereUniqueNestedInput {
+  where: MatchWhereUniqueInput!
+  data: MatchUpdateDataInput!
+}
+
+input MatchUpdateWithWhereUniqueWithoutPouleInput {
+  where: MatchWhereUniqueInput!
+  data: MatchUpdateWithoutPouleDataInput!
+}
+
+input MatchUpsertWithoutAssaultsInput {
+  update: MatchUpdateWithoutAssaultsDataInput!
+  create: MatchCreateWithoutAssaultsInput!
+}
+
+input MatchUpsertWithWhereUniqueNestedInput {
+  where: MatchWhereUniqueInput!
+  update: MatchUpdateDataInput!
+  create: MatchCreateInput!
+}
+
+input MatchUpsertWithWhereUniqueWithoutPouleInput {
+  where: MatchWhereUniqueInput!
+  update: MatchUpdateWithoutPouleDataInput!
+  create: MatchCreateWithoutPouleInput!
+}
+
+input MatchWhereInput {
+  assaults_every: AssaultWhereInput
+  assaults_some: AssaultWhereInput
+  assaults_none: AssaultWhereInput
+  createdBy: UserWhereInput
+  duration: Int
+  duration_not: Int
+  duration_in: [Int!]
+  duration_not_in: [Int!]
+  duration_lt: Int
+  duration_lte: Int
+  duration_gt: Int
+  duration_gte: Int
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  order: Int
+  order_not: Int
+  order_in: [Int!]
+  order_not_in: [Int!]
+  order_lt: Int
+  order_lte: Int
+  order_gt: Int
+  order_gte: Int
+  player1: PlayerWhereInput
+  player2: PlayerWhereInput
+  poule: PouleWhereInput
+  resultPlayer1: Int
+  resultPlayer1_not: Int
+  resultPlayer1_in: [Int!]
+  resultPlayer1_not_in: [Int!]
+  resultPlayer1_lt: Int
+  resultPlayer1_lte: Int
+  resultPlayer1_gt: Int
+  resultPlayer1_gte: Int
+  resultPlayer2: Int
+  resultPlayer2_not: Int
+  resultPlayer2_in: [Int!]
+  resultPlayer2_not_in: [Int!]
+  resultPlayer2_lt: Int
+  resultPlayer2_lte: Int
+  resultPlayer2_gt: Int
+  resultPlayer2_gte: Int
+  AND: [MatchWhereInput!]
+  OR: [MatchWhereInput!]
+  NOT: [MatchWhereInput!]
+}
+
+input MatchWhereUniqueInput {
+  id: ID
+}
+
 type Mutation {
   createAcademy(data: AcademyCreateInput!): Academy!
   updateAcademy(data: AcademyUpdateInput!, where: AcademyWhereUniqueInput!): Academy
@@ -800,6 +1710,18 @@ type Mutation {
   upsertAcademy(where: AcademyWhereUniqueInput!, create: AcademyCreateInput!, update: AcademyUpdateInput!): Academy!
   deleteAcademy(where: AcademyWhereUniqueInput!): Academy
   deleteManyAcademies(where: AcademyWhereInput): BatchPayload!
+  createAssault(data: AssaultCreateInput!): Assault!
+  updateAssault(data: AssaultUpdateInput!, where: AssaultWhereUniqueInput!): Assault
+  updateManyAssaults(data: AssaultUpdateManyMutationInput!, where: AssaultWhereInput): BatchPayload!
+  upsertAssault(where: AssaultWhereUniqueInput!, create: AssaultCreateInput!, update: AssaultUpdateInput!): Assault!
+  deleteAssault(where: AssaultWhereUniqueInput!): Assault
+  deleteManyAssaults(where: AssaultWhereInput): BatchPayload!
+  createCard(data: CardCreateInput!): Card!
+  updateCard(data: CardUpdateInput!, where: CardWhereUniqueInput!): Card
+  updateManyCards(data: CardUpdateManyMutationInput!, where: CardWhereInput): BatchPayload!
+  upsertCard(where: CardWhereUniqueInput!, create: CardCreateInput!, update: CardUpdateInput!): Card!
+  deleteCard(where: CardWhereUniqueInput!): Card
+  deleteManyCards(where: CardWhereInput): BatchPayload!
   createClan(data: ClanCreateInput!): Clan!
   updateClan(data: ClanUpdateInput!, where: ClanWhereUniqueInput!): Clan
   updateManyClans(data: ClanUpdateManyMutationInput!, where: ClanWhereInput): BatchPayload!
@@ -812,6 +1734,12 @@ type Mutation {
   upsertForm(where: FormWhereUniqueInput!, create: FormCreateInput!, update: FormUpdateInput!): Form!
   deleteForm(where: FormWhereUniqueInput!): Form
   deleteManyForms(where: FormWhereInput): BatchPayload!
+  createMatch(data: MatchCreateInput!): Match!
+  updateMatch(data: MatchUpdateInput!, where: MatchWhereUniqueInput!): Match
+  updateManyMatches(data: MatchUpdateManyMutationInput!, where: MatchWhereInput): BatchPayload!
+  upsertMatch(where: MatchWhereUniqueInput!, create: MatchCreateInput!, update: MatchUpdateInput!): Match!
+  deleteMatch(where: MatchWhereUniqueInput!): Match
+  deleteManyMatches(where: MatchWhereInput): BatchPayload!
   createPlayer(data: PlayerCreateInput!): Player!
   updatePlayer(data: PlayerUpdateInput!, where: PlayerWhereUniqueInput!): Player
   updateManyPlayers(data: PlayerUpdateManyMutationInput!, where: PlayerWhereInput): BatchPayload!
@@ -862,11 +1790,14 @@ type PageInfo {
 }
 
 type Player {
+  assaultsWon(where: AssaultWhereInput, orderBy: AssaultOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Assault!]
+  cards(where: CardWhereInput, orderBy: CardOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Card!]
   clan: Clan!
   createdBy: User
   familyName: String!
   forms(where: FormWhereInput, orderBy: FormOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Form!]
   id: ID!
+  matches(where: MatchWhereInput, orderBy: MatchOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Match!]
   name: String!
   nickname: String!
   poules(where: PouleWhereInput, orderBy: PouleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Poule!]
@@ -880,11 +1811,14 @@ type PlayerConnection {
 }
 
 input PlayerCreateInput {
+  assaultsWon: AssaultCreateManyWithoutWinnerInput
+  cards: CardCreateManyWithoutPlayerInput
   clan: ClanCreateOneWithoutPlayersInput!
   createdBy: UserCreateOneWithoutPlayersInput
   familyName: String!
   forms: FormCreateManyWithoutPlayersInput
   id: ID
+  matches: MatchCreateManyInput
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
@@ -916,11 +1850,57 @@ input PlayerCreateManyWithoutTournamentsInput {
   connect: [PlayerWhereUniqueInput!]
 }
 
-input PlayerCreateWithoutClanInput {
+input PlayerCreateOneInput {
+  create: PlayerCreateInput
+  connect: PlayerWhereUniqueInput
+}
+
+input PlayerCreateOneWithoutAssaultsWonInput {
+  create: PlayerCreateWithoutAssaultsWonInput
+  connect: PlayerWhereUniqueInput
+}
+
+input PlayerCreateOneWithoutCardsInput {
+  create: PlayerCreateWithoutCardsInput
+  connect: PlayerWhereUniqueInput
+}
+
+input PlayerCreateWithoutAssaultsWonInput {
+  cards: CardCreateManyWithoutPlayerInput
+  clan: ClanCreateOneWithoutPlayersInput!
   createdBy: UserCreateOneWithoutPlayersInput
   familyName: String!
   forms: FormCreateManyWithoutPlayersInput
   id: ID
+  matches: MatchCreateManyInput
+  name: String!
+  nickname: String!
+  poules: PouleCreateManyWithoutPlayersInput
+  tournaments: TournamentCreateManyWithoutPlayersInput
+}
+
+input PlayerCreateWithoutCardsInput {
+  assaultsWon: AssaultCreateManyWithoutWinnerInput
+  clan: ClanCreateOneWithoutPlayersInput!
+  createdBy: UserCreateOneWithoutPlayersInput
+  familyName: String!
+  forms: FormCreateManyWithoutPlayersInput
+  id: ID
+  matches: MatchCreateManyInput
+  name: String!
+  nickname: String!
+  poules: PouleCreateManyWithoutPlayersInput
+  tournaments: TournamentCreateManyWithoutPlayersInput
+}
+
+input PlayerCreateWithoutClanInput {
+  assaultsWon: AssaultCreateManyWithoutWinnerInput
+  cards: CardCreateManyWithoutPlayerInput
+  createdBy: UserCreateOneWithoutPlayersInput
+  familyName: String!
+  forms: FormCreateManyWithoutPlayersInput
+  id: ID
+  matches: MatchCreateManyInput
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
@@ -928,10 +1908,13 @@ input PlayerCreateWithoutClanInput {
 }
 
 input PlayerCreateWithoutCreatedByInput {
+  assaultsWon: AssaultCreateManyWithoutWinnerInput
+  cards: CardCreateManyWithoutPlayerInput
   clan: ClanCreateOneWithoutPlayersInput!
   familyName: String!
   forms: FormCreateManyWithoutPlayersInput
   id: ID
+  matches: MatchCreateManyInput
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
@@ -939,10 +1922,13 @@ input PlayerCreateWithoutCreatedByInput {
 }
 
 input PlayerCreateWithoutFormsInput {
+  assaultsWon: AssaultCreateManyWithoutWinnerInput
+  cards: CardCreateManyWithoutPlayerInput
   clan: ClanCreateOneWithoutPlayersInput!
   createdBy: UserCreateOneWithoutPlayersInput
   familyName: String!
   id: ID
+  matches: MatchCreateManyInput
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
@@ -950,22 +1936,28 @@ input PlayerCreateWithoutFormsInput {
 }
 
 input PlayerCreateWithoutPoulesInput {
+  assaultsWon: AssaultCreateManyWithoutWinnerInput
+  cards: CardCreateManyWithoutPlayerInput
   clan: ClanCreateOneWithoutPlayersInput!
   createdBy: UserCreateOneWithoutPlayersInput
   familyName: String!
   forms: FormCreateManyWithoutPlayersInput
   id: ID
+  matches: MatchCreateManyInput
   name: String!
   nickname: String!
   tournaments: TournamentCreateManyWithoutPlayersInput
 }
 
 input PlayerCreateWithoutTournamentsInput {
+  assaultsWon: AssaultCreateManyWithoutWinnerInput
+  cards: CardCreateManyWithoutPlayerInput
   clan: ClanCreateOneWithoutPlayersInput!
   createdBy: UserCreateOneWithoutPlayersInput
   familyName: String!
   forms: FormCreateManyWithoutPlayersInput
   id: ID
+  matches: MatchCreateManyInput
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
@@ -1074,11 +2066,28 @@ input PlayerSubscriptionWhereInput {
   NOT: [PlayerSubscriptionWhereInput!]
 }
 
-input PlayerUpdateInput {
+input PlayerUpdateDataInput {
+  assaultsWon: AssaultUpdateManyWithoutWinnerInput
+  cards: CardUpdateManyWithoutPlayerInput
   clan: ClanUpdateOneRequiredWithoutPlayersInput
   createdBy: UserUpdateOneWithoutPlayersInput
   familyName: String
   forms: FormUpdateManyWithoutPlayersInput
+  matches: MatchUpdateManyInput
+  name: String
+  nickname: String
+  poules: PouleUpdateManyWithoutPlayersInput
+  tournaments: TournamentUpdateManyWithoutPlayersInput
+}
+
+input PlayerUpdateInput {
+  assaultsWon: AssaultUpdateManyWithoutWinnerInput
+  cards: CardUpdateManyWithoutPlayerInput
+  clan: ClanUpdateOneRequiredWithoutPlayersInput
+  createdBy: UserUpdateOneWithoutPlayersInput
+  familyName: String
+  forms: FormUpdateManyWithoutPlayersInput
+  matches: MatchUpdateManyInput
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
@@ -1162,10 +2171,62 @@ input PlayerUpdateManyWithWhereNestedInput {
   data: PlayerUpdateManyDataInput!
 }
 
-input PlayerUpdateWithoutClanDataInput {
+input PlayerUpdateOneRequiredInput {
+  create: PlayerCreateInput
+  update: PlayerUpdateDataInput
+  upsert: PlayerUpsertNestedInput
+  connect: PlayerWhereUniqueInput
+}
+
+input PlayerUpdateOneRequiredWithoutCardsInput {
+  create: PlayerCreateWithoutCardsInput
+  update: PlayerUpdateWithoutCardsDataInput
+  upsert: PlayerUpsertWithoutCardsInput
+  connect: PlayerWhereUniqueInput
+}
+
+input PlayerUpdateOneWithoutAssaultsWonInput {
+  create: PlayerCreateWithoutAssaultsWonInput
+  update: PlayerUpdateWithoutAssaultsWonDataInput
+  upsert: PlayerUpsertWithoutAssaultsWonInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: PlayerWhereUniqueInput
+}
+
+input PlayerUpdateWithoutAssaultsWonDataInput {
+  cards: CardUpdateManyWithoutPlayerInput
+  clan: ClanUpdateOneRequiredWithoutPlayersInput
   createdBy: UserUpdateOneWithoutPlayersInput
   familyName: String
   forms: FormUpdateManyWithoutPlayersInput
+  matches: MatchUpdateManyInput
+  name: String
+  nickname: String
+  poules: PouleUpdateManyWithoutPlayersInput
+  tournaments: TournamentUpdateManyWithoutPlayersInput
+}
+
+input PlayerUpdateWithoutCardsDataInput {
+  assaultsWon: AssaultUpdateManyWithoutWinnerInput
+  clan: ClanUpdateOneRequiredWithoutPlayersInput
+  createdBy: UserUpdateOneWithoutPlayersInput
+  familyName: String
+  forms: FormUpdateManyWithoutPlayersInput
+  matches: MatchUpdateManyInput
+  name: String
+  nickname: String
+  poules: PouleUpdateManyWithoutPlayersInput
+  tournaments: TournamentUpdateManyWithoutPlayersInput
+}
+
+input PlayerUpdateWithoutClanDataInput {
+  assaultsWon: AssaultUpdateManyWithoutWinnerInput
+  cards: CardUpdateManyWithoutPlayerInput
+  createdBy: UserUpdateOneWithoutPlayersInput
+  familyName: String
+  forms: FormUpdateManyWithoutPlayersInput
+  matches: MatchUpdateManyInput
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
@@ -1173,9 +2234,12 @@ input PlayerUpdateWithoutClanDataInput {
 }
 
 input PlayerUpdateWithoutCreatedByDataInput {
+  assaultsWon: AssaultUpdateManyWithoutWinnerInput
+  cards: CardUpdateManyWithoutPlayerInput
   clan: ClanUpdateOneRequiredWithoutPlayersInput
   familyName: String
   forms: FormUpdateManyWithoutPlayersInput
+  matches: MatchUpdateManyInput
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
@@ -1183,9 +2247,12 @@ input PlayerUpdateWithoutCreatedByDataInput {
 }
 
 input PlayerUpdateWithoutFormsDataInput {
+  assaultsWon: AssaultUpdateManyWithoutWinnerInput
+  cards: CardUpdateManyWithoutPlayerInput
   clan: ClanUpdateOneRequiredWithoutPlayersInput
   createdBy: UserUpdateOneWithoutPlayersInput
   familyName: String
+  matches: MatchUpdateManyInput
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
@@ -1193,20 +2260,26 @@ input PlayerUpdateWithoutFormsDataInput {
 }
 
 input PlayerUpdateWithoutPoulesDataInput {
+  assaultsWon: AssaultUpdateManyWithoutWinnerInput
+  cards: CardUpdateManyWithoutPlayerInput
   clan: ClanUpdateOneRequiredWithoutPlayersInput
   createdBy: UserUpdateOneWithoutPlayersInput
   familyName: String
   forms: FormUpdateManyWithoutPlayersInput
+  matches: MatchUpdateManyInput
   name: String
   nickname: String
   tournaments: TournamentUpdateManyWithoutPlayersInput
 }
 
 input PlayerUpdateWithoutTournamentsDataInput {
+  assaultsWon: AssaultUpdateManyWithoutWinnerInput
+  cards: CardUpdateManyWithoutPlayerInput
   clan: ClanUpdateOneRequiredWithoutPlayersInput
   createdBy: UserUpdateOneWithoutPlayersInput
   familyName: String
   forms: FormUpdateManyWithoutPlayersInput
+  matches: MatchUpdateManyInput
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
@@ -1235,6 +2308,21 @@ input PlayerUpdateWithWhereUniqueWithoutPoulesInput {
 input PlayerUpdateWithWhereUniqueWithoutTournamentsInput {
   where: PlayerWhereUniqueInput!
   data: PlayerUpdateWithoutTournamentsDataInput!
+}
+
+input PlayerUpsertNestedInput {
+  update: PlayerUpdateDataInput!
+  create: PlayerCreateInput!
+}
+
+input PlayerUpsertWithoutAssaultsWonInput {
+  update: PlayerUpdateWithoutAssaultsWonDataInput!
+  create: PlayerCreateWithoutAssaultsWonInput!
+}
+
+input PlayerUpsertWithoutCardsInput {
+  update: PlayerUpdateWithoutCardsDataInput!
+  create: PlayerCreateWithoutCardsInput!
 }
 
 input PlayerUpsertWithWhereUniqueWithoutClanInput {
@@ -1268,6 +2356,12 @@ input PlayerUpsertWithWhereUniqueWithoutTournamentsInput {
 }
 
 input PlayerWhereInput {
+  assaultsWon_every: AssaultWhereInput
+  assaultsWon_some: AssaultWhereInput
+  assaultsWon_none: AssaultWhereInput
+  cards_every: CardWhereInput
+  cards_some: CardWhereInput
+  cards_none: CardWhereInput
   clan: ClanWhereInput
   createdBy: UserWhereInput
   familyName: String
@@ -1301,6 +2395,9 @@ input PlayerWhereInput {
   id_not_starts_with: ID
   id_ends_with: ID
   id_not_ends_with: ID
+  matches_every: MatchWhereInput
+  matches_some: MatchWhereInput
+  matches_none: MatchWhereInput
   name: String
   name_not: String
   name_in: [String!]
@@ -1347,6 +2444,7 @@ input PlayerWhereUniqueInput {
 type Poule {
   createdBy: User
   id: ID!
+  matches(where: MatchWhereInput, orderBy: MatchOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Match!]
   name: String!
   players(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Player!]
   tournament: Tournament!
@@ -1361,6 +2459,7 @@ type PouleConnection {
 input PouleCreateInput {
   createdBy: UserCreateOneWithoutPoulesInput
   id: ID
+  matches: MatchCreateManyWithoutPouleInput
   name: String!
   players: PlayerCreateManyWithoutPoulesInput
   tournament: TournamentCreateOneWithoutPoulesInput!
@@ -1381,7 +2480,21 @@ input PouleCreateManyWithoutTournamentInput {
   connect: [PouleWhereUniqueInput!]
 }
 
+input PouleCreateOneWithoutMatchesInput {
+  create: PouleCreateWithoutMatchesInput
+  connect: PouleWhereUniqueInput
+}
+
 input PouleCreateWithoutCreatedByInput {
+  id: ID
+  matches: MatchCreateManyWithoutPouleInput
+  name: String!
+  players: PlayerCreateManyWithoutPoulesInput
+  tournament: TournamentCreateOneWithoutPoulesInput!
+}
+
+input PouleCreateWithoutMatchesInput {
+  createdBy: UserCreateOneWithoutPoulesInput
   id: ID
   name: String!
   players: PlayerCreateManyWithoutPoulesInput
@@ -1391,6 +2504,7 @@ input PouleCreateWithoutCreatedByInput {
 input PouleCreateWithoutPlayersInput {
   createdBy: UserCreateOneWithoutPoulesInput
   id: ID
+  matches: MatchCreateManyWithoutPouleInput
   name: String!
   tournament: TournamentCreateOneWithoutPoulesInput!
 }
@@ -1398,6 +2512,7 @@ input PouleCreateWithoutPlayersInput {
 input PouleCreateWithoutTournamentInput {
   createdBy: UserCreateOneWithoutPoulesInput
   id: ID
+  matches: MatchCreateManyWithoutPouleInput
   name: String!
   players: PlayerCreateManyWithoutPoulesInput
 }
@@ -1478,6 +2593,7 @@ input PouleSubscriptionWhereInput {
 
 input PouleUpdateInput {
   createdBy: UserUpdateOneWithoutPoulesInput
+  matches: MatchUpdateManyWithoutPouleInput
   name: String
   players: PlayerUpdateManyWithoutPoulesInput
   tournament: TournamentUpdateOneRequiredWithoutPoulesInput
@@ -1532,7 +2648,22 @@ input PouleUpdateManyWithWhereNestedInput {
   data: PouleUpdateManyDataInput!
 }
 
+input PouleUpdateOneRequiredWithoutMatchesInput {
+  create: PouleCreateWithoutMatchesInput
+  update: PouleUpdateWithoutMatchesDataInput
+  upsert: PouleUpsertWithoutMatchesInput
+  connect: PouleWhereUniqueInput
+}
+
 input PouleUpdateWithoutCreatedByDataInput {
+  matches: MatchUpdateManyWithoutPouleInput
+  name: String
+  players: PlayerUpdateManyWithoutPoulesInput
+  tournament: TournamentUpdateOneRequiredWithoutPoulesInput
+}
+
+input PouleUpdateWithoutMatchesDataInput {
+  createdBy: UserUpdateOneWithoutPoulesInput
   name: String
   players: PlayerUpdateManyWithoutPoulesInput
   tournament: TournamentUpdateOneRequiredWithoutPoulesInput
@@ -1540,12 +2671,14 @@ input PouleUpdateWithoutCreatedByDataInput {
 
 input PouleUpdateWithoutPlayersDataInput {
   createdBy: UserUpdateOneWithoutPoulesInput
+  matches: MatchUpdateManyWithoutPouleInput
   name: String
   tournament: TournamentUpdateOneRequiredWithoutPoulesInput
 }
 
 input PouleUpdateWithoutTournamentDataInput {
   createdBy: UserUpdateOneWithoutPoulesInput
+  matches: MatchUpdateManyWithoutPouleInput
   name: String
   players: PlayerUpdateManyWithoutPoulesInput
 }
@@ -1563,6 +2696,11 @@ input PouleUpdateWithWhereUniqueWithoutPlayersInput {
 input PouleUpdateWithWhereUniqueWithoutTournamentInput {
   where: PouleWhereUniqueInput!
   data: PouleUpdateWithoutTournamentDataInput!
+}
+
+input PouleUpsertWithoutMatchesInput {
+  update: PouleUpdateWithoutMatchesDataInput!
+  create: PouleCreateWithoutMatchesInput!
 }
 
 input PouleUpsertWithWhereUniqueWithoutCreatedByInput {
@@ -1599,6 +2737,9 @@ input PouleWhereInput {
   id_not_starts_with: ID
   id_ends_with: ID
   id_not_ends_with: ID
+  matches_every: MatchWhereInput
+  matches_some: MatchWhereInput
+  matches_none: MatchWhereInput
   name: String
   name_not: String
   name_in: [String!]
@@ -1630,12 +2771,21 @@ type Query {
   academy(where: AcademyWhereUniqueInput!): Academy
   academies(where: AcademyWhereInput, orderBy: AcademyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Academy]!
   academiesConnection(where: AcademyWhereInput, orderBy: AcademyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): AcademyConnection!
+  assault(where: AssaultWhereUniqueInput!): Assault
+  assaults(where: AssaultWhereInput, orderBy: AssaultOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Assault]!
+  assaultsConnection(where: AssaultWhereInput, orderBy: AssaultOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): AssaultConnection!
+  card(where: CardWhereUniqueInput!): Card
+  cards(where: CardWhereInput, orderBy: CardOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Card]!
+  cardsConnection(where: CardWhereInput, orderBy: CardOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): CardConnection!
   clan(where: ClanWhereUniqueInput!): Clan
   clans(where: ClanWhereInput, orderBy: ClanOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Clan]!
   clansConnection(where: ClanWhereInput, orderBy: ClanOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ClanConnection!
   form(where: FormWhereUniqueInput!): Form
   forms(where: FormWhereInput, orderBy: FormOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Form]!
   formsConnection(where: FormWhereInput, orderBy: FormOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): FormConnection!
+  match(where: MatchWhereUniqueInput!): Match
+  matches(where: MatchWhereInput, orderBy: MatchOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Match]!
+  matchesConnection(where: MatchWhereInput, orderBy: MatchOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): MatchConnection!
   player(where: PlayerWhereUniqueInput!): Player
   players(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Player]!
   playersConnection(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PlayerConnection!
@@ -1922,8 +3072,11 @@ input SchoolWhereUniqueInput {
 
 type Subscription {
   academy(where: AcademySubscriptionWhereInput): AcademySubscriptionPayload
+  assault(where: AssaultSubscriptionWhereInput): AssaultSubscriptionPayload
+  card(where: CardSubscriptionWhereInput): CardSubscriptionPayload
   clan(where: ClanSubscriptionWhereInput): ClanSubscriptionPayload
   form(where: FormSubscriptionWhereInput): FormSubscriptionPayload
+  match(where: MatchSubscriptionWhereInput): MatchSubscriptionPayload
   player(where: PlayerSubscriptionWhereInput): PlayerSubscriptionPayload
   poule(where: PouleSubscriptionWhereInput): PouleSubscriptionPayload
   school(where: SchoolSubscriptionWhereInput): SchoolSubscriptionPayload
@@ -2255,6 +3408,11 @@ input UserCreateInput {
   tournaments: TournamentCreateManyWithoutCreatedByInput
 }
 
+input UserCreateOneInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+}
+
 input UserCreateOneWithoutAcademiesInput {
   create: UserCreateWithoutAcademiesInput
   connect: UserWhereUniqueInput
@@ -2422,6 +3580,19 @@ input UserSubscriptionWhereInput {
   NOT: [UserSubscriptionWhereInput!]
 }
 
+input UserUpdateDataInput {
+  academies: AcademyUpdateManyWithoutCreatedByInput
+  clans: ClanUpdateManyWithoutCreatedByInput
+  email: String
+  forms: FormUpdateManyWithoutCreatedByInput
+  name: String
+  password: String
+  players: PlayerUpdateManyWithoutCreatedByInput
+  poules: PouleUpdateManyWithoutCreatedByInput
+  schools: SchoolUpdateManyWithoutCreatedByInput
+  tournaments: TournamentUpdateManyWithoutCreatedByInput
+}
+
 input UserUpdateInput {
   academies: AcademyUpdateManyWithoutCreatedByInput
   clans: ClanUpdateManyWithoutCreatedByInput
@@ -2439,6 +3610,15 @@ input UserUpdateManyMutationInput {
   email: String
   name: String
   password: String
+}
+
+input UserUpdateOneInput {
+  create: UserCreateInput
+  update: UserUpdateDataInput
+  upsert: UserUpsertNestedInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: UserWhereUniqueInput
 }
 
 input UserUpdateOneWithoutAcademiesInput {
@@ -2586,6 +3766,11 @@ input UserUpdateWithoutTournamentsDataInput {
   players: PlayerUpdateManyWithoutCreatedByInput
   poules: PouleUpdateManyWithoutCreatedByInput
   schools: SchoolUpdateManyWithoutCreatedByInput
+}
+
+input UserUpsertNestedInput {
+  update: UserUpdateDataInput!
+  create: UserCreateInput!
 }
 
 input UserUpsertWithoutAcademiesInput {
