@@ -1,6 +1,7 @@
 const { APP_SECRET, getUserId, shuffleArray } = require('../utils')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const poulesPlayersPairing = require('../constants/poulesPlayersPairing')
 
 async function signup(parent, args, context, info) {
 	const password = await bcrypt.hash(args.password, 10)
@@ -270,14 +271,15 @@ async function generateTournamentPoules(parent, args, context, info) {
 
 		let poule = {
 			name: `POULE ${pouleName}`,
+			matches: [],
 			tournamentId: args.tournamentId,
-			type: 'POULE',
 			players: []
 		}
 
 		poules[pouleName] = poule
 	}
 
+	/** GROUP PLAYERS BY NUMBER OF KNOWN FORMS */
 	const playersGroupedByNumberOfForms = players.reduce((prev, curr) => {
 		(prev[curr['forms'].length] = prev[curr['forms'].length] || []).push(curr)
 		return prev
@@ -293,6 +295,25 @@ async function generateTournamentPoules(parent, args, context, info) {
 		})
 	})
 
+	/** CREATE MATCHES IN CORRECT ORDER*/
+	Object.keys(poules).map(key => {
+		let poule = poules[key]
+		let players = poule.players
+
+		let matches = []
+
+		poulesPlayersPairing[players.length].map((matchConfig, index) => {
+			let match = {
+				order: index+1,
+				player1: { id: players[matchConfig.player1Position - 1].id },
+				player2: { id: players[matchConfig.player2Position - 1].id },
+			}
+			matches.push(match)
+		})
+
+		poule.matches = matches
+	})
+
 	/** SAVE TO DB */
 	return context.prisma.updateTournament(
 		{
@@ -301,6 +322,17 @@ async function generateTournamentPoules(parent, args, context, info) {
 					create: Object.keys(poules).map(key => { 
 						return {
 							createdBy: { connect: { id: userId } },
+							matches: { create: poules[key].matches },
+							matches: { 
+								create: poules[key].matches.map(match => {
+									return {
+										createdBy: { connect: { id: userId } },
+										order: match.order,
+										player1: { connect: { id: match.player1.id } },
+										player2: { connect: { id: match.player2.id } }
+									}
+								})
+							},
 							name: poules[key].name,
 							players: { connect: poules[key].players }
 						}
