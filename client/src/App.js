@@ -22,6 +22,7 @@ import SignUp from './pages/SignUp'
 import Tournaments from './pages/tournaments/Tournaments'
 import TournamentEdit from './pages/tournaments/TournamentEdit'
 import TournamentManage from './pages/tournaments/TournamentManage'
+import TournamentPlay from './pages/tournaments/TournamentPlay'
 import Home from './pages/Home'
 
 export default function App() {
@@ -72,6 +73,7 @@ export default function App() {
 						<Route exact path="/tournaments" component={Tournaments} />
 						<Route exact path="/tournaments/edit/:id" component={TournamentEdit} />
 						<Route exact path="/tournaments/manage/:id" component={TournamentManage} />
+						<Route exact path="/tournaments/play/:id" component={TournamentPlay} />
 					</Switch>
 				</Container>
 

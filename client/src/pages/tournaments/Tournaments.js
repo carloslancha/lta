@@ -11,6 +11,7 @@ import IconButton from '@material-ui/core/IconButton'
 import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
 import Paper from '@material-ui/core/Paper'
+import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline'
 import React, { useState } from 'react'
 import Select from '@material-ui/core/Select'
 import SettingsIcon from '@material-ui/icons/Settings'
@@ -250,6 +251,14 @@ export default function Tournaments(props) {
 										<TableCell>{tournament.name}</TableCell>
 										<TableCell align="center">{tournament.poulesType}</TableCell>
 										<TableCell align="right">
+											<IconButton 
+												aria-label="Play"
+												component={Link}
+												to={`${props.match.url}/play/${tournament.id}`}
+											>
+												<PlayCircleOutlineIcon />
+											</IconButton>
+
 											<IconButton 
 												aria-label="Manage"
 												component={Link}
