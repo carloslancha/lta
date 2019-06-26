@@ -33,40 +33,12 @@ const QUERY = gql`
 			clan {
 				id
 				name
-				school {
-					id
-					name
-					academy {
-						id
-						name
-						country
-					}
-				}
 			}
 		}
 
 		tournaments {
 			id
 			name
-			players {
-				id
-				name
-				familyName
-				nickname
-				clan {
-					id
-					name
-					school {
-						id
-						name
-						academy {
-							id
-							name
-							country
-						}
-					}
-				}
-			}
 			poulesType
 		}
 
@@ -84,25 +56,6 @@ const CREATE_TOURNAMENT_MUTATION = gql`
 		createTournament(name: $name, playerIds: $playerIds, poulesType: $poulesType) {
 			id
 			name
-			players {
-				id
-				name
-				familyName
-				nickname
-				clan {
-					id
-					name
-					school {
-						id
-						name
-						academy {
-							id
-							name
-							country
-						}
-					}
-				}
-			}
 			poulesType
 		}
 	}
