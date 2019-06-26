@@ -461,10 +461,20 @@ async function updatePlayer(parent, args, context, info) {
 async function updateTournament(parent, args, context, info) {
 	const userId = getUserId(context)
 
+	const playersExists = await context.prisma.$exists.player({
+		id_in: args.playerIds
+	})
+
+	if(!playersExists) {
+		throw new Error(`The player doesn't exists`)
+	}
+
 	return context.prisma.updateTournament(
 		{
 			data: {
-				name: args.name
+				name: args.name,
+				players: arguments.playerIds ? { connect: args.playerIds.map(playerId => { return { id: playerId } } ) } : null,
+				poulesType: args.poulesType,
 			},
 			where: {
 				id: args.id

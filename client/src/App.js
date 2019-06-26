@@ -20,6 +20,7 @@ import PlayerEdit from './pages/players/PlayerEdit'
 import SignIn from './pages/SignIn'
 import SignUp from './pages/SignUp'
 import Tournaments from './pages/tournaments/Tournaments'
+import TournamentEdit from './pages/tournaments/TournamentEdit'
 import Home from './pages/Home'
 
 export default function App() {
@@ -68,6 +69,7 @@ export default function App() {
 						<Route exact path="/players" component={Players} />
 						<Route exact path="/players/edit/:id" component={PlayerEdit} />
 						<Route exact path="/tournaments" component={Tournaments} />
+						<Route exact path="/tournaments/edit/:id" component={TournamentEdit} />
 					</Switch>
 				</Container>
 

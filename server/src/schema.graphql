@@ -95,7 +95,7 @@ type Mutation {
 
 	createTournament(name: String!, playerIds: [ID!], poulesType: PoulesType!): Tournament!
 	deleteTournament(id: ID!): Tournament
-	updateTournament(id: ID!, name: String): Tournament
+	updateTournament(id: ID!, name: String, playerIds: [ID!], poulesType: PoulesType!): Tournament
 	generateTournamentPoules(tournamentId: ID!): Tournament!
 
 }
