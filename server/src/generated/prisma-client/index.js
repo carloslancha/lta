@@ -13,6 +13,10 @@ var models = [
     embedded: false
   },
   {
+    name: "RoundsType",
+    embedded: false
+  },
+  {
     name: "Academy",
     embedded: false
   },
@@ -37,11 +41,15 @@ var models = [
     embedded: false
   },
   {
+    name: "Player",
+    embedded: false
+  },
+  {
     name: "Poule",
     embedded: false
   },
   {
-    name: "Player",
+    name: "Round",
     embedded: false
   },
   {

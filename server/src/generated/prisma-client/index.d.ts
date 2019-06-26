@@ -24,6 +24,7 @@ export interface Exists {
   match: (where?: MatchWhereInput) => Promise<boolean>;
   player: (where?: PlayerWhereInput) => Promise<boolean>;
   poule: (where?: PouleWhereInput) => Promise<boolean>;
+  round: (where?: RoundWhereInput) => Promise<boolean>;
   school: (where?: SchoolWhereInput) => Promise<boolean>;
   tournament: (where?: TournamentWhereInput) => Promise<boolean>;
   user: (where?: UserWhereInput) => Promise<boolean>;
@@ -200,6 +201,25 @@ export interface Prisma {
     first?: Int;
     last?: Int;
   }) => PouleConnectionPromise;
+  round: (where: RoundWhereUniqueInput) => RoundNullablePromise;
+  rounds: (args?: {
+    where?: RoundWhereInput;
+    orderBy?: RoundOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => FragmentableArray<Round>;
+  roundsConnection: (args?: {
+    where?: RoundWhereInput;
+    orderBy?: RoundOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => RoundConnectionPromise;
   school: (where: SchoolWhereUniqueInput) => SchoolNullablePromise;
   schools: (args?: {
     where?: SchoolWhereInput;
@@ -391,6 +411,22 @@ export interface Prisma {
   }) => PoulePromise;
   deletePoule: (where: PouleWhereUniqueInput) => PoulePromise;
   deleteManyPoules: (where?: PouleWhereInput) => BatchPayloadPromise;
+  createRound: (data: RoundCreateInput) => RoundPromise;
+  updateRound: (args: {
+    data: RoundUpdateInput;
+    where: RoundWhereUniqueInput;
+  }) => RoundPromise;
+  updateManyRounds: (args: {
+    data: RoundUpdateManyMutationInput;
+    where?: RoundWhereInput;
+  }) => BatchPayloadPromise;
+  upsertRound: (args: {
+    where: RoundWhereUniqueInput;
+    create: RoundCreateInput;
+    update: RoundUpdateInput;
+  }) => RoundPromise;
+  deleteRound: (where: RoundWhereUniqueInput) => RoundPromise;
+  deleteManyRounds: (where?: RoundWhereInput) => BatchPayloadPromise;
   createSchool: (data: SchoolCreateInput) => SchoolPromise;
   updateSchool: (args: {
     data: SchoolUpdateInput;
@@ -472,6 +508,9 @@ export interface Subscription {
   poule: (
     where?: PouleSubscriptionWhereInput
   ) => PouleSubscriptionPayloadSubscription;
+  round: (
+    where?: RoundSubscriptionWhereInput
+  ) => RoundSubscriptionPayloadSubscription;
   school: (
     where?: SchoolSubscriptionWhereInput
   ) => SchoolSubscriptionPayloadSubscription;
@@ -491,17 +530,7 @@ export interface ClientConstructor<T> {
  * Types
  */
 
-export type MatchOrderByInput =
-  | "duration_ASC"
-  | "duration_DESC"
-  | "id_ASC"
-  | "id_DESC"
-  | "order_ASC"
-  | "order_DESC"
-  | "resultPlayer1_ASC"
-  | "resultPlayer1_DESC"
-  | "resultPlayer2_ASC"
-  | "resultPlayer2_DESC";
+export type FormOrderByInput = "id_ASC" | "id_DESC" | "name_ASC" | "name_DESC";
 
 export type PoulesType = "POSITIONING" | "QUALIFICATION";
 
@@ -523,6 +552,16 @@ export type UserOrderByInput =
   | "password_ASC"
   | "password_DESC";
 
+export type CardsType = "WHITE" | "YELLOW" | "RED" | "BLACK";
+
+export type TournamentOrderByInput =
+  | "id_ASC"
+  | "id_DESC"
+  | "name_ASC"
+  | "name_DESC"
+  | "poulesType_ASC"
+  | "poulesType_DESC";
+
 export type AssaultOrderByInput =
   | "doppio_ASC"
   | "doppio_DESC"
@@ -533,13 +572,16 @@ export type AssaultOrderByInput =
   | "number_ASC"
   | "number_DESC";
 
-export type TournamentOrderByInput =
-  | "id_ASC"
-  | "id_DESC"
-  | "name_ASC"
-  | "name_DESC"
-  | "poulesType_ASC"
-  | "poulesType_DESC";
+export type PouleOrderByInput = "id_ASC" | "id_DESC" | "name_ASC" | "name_DESC";
+
+export type RoundsType =
+  | "ROUND_OF_64"
+  | "ROUND_OF_32"
+  | "ROUND_OF_16"
+  | "QUARTERFINALS"
+  | "SEMIFINALS"
+  | "THIRD_PLACE_PLAYOFFS"
+  | "FINAL";
 
 export type AcademyOrderByInput =
   | "country_ASC"
@@ -561,9 +603,23 @@ export type PlayerOrderByInput =
   | "nickname_ASC"
   | "nickname_DESC";
 
-export type CardsType = "WHITE" | "YELLOW" | "RED" | "BLACK";
+export type MatchOrderByInput =
+  | "duration_ASC"
+  | "duration_DESC"
+  | "id_ASC"
+  | "id_DESC"
+  | "order_ASC"
+  | "order_DESC"
+  | "resultPlayer1_ASC"
+  | "resultPlayer1_DESC"
+  | "resultPlayer2_ASC"
+  | "resultPlayer2_DESC";
 
-export type FormOrderByInput = "id_ASC" | "id_DESC" | "name_ASC" | "name_DESC";
+export type RoundOrderByInput =
+  | "id_ASC"
+  | "id_DESC"
+  | "roundType_ASC"
+  | "roundType_DESC";
 
 export type SchoolOrderByInput =
   | "id_ASC"
@@ -573,28 +629,9 @@ export type SchoolOrderByInput =
 
 export type MutationType = "CREATED" | "UPDATED" | "DELETED";
 
-export type PouleOrderByInput = "id_ASC" | "id_DESC" | "name_ASC" | "name_DESC";
-
-export interface FormUpdateManyWithoutCreatedByInput {
-  create?: Maybe<
-    FormCreateWithoutCreatedByInput[] | FormCreateWithoutCreatedByInput
-  >;
-  delete?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
-  connect?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
-  set?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
-  disconnect?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
-  update?: Maybe<
-    | FormUpdateWithWhereUniqueWithoutCreatedByInput[]
-    | FormUpdateWithWhereUniqueWithoutCreatedByInput
-  >;
-  upsert?: Maybe<
-    | FormUpsertWithWhereUniqueWithoutCreatedByInput[]
-    | FormUpsertWithWhereUniqueWithoutCreatedByInput
-  >;
-  deleteMany?: Maybe<FormScalarWhereInput[] | FormScalarWhereInput>;
-  updateMany?: Maybe<
-    FormUpdateManyWithWhereNestedInput[] | FormUpdateManyWithWhereNestedInput
-  >;
+export interface PlayerUpdateWithWhereUniqueWithoutFormsInput {
+  where: PlayerWhereUniqueInput;
+  data: PlayerUpdateWithoutFormsDataInput;
 }
 
 export type AcademyWhereUniqueInput = AtLeastOne<{
@@ -602,10 +639,13 @@ export type AcademyWhereUniqueInput = AtLeastOne<{
   name?: Maybe<String>;
 }>;
 
-export interface CardUpdateWithoutPlayerDataInput {
-  assault?: Maybe<AssaultUpdateOneRequiredWithoutCardsInput>;
-  reason?: Maybe<String>;
-  type?: Maybe<CardsType>;
+export interface UserUpdateOneInput {
+  create?: Maybe<UserCreateInput>;
+  update?: Maybe<UserUpdateDataInput>;
+  upsert?: Maybe<UserUpsertNestedInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<UserWhereUniqueInput>;
 }
 
 export interface TournamentWhereInput {
@@ -641,23 +681,98 @@ export interface TournamentWhereInput {
   players_every?: Maybe<PlayerWhereInput>;
   players_some?: Maybe<PlayerWhereInput>;
   players_none?: Maybe<PlayerWhereInput>;
-  poules_every?: Maybe<PouleWhereInput>;
-  poules_some?: Maybe<PouleWhereInput>;
-  poules_none?: Maybe<PouleWhereInput>;
   poulesType?: Maybe<PoulesType>;
   poulesType_not?: Maybe<PoulesType>;
   poulesType_in?: Maybe<PoulesType[] | PoulesType>;
   poulesType_not_in?: Maybe<PoulesType[] | PoulesType>;
+  poules_every?: Maybe<PouleWhereInput>;
+  poules_some?: Maybe<PouleWhereInput>;
+  poules_none?: Maybe<PouleWhereInput>;
+  rounds_every?: Maybe<RoundWhereInput>;
+  rounds_some?: Maybe<RoundWhereInput>;
+  rounds_none?: Maybe<RoundWhereInput>;
   AND?: Maybe<TournamentWhereInput[] | TournamentWhereInput>;
   OR?: Maybe<TournamentWhereInput[] | TournamentWhereInput>;
   NOT?: Maybe<TournamentWhereInput[] | TournamentWhereInput>;
 }
 
-export interface AssaultUpdateOneRequiredWithoutCardsInput {
-  create?: Maybe<AssaultCreateWithoutCardsInput>;
-  update?: Maybe<AssaultUpdateWithoutCardsDataInput>;
-  upsert?: Maybe<AssaultUpsertWithoutCardsInput>;
-  connect?: Maybe<AssaultWhereUniqueInput>;
+export interface UserUpdateDataInput {
+  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
+  email?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
+  name?: Maybe<String>;
+  password?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
+}
+
+export interface PouleWhereInput {
+  createdBy?: Maybe<UserWhereInput>;
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  matches_every?: Maybe<MatchWhereInput>;
+  matches_some?: Maybe<MatchWhereInput>;
+  matches_none?: Maybe<MatchWhereInput>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  players_every?: Maybe<PlayerWhereInput>;
+  players_some?: Maybe<PlayerWhereInput>;
+  players_none?: Maybe<PlayerWhereInput>;
+  tournament?: Maybe<TournamentWhereInput>;
+  AND?: Maybe<PouleWhereInput[] | PouleWhereInput>;
+  OR?: Maybe<PouleWhereInput[] | PouleWhereInput>;
+  NOT?: Maybe<PouleWhereInput[] | PouleWhereInput>;
+}
+
+export interface PlayerUpdateManyWithoutCreatedByInput {
+  create?: Maybe<
+    PlayerCreateWithoutCreatedByInput[] | PlayerCreateWithoutCreatedByInput
+  >;
+  delete?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  set?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  disconnect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  update?: Maybe<
+    | PlayerUpdateWithWhereUniqueWithoutCreatedByInput[]
+    | PlayerUpdateWithWhereUniqueWithoutCreatedByInput
+  >;
+  upsert?: Maybe<
+    | PlayerUpsertWithWhereUniqueWithoutCreatedByInput[]
+    | PlayerUpsertWithWhereUniqueWithoutCreatedByInput
+  >;
+  deleteMany?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
+  updateMany?: Maybe<
+    | PlayerUpdateManyWithWhereNestedInput[]
+    | PlayerUpdateManyWithWhereNestedInput
+  >;
 }
 
 export interface FormWhereInput {
@@ -698,12 +813,10 @@ export interface FormWhereInput {
   NOT?: Maybe<FormWhereInput[] | FormWhereInput>;
 }
 
-export interface AssaultUpdateWithoutWinnerDataInput {
-  cards?: Maybe<CardUpdateManyWithoutAssaultInput>;
-  doppio?: Maybe<Boolean>;
-  match?: Maybe<MatchUpdateOneWithoutAssaultsInput>;
-  nullo?: Maybe<Boolean>;
-  number?: Maybe<Int>;
+export interface CardUpdateWithoutAssaultDataInput {
+  reason?: Maybe<String>;
+  type?: Maybe<CardsType>;
+  player?: Maybe<PlayerUpdateOneRequiredWithoutCardsInput>;
 }
 
 export interface SchoolUpdateWithoutClansDataInput {
@@ -712,39 +825,30 @@ export interface SchoolUpdateWithoutClansDataInput {
   name?: Maybe<String>;
 }
 
-export interface CardUpdateManyWithoutAssaultInput {
-  create?: Maybe<
-    CardCreateWithoutAssaultInput[] | CardCreateWithoutAssaultInput
-  >;
-  delete?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
-  connect?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
-  set?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
-  disconnect?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
-  update?: Maybe<
-    | CardUpdateWithWhereUniqueWithoutAssaultInput[]
-    | CardUpdateWithWhereUniqueWithoutAssaultInput
-  >;
-  upsert?: Maybe<
-    | CardUpsertWithWhereUniqueWithoutAssaultInput[]
-    | CardUpsertWithWhereUniqueWithoutAssaultInput
-  >;
-  deleteMany?: Maybe<CardScalarWhereInput[] | CardScalarWhereInput>;
-  updateMany?: Maybe<
-    CardUpdateManyWithWhereNestedInput[] | CardUpdateManyWithWhereNestedInput
-  >;
+export interface PlayerUpdateOneRequiredWithoutCardsInput {
+  create?: Maybe<PlayerCreateWithoutCardsInput>;
+  update?: Maybe<PlayerUpdateWithoutCardsDataInput>;
+  upsert?: Maybe<PlayerUpsertWithoutCardsInput>;
+  connect?: Maybe<PlayerWhereUniqueInput>;
 }
 
-export interface AssaultUpdateWithoutCardsDataInput {
-  doppio?: Maybe<Boolean>;
-  match?: Maybe<MatchUpdateOneWithoutAssaultsInput>;
-  nullo?: Maybe<Boolean>;
-  number?: Maybe<Int>;
-  winner?: Maybe<PlayerUpdateOneWithoutAssaultsWonInput>;
+export interface PlayerUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: PlayerWhereUniqueInput;
+  data: PlayerUpdateWithoutCreatedByDataInput;
 }
 
-export interface CardUpdateWithWhereUniqueWithoutAssaultInput {
-  where: CardWhereUniqueInput;
-  data: CardUpdateWithoutAssaultDataInput;
+export interface PlayerUpdateWithoutCardsDataInput {
+  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
+  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
+  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
+  familyName?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  nickname?: Maybe<String>;
+  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
 }
 
 export interface TournamentSubscriptionWhereInput {
@@ -764,10 +868,11 @@ export interface TournamentSubscriptionWhereInput {
   >;
 }
 
-export interface CardUpdateWithoutAssaultDataInput {
-  reason?: Maybe<String>;
-  type?: Maybe<CardsType>;
-  player?: Maybe<PlayerUpdateOneRequiredWithoutCardsInput>;
+export interface ClanUpdateOneRequiredWithoutPlayersInput {
+  create?: Maybe<ClanCreateWithoutPlayersInput>;
+  update?: Maybe<ClanUpdateWithoutPlayersDataInput>;
+  upsert?: Maybe<ClanUpsertWithoutPlayersInput>;
+  connect?: Maybe<ClanWhereUniqueInput>;
 }
 
 export interface CardWhereInput {
@@ -810,11 +915,1890 @@ export interface CardWhereInput {
   NOT?: Maybe<CardWhereInput[] | CardWhereInput>;
 }
 
-export interface PlayerUpdateOneRequiredWithoutCardsInput {
-  create?: Maybe<PlayerCreateWithoutCardsInput>;
-  update?: Maybe<PlayerUpdateWithoutCardsDataInput>;
-  upsert?: Maybe<PlayerUpsertWithoutCardsInput>;
+export interface ClanUpdateWithoutPlayersDataInput {
+  createdBy?: Maybe<UserUpdateOneWithoutClansInput>;
+  name?: Maybe<String>;
+  school?: Maybe<SchoolUpdateOneRequiredWithoutClansInput>;
+}
+
+export interface PouleSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<PouleWhereInput>;
+  AND?: Maybe<PouleSubscriptionWhereInput[] | PouleSubscriptionWhereInput>;
+  OR?: Maybe<PouleSubscriptionWhereInput[] | PouleSubscriptionWhereInput>;
+  NOT?: Maybe<PouleSubscriptionWhereInput[] | PouleSubscriptionWhereInput>;
+}
+
+export interface UserUpdateOneWithoutClansInput {
+  create?: Maybe<UserCreateWithoutClansInput>;
+  update?: Maybe<UserUpdateWithoutClansDataInput>;
+  upsert?: Maybe<UserUpsertWithoutClansInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface PlayerSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<PlayerWhereInput>;
+  AND?: Maybe<PlayerSubscriptionWhereInput[] | PlayerSubscriptionWhereInput>;
+  OR?: Maybe<PlayerSubscriptionWhereInput[] | PlayerSubscriptionWhereInput>;
+  NOT?: Maybe<PlayerSubscriptionWhereInput[] | PlayerSubscriptionWhereInput>;
+}
+
+export interface UserUpdateWithoutClansDataInput {
+  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
+  email?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
+  name?: Maybe<String>;
+  password?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
+}
+
+export interface ClanWhereInput {
+  createdBy?: Maybe<UserWhereInput>;
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  players_every?: Maybe<PlayerWhereInput>;
+  players_some?: Maybe<PlayerWhereInput>;
+  players_none?: Maybe<PlayerWhereInput>;
+  school?: Maybe<SchoolWhereInput>;
+  AND?: Maybe<ClanWhereInput[] | ClanWhereInput>;
+  OR?: Maybe<ClanWhereInput[] | ClanWhereInput>;
+  NOT?: Maybe<ClanWhereInput[] | ClanWhereInput>;
+}
+
+export interface AcademyUpdateManyWithoutCreatedByInput {
+  create?: Maybe<
+    AcademyCreateWithoutCreatedByInput[] | AcademyCreateWithoutCreatedByInput
+  >;
+  delete?: Maybe<AcademyWhereUniqueInput[] | AcademyWhereUniqueInput>;
+  connect?: Maybe<AcademyWhereUniqueInput[] | AcademyWhereUniqueInput>;
+  set?: Maybe<AcademyWhereUniqueInput[] | AcademyWhereUniqueInput>;
+  disconnect?: Maybe<AcademyWhereUniqueInput[] | AcademyWhereUniqueInput>;
+  update?: Maybe<
+    | AcademyUpdateWithWhereUniqueWithoutCreatedByInput[]
+    | AcademyUpdateWithWhereUniqueWithoutCreatedByInput
+  >;
+  upsert?: Maybe<
+    | AcademyUpsertWithWhereUniqueWithoutCreatedByInput[]
+    | AcademyUpsertWithWhereUniqueWithoutCreatedByInput
+  >;
+  deleteMany?: Maybe<AcademyScalarWhereInput[] | AcademyScalarWhereInput>;
+  updateMany?: Maybe<
+    | AcademyUpdateManyWithWhereNestedInput[]
+    | AcademyUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface FormSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<FormWhereInput>;
+  AND?: Maybe<FormSubscriptionWhereInput[] | FormSubscriptionWhereInput>;
+  OR?: Maybe<FormSubscriptionWhereInput[] | FormSubscriptionWhereInput>;
+  NOT?: Maybe<FormSubscriptionWhereInput[] | FormSubscriptionWhereInput>;
+}
+
+export interface AcademyUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: AcademyWhereUniqueInput;
+  data: AcademyUpdateWithoutCreatedByDataInput;
+}
+
+export interface ClanSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<ClanWhereInput>;
+  AND?: Maybe<ClanSubscriptionWhereInput[] | ClanSubscriptionWhereInput>;
+  OR?: Maybe<ClanSubscriptionWhereInput[] | ClanSubscriptionWhereInput>;
+  NOT?: Maybe<ClanSubscriptionWhereInput[] | ClanSubscriptionWhereInput>;
+}
+
+export interface AcademyUpdateWithoutCreatedByDataInput {
+  country?: Maybe<String>;
+  name?: Maybe<String>;
+  schools?: Maybe<SchoolUpdateManyWithoutAcademyInput>;
+}
+
+export interface CardSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<CardWhereInput>;
+  AND?: Maybe<CardSubscriptionWhereInput[] | CardSubscriptionWhereInput>;
+  OR?: Maybe<CardSubscriptionWhereInput[] | CardSubscriptionWhereInput>;
+  NOT?: Maybe<CardSubscriptionWhereInput[] | CardSubscriptionWhereInput>;
+}
+
+export interface SchoolUpdateManyWithoutAcademyInput {
+  create?: Maybe<
+    SchoolCreateWithoutAcademyInput[] | SchoolCreateWithoutAcademyInput
+  >;
+  delete?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
+  connect?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
+  set?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
+  disconnect?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
+  update?: Maybe<
+    | SchoolUpdateWithWhereUniqueWithoutAcademyInput[]
+    | SchoolUpdateWithWhereUniqueWithoutAcademyInput
+  >;
+  upsert?: Maybe<
+    | SchoolUpsertWithWhereUniqueWithoutAcademyInput[]
+    | SchoolUpsertWithWhereUniqueWithoutAcademyInput
+  >;
+  deleteMany?: Maybe<SchoolScalarWhereInput[] | SchoolScalarWhereInput>;
+  updateMany?: Maybe<
+    | SchoolUpdateManyWithWhereNestedInput[]
+    | SchoolUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface AcademySubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<AcademyWhereInput>;
+  AND?: Maybe<AcademySubscriptionWhereInput[] | AcademySubscriptionWhereInput>;
+  OR?: Maybe<AcademySubscriptionWhereInput[] | AcademySubscriptionWhereInput>;
+  NOT?: Maybe<AcademySubscriptionWhereInput[] | AcademySubscriptionWhereInput>;
+}
+
+export interface SchoolUpdateWithWhereUniqueWithoutAcademyInput {
+  where: SchoolWhereUniqueInput;
+  data: SchoolUpdateWithoutAcademyDataInput;
+}
+
+export interface UserUpdateInput {
+  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
+  email?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
+  name?: Maybe<String>;
+  password?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
+}
+
+export interface SchoolUpdateWithoutAcademyDataInput {
+  clans?: Maybe<ClanUpdateManyWithoutSchoolInput>;
+  createdBy?: Maybe<UserUpdateOneWithoutSchoolsInput>;
+  name?: Maybe<String>;
+}
+
+export type AssaultWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface ClanUpdateManyWithoutSchoolInput {
+  create?: Maybe<ClanCreateWithoutSchoolInput[] | ClanCreateWithoutSchoolInput>;
+  delete?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
+  connect?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
+  set?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
+  disconnect?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
+  update?: Maybe<
+    | ClanUpdateWithWhereUniqueWithoutSchoolInput[]
+    | ClanUpdateWithWhereUniqueWithoutSchoolInput
+  >;
+  upsert?: Maybe<
+    | ClanUpsertWithWhereUniqueWithoutSchoolInput[]
+    | ClanUpsertWithWhereUniqueWithoutSchoolInput
+  >;
+  deleteMany?: Maybe<ClanScalarWhereInput[] | ClanScalarWhereInput>;
+  updateMany?: Maybe<
+    ClanUpdateManyWithWhereNestedInput[] | ClanUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface TournamentCreateInput {
+  createdBy?: Maybe<UserCreateOneWithoutTournamentsInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  players?: Maybe<PlayerCreateManyWithoutTournamentsInput>;
+  poulesType: PoulesType;
+  poules?: Maybe<PouleCreateManyWithoutTournamentInput>;
+  rounds?: Maybe<RoundCreateManyWithoutTournamentInput>;
+}
+
+export interface ClanUpdateWithWhereUniqueWithoutSchoolInput {
+  where: ClanWhereUniqueInput;
+  data: ClanUpdateWithoutSchoolDataInput;
+}
+
+export type CardWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface ClanUpdateWithoutSchoolDataInput {
+  createdBy?: Maybe<UserUpdateOneWithoutClansInput>;
+  name?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutClanInput>;
+}
+
+export interface SchoolCreateInput {
+  academy: AcademyCreateOneWithoutSchoolsInput;
+  clans?: Maybe<ClanCreateManyWithoutSchoolInput>;
+  createdBy?: Maybe<UserCreateOneWithoutSchoolsInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+}
+
+export interface ClanUpsertWithWhereUniqueWithoutSchoolInput {
+  where: ClanWhereUniqueInput;
+  update: ClanUpdateWithoutSchoolDataInput;
+  create: ClanCreateWithoutSchoolInput;
+}
+
+export type ClanWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface ClanScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  AND?: Maybe<ClanScalarWhereInput[] | ClanScalarWhereInput>;
+  OR?: Maybe<ClanScalarWhereInput[] | ClanScalarWhereInput>;
+  NOT?: Maybe<ClanScalarWhereInput[] | ClanScalarWhereInput>;
+}
+
+export interface RoundCreateInput {
+  createdBy?: Maybe<UserCreateOneWithoutRoundsInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  players?: Maybe<PlayerCreateManyWithoutRoundsInput>;
+  roundType: RoundsType;
+  tournament: TournamentCreateOneWithoutRoundsInput;
+}
+
+export interface ClanUpdateManyWithWhereNestedInput {
+  where: ClanScalarWhereInput;
+  data: ClanUpdateManyDataInput;
+}
+
+export type FormWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface ClanUpdateManyDataInput {
+  name?: Maybe<String>;
+}
+
+export interface PouleCreateInput {
+  createdBy?: Maybe<UserCreateOneWithoutPoulesInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  players?: Maybe<PlayerCreateManyWithoutPoulesInput>;
+  tournament: TournamentCreateOneWithoutPoulesInput;
+}
+
+export interface UserUpdateOneWithoutSchoolsInput {
+  create?: Maybe<UserCreateWithoutSchoolsInput>;
+  update?: Maybe<UserUpdateWithoutSchoolsDataInput>;
+  upsert?: Maybe<UserUpsertWithoutSchoolsInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export type MatchWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface UserUpdateWithoutSchoolsDataInput {
+  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
+  email?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
+  name?: Maybe<String>;
+  password?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
+}
+
+export interface MatchUpdateManyMutationInput {
+  duration?: Maybe<Int>;
+  order?: Maybe<Int>;
+  resultPlayer1?: Maybe<Int>;
+  resultPlayer2?: Maybe<Int>;
+}
+
+export interface FormUpdateManyWithoutCreatedByInput {
+  create?: Maybe<
+    FormCreateWithoutCreatedByInput[] | FormCreateWithoutCreatedByInput
+  >;
+  delete?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
+  connect?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
+  set?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
+  disconnect?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
+  update?: Maybe<
+    | FormUpdateWithWhereUniqueWithoutCreatedByInput[]
+    | FormUpdateWithWhereUniqueWithoutCreatedByInput
+  >;
+  upsert?: Maybe<
+    | FormUpsertWithWhereUniqueWithoutCreatedByInput[]
+    | FormUpsertWithWhereUniqueWithoutCreatedByInput
+  >;
+  deleteMany?: Maybe<FormScalarWhereInput[] | FormScalarWhereInput>;
+  updateMany?: Maybe<
+    FormUpdateManyWithWhereNestedInput[] | FormUpdateManyWithWhereNestedInput
+  >;
+}
+
+export type PlayerWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface FormUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: FormWhereUniqueInput;
+  data: FormUpdateWithoutCreatedByDataInput;
+}
+
+export interface FormUpdateInput {
+  createdBy?: Maybe<UserUpdateOneWithoutFormsInput>;
+  name?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutFormsInput>;
+}
+
+export interface FormUpdateWithoutCreatedByDataInput {
+  name?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutFormsInput>;
+}
+
+export type PouleWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface PlayerUpdateManyWithoutFormsInput {
+  create?: Maybe<
+    PlayerCreateWithoutFormsInput[] | PlayerCreateWithoutFormsInput
+  >;
+  delete?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  set?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  disconnect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  update?: Maybe<
+    | PlayerUpdateWithWhereUniqueWithoutFormsInput[]
+    | PlayerUpdateWithWhereUniqueWithoutFormsInput
+  >;
+  upsert?: Maybe<
+    | PlayerUpsertWithWhereUniqueWithoutFormsInput[]
+    | PlayerUpsertWithWhereUniqueWithoutFormsInput
+  >;
+  deleteMany?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
+  updateMany?: Maybe<
+    | PlayerUpdateManyWithWhereNestedInput[]
+    | PlayerUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface ClanUpdateInput {
+  createdBy?: Maybe<UserUpdateOneWithoutClansInput>;
+  name?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutClanInput>;
+  school?: Maybe<SchoolUpdateOneRequiredWithoutClansInput>;
+}
+
+export interface ClanUpsertWithoutPlayersInput {
+  update: ClanUpdateWithoutPlayersDataInput;
+  create: ClanCreateWithoutPlayersInput;
+}
+
+export type RoundWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface PlayerUpdateWithoutFormsDataInput {
+  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
+  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
+  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
+  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
+  familyName?: Maybe<String>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  nickname?: Maybe<String>;
+  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
+}
+
+export interface CardUpdateInput {
+  assault?: Maybe<AssaultUpdateOneRequiredWithoutCardsInput>;
+  reason?: Maybe<String>;
+  type?: Maybe<CardsType>;
+  player?: Maybe<PlayerUpdateOneRequiredWithoutCardsInput>;
+}
+
+export interface CardUpdateManyWithoutPlayerInput {
+  create?: Maybe<CardCreateWithoutPlayerInput[] | CardCreateWithoutPlayerInput>;
+  delete?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
+  connect?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
+  set?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
+  disconnect?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
+  update?: Maybe<
+    | CardUpdateWithWhereUniqueWithoutPlayerInput[]
+    | CardUpdateWithWhereUniqueWithoutPlayerInput
+  >;
+  upsert?: Maybe<
+    | CardUpsertWithWhereUniqueWithoutPlayerInput[]
+    | CardUpsertWithWhereUniqueWithoutPlayerInput
+  >;
+  deleteMany?: Maybe<CardScalarWhereInput[] | CardScalarWhereInput>;
+  updateMany?: Maybe<
+    CardUpdateManyWithWhereNestedInput[] | CardUpdateManyWithWhereNestedInput
+  >;
+}
+
+export type SchoolWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface CardUpdateWithWhereUniqueWithoutPlayerInput {
+  where: CardWhereUniqueInput;
+  data: CardUpdateWithoutPlayerDataInput;
+}
+
+export interface AssaultUpdateInput {
+  cards?: Maybe<CardUpdateManyWithoutAssaultInput>;
+  doppio?: Maybe<Boolean>;
+  match?: Maybe<MatchUpdateOneWithoutAssaultsInput>;
+  nullo?: Maybe<Boolean>;
+  number?: Maybe<Int>;
+  winner?: Maybe<PlayerUpdateOneWithoutAssaultsWonInput>;
+}
+
+export interface CardUpdateWithoutPlayerDataInput {
+  assault?: Maybe<AssaultUpdateOneRequiredWithoutCardsInput>;
+  reason?: Maybe<String>;
+  type?: Maybe<CardsType>;
+}
+
+export type TournamentWhereUniqueInput = AtLeastOne<{
+  id: Maybe<ID_Input>;
+}>;
+
+export interface AssaultUpdateOneRequiredWithoutCardsInput {
+  create?: Maybe<AssaultCreateWithoutCardsInput>;
+  update?: Maybe<AssaultUpdateWithoutCardsDataInput>;
+  upsert?: Maybe<AssaultUpsertWithoutCardsInput>;
+  connect?: Maybe<AssaultWhereUniqueInput>;
+}
+
+export interface UserUpsertWithoutAcademiesInput {
+  update: UserUpdateWithoutAcademiesDataInput;
+  create: UserCreateWithoutAcademiesInput;
+}
+
+export interface AssaultUpdateWithoutCardsDataInput {
+  doppio?: Maybe<Boolean>;
+  match?: Maybe<MatchUpdateOneWithoutAssaultsInput>;
+  nullo?: Maybe<Boolean>;
+  number?: Maybe<Int>;
+  winner?: Maybe<PlayerUpdateOneWithoutAssaultsWonInput>;
+}
+
+export type UserWhereUniqueInput = AtLeastOne<{
+  email: Maybe<String>;
+  id?: Maybe<ID_Input>;
+}>;
+
+export interface MatchUpdateOneWithoutAssaultsInput {
+  create?: Maybe<MatchCreateWithoutAssaultsInput>;
+  update?: Maybe<MatchUpdateWithoutAssaultsDataInput>;
+  upsert?: Maybe<MatchUpsertWithoutAssaultsInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<MatchWhereUniqueInput>;
+}
+
+export interface AssaultUpsertWithWhereUniqueWithoutWinnerInput {
+  where: AssaultWhereUniqueInput;
+  update: AssaultUpdateWithoutWinnerDataInput;
+  create: AssaultCreateWithoutWinnerInput;
+}
+
+export interface MatchUpdateWithoutAssaultsDataInput {
+  createdBy?: Maybe<UserUpdateOneInput>;
+  duration?: Maybe<Int>;
+  order?: Maybe<Int>;
+  player1?: Maybe<PlayerUpdateOneRequiredInput>;
+  player2?: Maybe<PlayerUpdateOneRequiredInput>;
+  resultPlayer1?: Maybe<Int>;
+  resultPlayer2?: Maybe<Int>;
+}
+
+export interface PlayerUpsertWithoutCardsInput {
+  update: PlayerUpdateWithoutCardsDataInput;
+  create: PlayerCreateWithoutCardsInput;
+}
+
+export interface RoundWhereInput {
+  createdBy?: Maybe<UserWhereInput>;
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  matches_every?: Maybe<MatchWhereInput>;
+  matches_some?: Maybe<MatchWhereInput>;
+  matches_none?: Maybe<MatchWhereInput>;
+  players_every?: Maybe<PlayerWhereInput>;
+  players_some?: Maybe<PlayerWhereInput>;
+  players_none?: Maybe<PlayerWhereInput>;
+  roundType?: Maybe<RoundsType>;
+  roundType_not?: Maybe<RoundsType>;
+  roundType_in?: Maybe<RoundsType[] | RoundsType>;
+  roundType_not_in?: Maybe<RoundsType[] | RoundsType>;
+  tournament?: Maybe<TournamentWhereInput>;
+  AND?: Maybe<RoundWhereInput[] | RoundWhereInput>;
+  OR?: Maybe<RoundWhereInput[] | RoundWhereInput>;
+  NOT?: Maybe<RoundWhereInput[] | RoundWhereInput>;
+}
+
+export interface AcademyCreateInput {
+  country: String;
+  createdBy?: Maybe<UserCreateOneWithoutAcademiesInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  schools?: Maybe<SchoolCreateManyWithoutAcademyInput>;
+}
+
+export interface SchoolWhereInput {
+  academy?: Maybe<AcademyWhereInput>;
+  clans_every?: Maybe<ClanWhereInput>;
+  clans_some?: Maybe<ClanWhereInput>;
+  clans_none?: Maybe<ClanWhereInput>;
+  createdBy?: Maybe<UserWhereInput>;
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  AND?: Maybe<SchoolWhereInput[] | SchoolWhereInput>;
+  OR?: Maybe<SchoolWhereInput[] | SchoolWhereInput>;
+  NOT?: Maybe<SchoolWhereInput[] | SchoolWhereInput>;
+}
+
+export interface UserCreateWithoutAcademiesInput {
+  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
+  email: String;
+  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  password: String;
+  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundCreateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
+}
+
+export interface SchoolUpsertWithoutClansInput {
+  update: SchoolUpdateWithoutClansDataInput;
+  create: SchoolCreateWithoutClansInput;
+}
+
+export interface ClanCreateWithoutCreatedByInput {
+  id?: Maybe<ID_Input>;
+  name: String;
+  players?: Maybe<PlayerCreateManyWithoutClanInput>;
+  school: SchoolCreateOneWithoutClansInput;
+}
+
+export interface MatchWhereInput {
+  assaults_every?: Maybe<AssaultWhereInput>;
+  assaults_some?: Maybe<AssaultWhereInput>;
+  assaults_none?: Maybe<AssaultWhereInput>;
+  createdBy?: Maybe<UserWhereInput>;
+  duration?: Maybe<Int>;
+  duration_not?: Maybe<Int>;
+  duration_in?: Maybe<Int[] | Int>;
+  duration_not_in?: Maybe<Int[] | Int>;
+  duration_lt?: Maybe<Int>;
+  duration_lte?: Maybe<Int>;
+  duration_gt?: Maybe<Int>;
+  duration_gte?: Maybe<Int>;
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  order?: Maybe<Int>;
+  order_not?: Maybe<Int>;
+  order_in?: Maybe<Int[] | Int>;
+  order_not_in?: Maybe<Int[] | Int>;
+  order_lt?: Maybe<Int>;
+  order_lte?: Maybe<Int>;
+  order_gt?: Maybe<Int>;
+  order_gte?: Maybe<Int>;
+  player1?: Maybe<PlayerWhereInput>;
+  player2?: Maybe<PlayerWhereInput>;
+  resultPlayer1?: Maybe<Int>;
+  resultPlayer1_not?: Maybe<Int>;
+  resultPlayer1_in?: Maybe<Int[] | Int>;
+  resultPlayer1_not_in?: Maybe<Int[] | Int>;
+  resultPlayer1_lt?: Maybe<Int>;
+  resultPlayer1_lte?: Maybe<Int>;
+  resultPlayer1_gt?: Maybe<Int>;
+  resultPlayer1_gte?: Maybe<Int>;
+  resultPlayer2?: Maybe<Int>;
+  resultPlayer2_not?: Maybe<Int>;
+  resultPlayer2_in?: Maybe<Int[] | Int>;
+  resultPlayer2_not_in?: Maybe<Int[] | Int>;
+  resultPlayer2_lt?: Maybe<Int>;
+  resultPlayer2_lte?: Maybe<Int>;
+  resultPlayer2_gt?: Maybe<Int>;
+  resultPlayer2_gte?: Maybe<Int>;
+  AND?: Maybe<MatchWhereInput[] | MatchWhereInput>;
+  OR?: Maybe<MatchWhereInput[] | MatchWhereInput>;
+  NOT?: Maybe<MatchWhereInput[] | MatchWhereInput>;
+}
+
+export interface PlayerCreateWithoutClanInput {
+  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
+  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
+  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
+  familyName: String;
+  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  nickname: String;
+  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundCreateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
+}
+
+export interface PlayerUpdateWithoutCreatedByDataInput {
+  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
+  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
+  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
+  familyName?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  nickname?: Maybe<String>;
+  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
+}
+
+export interface AssaultCreateWithoutWinnerInput {
+  cards?: Maybe<CardCreateManyWithoutAssaultInput>;
+  doppio?: Maybe<Boolean>;
+  id?: Maybe<ID_Input>;
+  match?: Maybe<MatchCreateOneWithoutAssaultsInput>;
+  nullo?: Maybe<Boolean>;
+  number: Int;
+}
+
+export interface FormUpdateManyWithoutPlayersInput {
+  create?: Maybe<
+    FormCreateWithoutPlayersInput[] | FormCreateWithoutPlayersInput
+  >;
+  delete?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
+  connect?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
+  set?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
+  disconnect?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
+  update?: Maybe<
+    | FormUpdateWithWhereUniqueWithoutPlayersInput[]
+    | FormUpdateWithWhereUniqueWithoutPlayersInput
+  >;
+  upsert?: Maybe<
+    | FormUpsertWithWhereUniqueWithoutPlayersInput[]
+    | FormUpsertWithWhereUniqueWithoutPlayersInput
+  >;
+  deleteMany?: Maybe<FormScalarWhereInput[] | FormScalarWhereInput>;
+  updateMany?: Maybe<
+    FormUpdateManyWithWhereNestedInput[] | FormUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface CardCreateWithoutAssaultInput {
+  id?: Maybe<ID_Input>;
+  reason?: Maybe<String>;
+  type: CardsType;
+  player: PlayerCreateOneWithoutCardsInput;
+}
+
+export interface FormUpdateWithWhereUniqueWithoutPlayersInput {
+  where: FormWhereUniqueInput;
+  data: FormUpdateWithoutPlayersDataInput;
+}
+
+export interface PlayerCreateWithoutCardsInput {
+  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
+  clan: ClanCreateOneWithoutPlayersInput;
+  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
+  familyName: String;
+  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  nickname: String;
+  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundCreateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
+}
+
+export interface FormUpdateWithoutPlayersDataInput {
+  createdBy?: Maybe<UserUpdateOneWithoutFormsInput>;
+  name?: Maybe<String>;
+}
+
+export interface ClanCreateWithoutPlayersInput {
+  createdBy?: Maybe<UserCreateOneWithoutClansInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  school: SchoolCreateOneWithoutClansInput;
+}
+
+export interface UserUpdateOneWithoutFormsInput {
+  create?: Maybe<UserCreateWithoutFormsInput>;
+  update?: Maybe<UserUpdateWithoutFormsDataInput>;
+  upsert?: Maybe<UserUpsertWithoutFormsInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface UserCreateWithoutClansInput {
+  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
+  email: String;
+  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  password: String;
+  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundCreateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
+}
+
+export interface UserUpdateWithoutFormsDataInput {
+  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
+  email?: Maybe<String>;
+  name?: Maybe<String>;
+  password?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
+}
+
+export interface AcademyCreateWithoutCreatedByInput {
+  country: String;
+  id?: Maybe<ID_Input>;
+  name: String;
+  schools?: Maybe<SchoolCreateManyWithoutAcademyInput>;
+}
+
+export interface PouleUpdateManyWithoutCreatedByInput {
+  create?: Maybe<
+    PouleCreateWithoutCreatedByInput[] | PouleCreateWithoutCreatedByInput
+  >;
+  delete?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  connect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  set?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  disconnect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  update?: Maybe<
+    | PouleUpdateWithWhereUniqueWithoutCreatedByInput[]
+    | PouleUpdateWithWhereUniqueWithoutCreatedByInput
+  >;
+  upsert?: Maybe<
+    | PouleUpsertWithWhereUniqueWithoutCreatedByInput[]
+    | PouleUpsertWithWhereUniqueWithoutCreatedByInput
+  >;
+  deleteMany?: Maybe<PouleScalarWhereInput[] | PouleScalarWhereInput>;
+  updateMany?: Maybe<
+    PouleUpdateManyWithWhereNestedInput[] | PouleUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface SchoolCreateWithoutAcademyInput {
+  clans?: Maybe<ClanCreateManyWithoutSchoolInput>;
+  createdBy?: Maybe<UserCreateOneWithoutSchoolsInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+}
+
+export interface PouleUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: PouleWhereUniqueInput;
+  data: PouleUpdateWithoutCreatedByDataInput;
+}
+
+export interface ClanCreateWithoutSchoolInput {
+  createdBy?: Maybe<UserCreateOneWithoutClansInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  players?: Maybe<PlayerCreateManyWithoutClanInput>;
+}
+
+export interface PouleUpdateWithoutCreatedByDataInput {
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutPoulesInput>;
+  tournament?: Maybe<TournamentUpdateOneRequiredWithoutPoulesInput>;
+}
+
+export interface UserCreateWithoutSchoolsInput {
+  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
+  email: String;
+  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  password: String;
+  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundCreateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
+}
+
+export interface MatchUpdateManyInput {
+  create?: Maybe<MatchCreateInput[] | MatchCreateInput>;
+  update?: Maybe<
+    | MatchUpdateWithWhereUniqueNestedInput[]
+    | MatchUpdateWithWhereUniqueNestedInput
+  >;
+  upsert?: Maybe<
+    | MatchUpsertWithWhereUniqueNestedInput[]
+    | MatchUpsertWithWhereUniqueNestedInput
+  >;
+  delete?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
+  connect?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
+  set?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
+  disconnect?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
+  deleteMany?: Maybe<MatchScalarWhereInput[] | MatchScalarWhereInput>;
+  updateMany?: Maybe<
+    MatchUpdateManyWithWhereNestedInput[] | MatchUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface FormCreateWithoutCreatedByInput {
+  id?: Maybe<ID_Input>;
+  name: String;
+  players?: Maybe<PlayerCreateManyWithoutFormsInput>;
+}
+
+export interface MatchUpdateWithWhereUniqueNestedInput {
+  where: MatchWhereUniqueInput;
+  data: MatchUpdateDataInput;
+}
+
+export interface PlayerCreateWithoutFormsInput {
+  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
+  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
+  clan: ClanCreateOneWithoutPlayersInput;
+  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
+  familyName: String;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  nickname: String;
+  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundCreateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
+}
+
+export interface MatchUpdateDataInput {
+  assaults?: Maybe<AssaultUpdateManyWithoutMatchInput>;
+  createdBy?: Maybe<UserUpdateOneInput>;
+  duration?: Maybe<Int>;
+  order?: Maybe<Int>;
+  player1?: Maybe<PlayerUpdateOneRequiredInput>;
+  player2?: Maybe<PlayerUpdateOneRequiredInput>;
+  resultPlayer1?: Maybe<Int>;
+  resultPlayer2?: Maybe<Int>;
+}
+
+export interface CardCreateWithoutPlayerInput {
+  assault: AssaultCreateOneWithoutCardsInput;
+  id?: Maybe<ID_Input>;
+  reason?: Maybe<String>;
+  type: CardsType;
+}
+
+export interface AssaultUpdateManyWithoutMatchInput {
+  create?: Maybe<
+    AssaultCreateWithoutMatchInput[] | AssaultCreateWithoutMatchInput
+  >;
+  delete?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
+  connect?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
+  set?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
+  disconnect?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
+  update?: Maybe<
+    | AssaultUpdateWithWhereUniqueWithoutMatchInput[]
+    | AssaultUpdateWithWhereUniqueWithoutMatchInput
+  >;
+  upsert?: Maybe<
+    | AssaultUpsertWithWhereUniqueWithoutMatchInput[]
+    | AssaultUpsertWithWhereUniqueWithoutMatchInput
+  >;
+  deleteMany?: Maybe<AssaultScalarWhereInput[] | AssaultScalarWhereInput>;
+  updateMany?: Maybe<
+    | AssaultUpdateManyWithWhereNestedInput[]
+    | AssaultUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface AssaultCreateWithoutCardsInput {
+  doppio?: Maybe<Boolean>;
+  id?: Maybe<ID_Input>;
+  match?: Maybe<MatchCreateOneWithoutAssaultsInput>;
+  nullo?: Maybe<Boolean>;
+  number: Int;
+  winner?: Maybe<PlayerCreateOneWithoutAssaultsWonInput>;
+}
+
+export interface AssaultUpdateWithWhereUniqueWithoutMatchInput {
+  where: AssaultWhereUniqueInput;
+  data: AssaultUpdateWithoutMatchDataInput;
+}
+
+export interface MatchCreateWithoutAssaultsInput {
+  createdBy?: Maybe<UserCreateOneInput>;
+  duration?: Maybe<Int>;
+  id?: Maybe<ID_Input>;
+  order: Int;
+  player1: PlayerCreateOneInput;
+  player2: PlayerCreateOneInput;
+  resultPlayer1?: Maybe<Int>;
+  resultPlayer2?: Maybe<Int>;
+}
+
+export interface AssaultUpdateWithoutMatchDataInput {
+  cards?: Maybe<CardUpdateManyWithoutAssaultInput>;
+  doppio?: Maybe<Boolean>;
+  nullo?: Maybe<Boolean>;
+  number?: Maybe<Int>;
+  winner?: Maybe<PlayerUpdateOneWithoutAssaultsWonInput>;
+}
+
+export interface UserCreateInput {
+  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
+  email: String;
+  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  password: String;
+  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundCreateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
+}
+
+export interface PlayerUpdateOneWithoutAssaultsWonInput {
+  create?: Maybe<PlayerCreateWithoutAssaultsWonInput>;
+  update?: Maybe<PlayerUpdateWithoutAssaultsWonDataInput>;
+  upsert?: Maybe<PlayerUpsertWithoutAssaultsWonInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
   connect?: Maybe<PlayerWhereUniqueInput>;
+}
+
+export interface PlayerCreateWithoutCreatedByInput {
+  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
+  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
+  clan: ClanCreateOneWithoutPlayersInput;
+  familyName: String;
+  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  nickname: String;
+  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundCreateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
+}
+
+export interface PlayerUpdateWithoutAssaultsWonDataInput {
+  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
+  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
+  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
+  familyName?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  nickname?: Maybe<String>;
+  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
+}
+
+export interface FormCreateWithoutPlayersInput {
+  createdBy?: Maybe<UserCreateOneWithoutFormsInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+}
+
+export interface UserUpdateOneWithoutPlayersInput {
+  create?: Maybe<UserCreateWithoutPlayersInput>;
+  update?: Maybe<UserUpdateWithoutPlayersDataInput>;
+  upsert?: Maybe<UserUpsertWithoutPlayersInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface UserCreateWithoutFormsInput {
+  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
+  email: String;
+  id?: Maybe<ID_Input>;
+  name: String;
+  password: String;
+  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundCreateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
+}
+
+export interface UserUpdateWithoutPlayersDataInput {
+  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
+  email?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
+  name?: Maybe<String>;
+  password?: Maybe<String>;
+  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
+}
+
+export interface PouleCreateWithoutCreatedByInput {
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  players?: Maybe<PlayerCreateManyWithoutPoulesInput>;
+  tournament: TournamentCreateOneWithoutPoulesInput;
+}
+
+export interface RoundUpdateManyWithoutCreatedByInput {
+  create?: Maybe<
+    RoundCreateWithoutCreatedByInput[] | RoundCreateWithoutCreatedByInput
+  >;
+  delete?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+  connect?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+  set?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+  disconnect?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+  update?: Maybe<
+    | RoundUpdateWithWhereUniqueWithoutCreatedByInput[]
+    | RoundUpdateWithWhereUniqueWithoutCreatedByInput
+  >;
+  upsert?: Maybe<
+    | RoundUpsertWithWhereUniqueWithoutCreatedByInput[]
+    | RoundUpsertWithWhereUniqueWithoutCreatedByInput
+  >;
+  deleteMany?: Maybe<RoundScalarWhereInput[] | RoundScalarWhereInput>;
+  updateMany?: Maybe<
+    RoundUpdateManyWithWhereNestedInput[] | RoundUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface MatchCreateInput {
+  assaults?: Maybe<AssaultCreateManyWithoutMatchInput>;
+  createdBy?: Maybe<UserCreateOneInput>;
+  duration?: Maybe<Int>;
+  id?: Maybe<ID_Input>;
+  order: Int;
+  player1: PlayerCreateOneInput;
+  player2: PlayerCreateOneInput;
+  resultPlayer1?: Maybe<Int>;
+  resultPlayer2?: Maybe<Int>;
+}
+
+export interface RoundUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: RoundWhereUniqueInput;
+  data: RoundUpdateWithoutCreatedByDataInput;
+}
+
+export interface AssaultCreateWithoutMatchInput {
+  cards?: Maybe<CardCreateManyWithoutAssaultInput>;
+  doppio?: Maybe<Boolean>;
+  id?: Maybe<ID_Input>;
+  nullo?: Maybe<Boolean>;
+  number: Int;
+  winner?: Maybe<PlayerCreateOneWithoutAssaultsWonInput>;
+}
+
+export interface RoundUpdateWithoutCreatedByDataInput {
+  matches?: Maybe<MatchUpdateManyInput>;
+  players?: Maybe<PlayerUpdateManyWithoutRoundsInput>;
+  roundType?: Maybe<RoundsType>;
+  tournament?: Maybe<TournamentUpdateOneRequiredWithoutRoundsInput>;
+}
+
+export interface PlayerCreateWithoutAssaultsWonInput {
+  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
+  clan: ClanCreateOneWithoutPlayersInput;
+  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
+  familyName: String;
+  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  nickname: String;
+  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundCreateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
+}
+
+export interface PlayerUpdateManyWithoutRoundsInput {
+  create?: Maybe<
+    PlayerCreateWithoutRoundsInput[] | PlayerCreateWithoutRoundsInput
+  >;
+  delete?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  set?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  disconnect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  update?: Maybe<
+    | PlayerUpdateWithWhereUniqueWithoutRoundsInput[]
+    | PlayerUpdateWithWhereUniqueWithoutRoundsInput
+  >;
+  upsert?: Maybe<
+    | PlayerUpsertWithWhereUniqueWithoutRoundsInput[]
+    | PlayerUpsertWithWhereUniqueWithoutRoundsInput
+  >;
+  deleteMany?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
+  updateMany?: Maybe<
+    | PlayerUpdateManyWithWhereNestedInput[]
+    | PlayerUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface UserCreateWithoutPlayersInput {
+  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
+  email: String;
+  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  password: String;
+  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundCreateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
+}
+
+export interface PlayerUpdateWithWhereUniqueWithoutRoundsInput {
+  where: PlayerWhereUniqueInput;
+  data: PlayerUpdateWithoutRoundsDataInput;
+}
+
+export interface RoundCreateWithoutCreatedByInput {
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  players?: Maybe<PlayerCreateManyWithoutRoundsInput>;
+  roundType: RoundsType;
+  tournament: TournamentCreateOneWithoutRoundsInput;
+}
+
+export interface PlayerUpdateWithoutRoundsDataInput {
+  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
+  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
+  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
+  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
+  familyName?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  nickname?: Maybe<String>;
+  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
+}
+
+export interface PlayerCreateWithoutRoundsInput {
+  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
+  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
+  clan: ClanCreateOneWithoutPlayersInput;
+  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
+  familyName: String;
+  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  nickname: String;
+  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
+}
+
+export interface PouleUpdateManyWithoutPlayersInput {
+  create?: Maybe<
+    PouleCreateWithoutPlayersInput[] | PouleCreateWithoutPlayersInput
+  >;
+  delete?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  connect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  set?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  disconnect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  update?: Maybe<
+    | PouleUpdateWithWhereUniqueWithoutPlayersInput[]
+    | PouleUpdateWithWhereUniqueWithoutPlayersInput
+  >;
+  upsert?: Maybe<
+    | PouleUpsertWithWhereUniqueWithoutPlayersInput[]
+    | PouleUpsertWithWhereUniqueWithoutPlayersInput
+  >;
+  deleteMany?: Maybe<PouleScalarWhereInput[] | PouleScalarWhereInput>;
+  updateMany?: Maybe<
+    PouleUpdateManyWithWhereNestedInput[] | PouleUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface PouleCreateWithoutPlayersInput {
+  createdBy?: Maybe<UserCreateOneWithoutPoulesInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  tournament: TournamentCreateOneWithoutPoulesInput;
+}
+
+export interface PouleUpdateWithWhereUniqueWithoutPlayersInput {
+  where: PouleWhereUniqueInput;
+  data: PouleUpdateWithoutPlayersDataInput;
+}
+
+export interface UserCreateWithoutPoulesInput {
+  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
+  email: String;
+  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  password: String;
+  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundCreateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
+}
+
+export interface PouleUpdateWithoutPlayersDataInput {
+  createdBy?: Maybe<UserUpdateOneWithoutPoulesInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  tournament?: Maybe<TournamentUpdateOneRequiredWithoutPoulesInput>;
+}
+
+export interface SchoolCreateWithoutCreatedByInput {
+  academy: AcademyCreateOneWithoutSchoolsInput;
+  clans?: Maybe<ClanCreateManyWithoutSchoolInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+}
+
+export interface UserUpdateOneWithoutPoulesInput {
+  create?: Maybe<UserCreateWithoutPoulesInput>;
+  update?: Maybe<UserUpdateWithoutPoulesDataInput>;
+  upsert?: Maybe<UserUpsertWithoutPoulesInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface AcademyCreateWithoutSchoolsInput {
+  country: String;
+  createdBy?: Maybe<UserCreateOneWithoutAcademiesInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+}
+
+export interface UserUpdateWithoutPoulesDataInput {
+  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
+  email?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
+  name?: Maybe<String>;
+  password?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
+}
+
+export interface TournamentCreateWithoutCreatedByInput {
+  id?: Maybe<ID_Input>;
+  name: String;
+  players?: Maybe<PlayerCreateManyWithoutTournamentsInput>;
+  poulesType: PoulesType;
+  poules?: Maybe<PouleCreateManyWithoutTournamentInput>;
+  rounds?: Maybe<RoundCreateManyWithoutTournamentInput>;
+}
+
+export interface SchoolUpdateManyWithoutCreatedByInput {
+  create?: Maybe<
+    SchoolCreateWithoutCreatedByInput[] | SchoolCreateWithoutCreatedByInput
+  >;
+  delete?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
+  connect?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
+  set?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
+  disconnect?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
+  update?: Maybe<
+    | SchoolUpdateWithWhereUniqueWithoutCreatedByInput[]
+    | SchoolUpdateWithWhereUniqueWithoutCreatedByInput
+  >;
+  upsert?: Maybe<
+    | SchoolUpsertWithWhereUniqueWithoutCreatedByInput[]
+    | SchoolUpsertWithWhereUniqueWithoutCreatedByInput
+  >;
+  deleteMany?: Maybe<SchoolScalarWhereInput[] | SchoolScalarWhereInput>;
+  updateMany?: Maybe<
+    | SchoolUpdateManyWithWhereNestedInput[]
+    | SchoolUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface PlayerCreateWithoutTournamentsInput {
+  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
+  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
+  clan: ClanCreateOneWithoutPlayersInput;
+  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
+  familyName: String;
+  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  nickname: String;
+  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundCreateManyWithoutPlayersInput>;
+}
+
+export interface SchoolUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: SchoolWhereUniqueInput;
+  data: SchoolUpdateWithoutCreatedByDataInput;
+}
+
+export interface RoundCreateWithoutPlayersInput {
+  createdBy?: Maybe<UserCreateOneWithoutRoundsInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  roundType: RoundsType;
+  tournament: TournamentCreateOneWithoutRoundsInput;
+}
+
+export interface SchoolUpdateWithoutCreatedByDataInput {
+  academy?: Maybe<AcademyUpdateOneRequiredWithoutSchoolsInput>;
+  clans?: Maybe<ClanUpdateManyWithoutSchoolInput>;
+  name?: Maybe<String>;
+}
+
+export interface UserCreateWithoutRoundsInput {
+  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
+  email: String;
+  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  password: String;
+  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
+}
+
+export interface AcademyUpdateOneRequiredWithoutSchoolsInput {
+  create?: Maybe<AcademyCreateWithoutSchoolsInput>;
+  update?: Maybe<AcademyUpdateWithoutSchoolsDataInput>;
+  upsert?: Maybe<AcademyUpsertWithoutSchoolsInput>;
+  connect?: Maybe<AcademyWhereUniqueInput>;
+}
+
+export interface TournamentCreateWithoutRoundsInput {
+  createdBy?: Maybe<UserCreateOneWithoutTournamentsInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  players?: Maybe<PlayerCreateManyWithoutTournamentsInput>;
+  poulesType: PoulesType;
+  poules?: Maybe<PouleCreateManyWithoutTournamentInput>;
+}
+
+export interface AcademyUpdateWithoutSchoolsDataInput {
+  country?: Maybe<String>;
+  createdBy?: Maybe<UserUpdateOneWithoutAcademiesInput>;
+  name?: Maybe<String>;
+}
+
+export interface UserCreateWithoutTournamentsInput {
+  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
+  email: String;
+  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  password: String;
+  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundCreateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
+}
+
+export interface AcademyUpsertWithoutSchoolsInput {
+  update: AcademyUpdateWithoutSchoolsDataInput;
+  create: AcademyCreateWithoutSchoolsInput;
+}
+
+export interface PouleCreateWithoutTournamentInput {
+  createdBy?: Maybe<UserCreateOneWithoutPoulesInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  players?: Maybe<PlayerCreateManyWithoutPoulesInput>;
+}
+
+export interface SchoolUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: SchoolWhereUniqueInput;
+  update: SchoolUpdateWithoutCreatedByDataInput;
+  create: SchoolCreateWithoutCreatedByInput;
+}
+
+export interface PlayerCreateWithoutPoulesInput {
+  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
+  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
+  clan: ClanCreateOneWithoutPlayersInput;
+  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
+  familyName: String;
+  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  nickname: String;
+  rounds?: Maybe<RoundCreateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
+}
+
+export interface SchoolScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  AND?: Maybe<SchoolScalarWhereInput[] | SchoolScalarWhereInput>;
+  OR?: Maybe<SchoolScalarWhereInput[] | SchoolScalarWhereInput>;
+  NOT?: Maybe<SchoolScalarWhereInput[] | SchoolScalarWhereInput>;
+}
+
+export interface TournamentCreateWithoutPlayersInput {
+  createdBy?: Maybe<UserCreateOneWithoutTournamentsInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  poulesType: PoulesType;
+  poules?: Maybe<PouleCreateManyWithoutTournamentInput>;
+  rounds?: Maybe<RoundCreateManyWithoutTournamentInput>;
+}
+
+export interface SchoolUpdateManyWithWhereNestedInput {
+  where: SchoolScalarWhereInput;
+  data: SchoolUpdateManyDataInput;
+}
+
+export interface RoundCreateWithoutTournamentInput {
+  createdBy?: Maybe<UserCreateOneWithoutRoundsInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  players?: Maybe<PlayerCreateManyWithoutRoundsInput>;
+  roundType: RoundsType;
+}
+
+export interface SchoolUpdateManyDataInput {
+  name?: Maybe<String>;
+}
+
+export interface TournamentCreateWithoutPoulesInput {
+  createdBy?: Maybe<UserCreateOneWithoutTournamentsInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  players?: Maybe<PlayerCreateManyWithoutTournamentsInput>;
+  poulesType: PoulesType;
+  rounds?: Maybe<RoundCreateManyWithoutTournamentInput>;
+}
+
+export interface TournamentUpdateManyWithoutCreatedByInput {
+  create?: Maybe<
+    | TournamentCreateWithoutCreatedByInput[]
+    | TournamentCreateWithoutCreatedByInput
+  >;
+  delete?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
+  connect?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
+  set?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
+  disconnect?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
+  update?: Maybe<
+    | TournamentUpdateWithWhereUniqueWithoutCreatedByInput[]
+    | TournamentUpdateWithWhereUniqueWithoutCreatedByInput
+  >;
+  upsert?: Maybe<
+    | TournamentUpsertWithWhereUniqueWithoutCreatedByInput[]
+    | TournamentUpsertWithWhereUniqueWithoutCreatedByInput
+  >;
+  deleteMany?: Maybe<TournamentScalarWhereInput[] | TournamentScalarWhereInput>;
+  updateMany?: Maybe<
+    | TournamentUpdateManyWithWhereNestedInput[]
+    | TournamentUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface PlayerCreateInput {
+  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
+  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
+  clan: ClanCreateOneWithoutPlayersInput;
+  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
+  familyName: String;
+  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
+  id?: Maybe<ID_Input>;
+  matches?: Maybe<MatchCreateManyInput>;
+  name: String;
+  nickname: String;
+  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundCreateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
+}
+
+export interface TournamentUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: TournamentWhereUniqueInput;
+  data: TournamentUpdateWithoutCreatedByDataInput;
+}
+
+export interface SchoolCreateWithoutClansInput {
+  academy: AcademyCreateOneWithoutSchoolsInput;
+  createdBy?: Maybe<UserCreateOneWithoutSchoolsInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+}
+
+export interface TournamentUpdateWithoutCreatedByDataInput {
+  name?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutTournamentsInput>;
+  poulesType?: Maybe<PoulesType>;
+  poules?: Maybe<PouleUpdateManyWithoutTournamentInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutTournamentInput>;
+}
+
+export interface UserUpdateOneWithoutAcademiesInput {
+  create?: Maybe<UserCreateWithoutAcademiesInput>;
+  update?: Maybe<UserUpdateWithoutAcademiesDataInput>;
+  upsert?: Maybe<UserUpsertWithoutAcademiesInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface PlayerUpdateManyWithoutTournamentsInput {
+  create?: Maybe<
+    PlayerCreateWithoutTournamentsInput[] | PlayerCreateWithoutTournamentsInput
+  >;
+  delete?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  set?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  disconnect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  update?: Maybe<
+    | PlayerUpdateWithWhereUniqueWithoutTournamentsInput[]
+    | PlayerUpdateWithWhereUniqueWithoutTournamentsInput
+  >;
+  upsert?: Maybe<
+    | PlayerUpsertWithWhereUniqueWithoutTournamentsInput[]
+    | PlayerUpsertWithWhereUniqueWithoutTournamentsInput
+  >;
+  deleteMany?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
+  updateMany?: Maybe<
+    | PlayerUpdateManyWithWhereNestedInput[]
+    | PlayerUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface ClanUpdateManyWithoutCreatedByInput {
+  create?: Maybe<
+    ClanCreateWithoutCreatedByInput[] | ClanCreateWithoutCreatedByInput
+  >;
+  delete?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
+  connect?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
+  set?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
+  disconnect?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
+  update?: Maybe<
+    | ClanUpdateWithWhereUniqueWithoutCreatedByInput[]
+    | ClanUpdateWithWhereUniqueWithoutCreatedByInput
+  >;
+  upsert?: Maybe<
+    | ClanUpsertWithWhereUniqueWithoutCreatedByInput[]
+    | ClanUpsertWithWhereUniqueWithoutCreatedByInput
+  >;
+  deleteMany?: Maybe<ClanScalarWhereInput[] | ClanScalarWhereInput>;
+  updateMany?: Maybe<
+    ClanUpdateManyWithWhereNestedInput[] | ClanUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface PlayerUpdateWithWhereUniqueWithoutTournamentsInput {
+  where: PlayerWhereUniqueInput;
+  data: PlayerUpdateWithoutTournamentsDataInput;
+}
+
+export interface ClanUpdateWithoutCreatedByDataInput {
+  name?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutClanInput>;
+  school?: Maybe<SchoolUpdateOneRequiredWithoutClansInput>;
+}
+
+export interface PlayerUpdateWithoutTournamentsDataInput {
+  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
+  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
+  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
+  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
+  familyName?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  nickname?: Maybe<String>;
+  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutPlayersInput>;
+}
+
+export interface PlayerUpdateWithWhereUniqueWithoutClanInput {
+  where: PlayerWhereUniqueInput;
+  data: PlayerUpdateWithoutClanDataInput;
+}
+
+export interface RoundUpdateManyWithoutPlayersInput {
+  create?: Maybe<
+    RoundCreateWithoutPlayersInput[] | RoundCreateWithoutPlayersInput
+  >;
+  delete?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+  connect?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+  set?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+  disconnect?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+  update?: Maybe<
+    | RoundUpdateWithWhereUniqueWithoutPlayersInput[]
+    | RoundUpdateWithWhereUniqueWithoutPlayersInput
+  >;
+  upsert?: Maybe<
+    | RoundUpsertWithWhereUniqueWithoutPlayersInput[]
+    | RoundUpsertWithWhereUniqueWithoutPlayersInput
+  >;
+  deleteMany?: Maybe<RoundScalarWhereInput[] | RoundScalarWhereInput>;
+  updateMany?: Maybe<
+    RoundUpdateManyWithWhereNestedInput[] | RoundUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface AssaultUpdateManyWithoutWinnerInput {
+  create?: Maybe<
+    AssaultCreateWithoutWinnerInput[] | AssaultCreateWithoutWinnerInput
+  >;
+  delete?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
+  connect?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
+  set?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
+  disconnect?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
+  update?: Maybe<
+    | AssaultUpdateWithWhereUniqueWithoutWinnerInput[]
+    | AssaultUpdateWithWhereUniqueWithoutWinnerInput
+  >;
+  upsert?: Maybe<
+    | AssaultUpsertWithWhereUniqueWithoutWinnerInput[]
+    | AssaultUpsertWithWhereUniqueWithoutWinnerInput
+  >;
+  deleteMany?: Maybe<AssaultScalarWhereInput[] | AssaultScalarWhereInput>;
+  updateMany?: Maybe<
+    | AssaultUpdateManyWithWhereNestedInput[]
+    | AssaultUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface RoundUpdateWithWhereUniqueWithoutPlayersInput {
+  where: RoundWhereUniqueInput;
+  data: RoundUpdateWithoutPlayersDataInput;
+}
+
+export interface AssaultUpdateWithoutWinnerDataInput {
+  cards?: Maybe<CardUpdateManyWithoutAssaultInput>;
+  doppio?: Maybe<Boolean>;
+  match?: Maybe<MatchUpdateOneWithoutAssaultsInput>;
+  nullo?: Maybe<Boolean>;
+  number?: Maybe<Int>;
+}
+
+export interface RoundUpdateWithoutPlayersDataInput {
+  createdBy?: Maybe<UserUpdateOneWithoutRoundsInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  roundType?: Maybe<RoundsType>;
+  tournament?: Maybe<TournamentUpdateOneRequiredWithoutRoundsInput>;
+}
+
+export interface CardUpdateWithWhereUniqueWithoutAssaultInput {
+  where: CardWhereUniqueInput;
+  data: CardUpdateWithoutAssaultDataInput;
+}
+
+export interface UserUpdateOneWithoutRoundsInput {
+  create?: Maybe<UserCreateWithoutRoundsInput>;
+  update?: Maybe<UserUpdateWithoutRoundsDataInput>;
+  upsert?: Maybe<UserUpsertWithoutRoundsInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface SchoolSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<SchoolWhereInput>;
+  AND?: Maybe<SchoolSubscriptionWhereInput[] | SchoolSubscriptionWhereInput>;
+  OR?: Maybe<SchoolSubscriptionWhereInput[] | SchoolSubscriptionWhereInput>;
+  NOT?: Maybe<SchoolSubscriptionWhereInput[] | SchoolSubscriptionWhereInput>;
+}
+
+export interface UserUpdateWithoutRoundsDataInput {
+  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
+  email?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
+  name?: Maybe<String>;
+  password?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
 }
 
 export interface AssaultWhereInput {
@@ -854,17 +2838,9 @@ export interface AssaultWhereInput {
   NOT?: Maybe<AssaultWhereInput[] | AssaultWhereInput>;
 }
 
-export interface PlayerUpdateWithoutCardsDataInput {
-  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
-  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
-  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
-  familyName?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
-  matches?: Maybe<MatchUpdateManyInput>;
-  name?: Maybe<String>;
-  nickname?: Maybe<String>;
-  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
+export interface UserUpsertWithoutRoundsInput {
+  update: UserUpdateWithoutRoundsDataInput;
+  create: UserCreateWithoutRoundsInput;
 }
 
 export interface MatchSubscriptionWhereInput {
@@ -878,11 +2854,1400 @@ export interface MatchSubscriptionWhereInput {
   NOT?: Maybe<MatchSubscriptionWhereInput[] | MatchSubscriptionWhereInput>;
 }
 
-export interface ClanUpdateOneRequiredWithoutPlayersInput {
+export interface TournamentUpdateOneRequiredWithoutRoundsInput {
+  create?: Maybe<TournamentCreateWithoutRoundsInput>;
+  update?: Maybe<TournamentUpdateWithoutRoundsDataInput>;
+  upsert?: Maybe<TournamentUpsertWithoutRoundsInput>;
+  connect?: Maybe<TournamentWhereUniqueInput>;
+}
+
+export interface AcademyWhereInput {
+  country?: Maybe<String>;
+  country_not?: Maybe<String>;
+  country_in?: Maybe<String[] | String>;
+  country_not_in?: Maybe<String[] | String>;
+  country_lt?: Maybe<String>;
+  country_lte?: Maybe<String>;
+  country_gt?: Maybe<String>;
+  country_gte?: Maybe<String>;
+  country_contains?: Maybe<String>;
+  country_not_contains?: Maybe<String>;
+  country_starts_with?: Maybe<String>;
+  country_not_starts_with?: Maybe<String>;
+  country_ends_with?: Maybe<String>;
+  country_not_ends_with?: Maybe<String>;
+  createdBy?: Maybe<UserWhereInput>;
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  schools_every?: Maybe<SchoolWhereInput>;
+  schools_some?: Maybe<SchoolWhereInput>;
+  schools_none?: Maybe<SchoolWhereInput>;
+  AND?: Maybe<AcademyWhereInput[] | AcademyWhereInput>;
+  OR?: Maybe<AcademyWhereInput[] | AcademyWhereInput>;
+  NOT?: Maybe<AcademyWhereInput[] | AcademyWhereInput>;
+}
+
+export interface TournamentUpdateWithoutRoundsDataInput {
+  createdBy?: Maybe<UserUpdateOneWithoutTournamentsInput>;
+  name?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutTournamentsInput>;
+  poulesType?: Maybe<PoulesType>;
+  poules?: Maybe<PouleUpdateManyWithoutTournamentInput>;
+}
+
+export interface UserUpdateManyMutationInput {
+  email?: Maybe<String>;
+  name?: Maybe<String>;
+  password?: Maybe<String>;
+}
+
+export interface UserUpdateOneWithoutTournamentsInput {
+  create?: Maybe<UserCreateWithoutTournamentsInput>;
+  update?: Maybe<UserUpdateWithoutTournamentsDataInput>;
+  upsert?: Maybe<UserUpsertWithoutTournamentsInput>;
+  delete?: Maybe<Boolean>;
+  disconnect?: Maybe<Boolean>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface TournamentUpdateInput {
+  createdBy?: Maybe<UserUpdateOneWithoutTournamentsInput>;
+  name?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutTournamentsInput>;
+  poulesType?: Maybe<PoulesType>;
+  poules?: Maybe<PouleUpdateManyWithoutTournamentInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutTournamentInput>;
+}
+
+export interface UserUpdateWithoutTournamentsDataInput {
+  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
+  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
+  email?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
+  name?: Maybe<String>;
+  password?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
+}
+
+export interface SchoolUpdateInput {
+  academy?: Maybe<AcademyUpdateOneRequiredWithoutSchoolsInput>;
+  clans?: Maybe<ClanUpdateManyWithoutSchoolInput>;
+  createdBy?: Maybe<UserUpdateOneWithoutSchoolsInput>;
+  name?: Maybe<String>;
+}
+
+export interface UserUpsertWithoutTournamentsInput {
+  update: UserUpdateWithoutTournamentsDataInput;
+  create: UserCreateWithoutTournamentsInput;
+}
+
+export interface RoundUpdateInput {
+  createdBy?: Maybe<UserUpdateOneWithoutRoundsInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  players?: Maybe<PlayerUpdateManyWithoutRoundsInput>;
+  roundType?: Maybe<RoundsType>;
+  tournament?: Maybe<TournamentUpdateOneRequiredWithoutRoundsInput>;
+}
+
+export interface PouleUpdateManyWithoutTournamentInput {
+  create?: Maybe<
+    PouleCreateWithoutTournamentInput[] | PouleCreateWithoutTournamentInput
+  >;
+  delete?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  connect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  set?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  disconnect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  update?: Maybe<
+    | PouleUpdateWithWhereUniqueWithoutTournamentInput[]
+    | PouleUpdateWithWhereUniqueWithoutTournamentInput
+  >;
+  upsert?: Maybe<
+    | PouleUpsertWithWhereUniqueWithoutTournamentInput[]
+    | PouleUpsertWithWhereUniqueWithoutTournamentInput
+  >;
+  deleteMany?: Maybe<PouleScalarWhereInput[] | PouleScalarWhereInput>;
+  updateMany?: Maybe<
+    PouleUpdateManyWithWhereNestedInput[] | PouleUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface PouleUpdateInput {
+  createdBy?: Maybe<UserUpdateOneWithoutPoulesInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutPoulesInput>;
+  tournament?: Maybe<TournamentUpdateOneRequiredWithoutPoulesInput>;
+}
+
+export interface PouleUpdateWithWhereUniqueWithoutTournamentInput {
+  where: PouleWhereUniqueInput;
+  data: PouleUpdateWithoutTournamentDataInput;
+}
+
+export interface PlayerUpdateInput {
+  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
+  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
+  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
+  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
+  familyName?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  nickname?: Maybe<String>;
+  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
+}
+
+export interface PouleUpdateWithoutTournamentDataInput {
+  createdBy?: Maybe<UserUpdateOneWithoutPoulesInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutPoulesInput>;
+}
+
+export interface FormUpdateManyMutationInput {
+  name?: Maybe<String>;
+}
+
+export interface PlayerUpdateManyWithoutPoulesInput {
+  create?: Maybe<
+    PlayerCreateWithoutPoulesInput[] | PlayerCreateWithoutPoulesInput
+  >;
+  delete?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  set?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  disconnect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  update?: Maybe<
+    | PlayerUpdateWithWhereUniqueWithoutPoulesInput[]
+    | PlayerUpdateWithWhereUniqueWithoutPoulesInput
+  >;
+  upsert?: Maybe<
+    | PlayerUpsertWithWhereUniqueWithoutPoulesInput[]
+    | PlayerUpsertWithWhereUniqueWithoutPoulesInput
+  >;
+  deleteMany?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
+  updateMany?: Maybe<
+    | PlayerUpdateManyWithWhereNestedInput[]
+    | PlayerUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface ClanUpdateManyMutationInput {
+  name?: Maybe<String>;
+}
+
+export interface PlayerUpdateWithWhereUniqueWithoutPoulesInput {
+  where: PlayerWhereUniqueInput;
+  data: PlayerUpdateWithoutPoulesDataInput;
+}
+
+export interface CardUpdateManyMutationInput {
+  reason?: Maybe<String>;
+  type?: Maybe<CardsType>;
+}
+
+export interface PlayerUpdateWithoutPoulesDataInput {
+  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
+  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
+  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
+  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
+  familyName?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  nickname?: Maybe<String>;
+  rounds?: Maybe<RoundUpdateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
+}
+
+export interface AssaultUpdateManyMutationInput {
+  doppio?: Maybe<Boolean>;
+  nullo?: Maybe<Boolean>;
+  number?: Maybe<Int>;
+}
+
+export interface TournamentUpdateManyWithoutPlayersInput {
+  create?: Maybe<
+    TournamentCreateWithoutPlayersInput[] | TournamentCreateWithoutPlayersInput
+  >;
+  delete?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
+  connect?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
+  set?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
+  disconnect?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
+  update?: Maybe<
+    | TournamentUpdateWithWhereUniqueWithoutPlayersInput[]
+    | TournamentUpdateWithWhereUniqueWithoutPlayersInput
+  >;
+  upsert?: Maybe<
+    | TournamentUpsertWithWhereUniqueWithoutPlayersInput[]
+    | TournamentUpsertWithWhereUniqueWithoutPlayersInput
+  >;
+  deleteMany?: Maybe<TournamentScalarWhereInput[] | TournamentScalarWhereInput>;
+  updateMany?: Maybe<
+    | TournamentUpdateManyWithWhereNestedInput[]
+    | TournamentUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface AcademyUpdateManyMutationInput {
+  country?: Maybe<String>;
+  name?: Maybe<String>;
+}
+
+export interface TournamentUpdateWithWhereUniqueWithoutPlayersInput {
+  where: TournamentWhereUniqueInput;
+  data: TournamentUpdateWithoutPlayersDataInput;
+}
+
+export interface PlayerUpsertWithWhereUniqueWithoutClanInput {
+  where: PlayerWhereUniqueInput;
+  update: PlayerUpdateWithoutClanDataInput;
+  create: PlayerCreateWithoutClanInput;
+}
+
+export interface TournamentUpdateWithoutPlayersDataInput {
+  createdBy?: Maybe<UserUpdateOneWithoutTournamentsInput>;
+  name?: Maybe<String>;
+  poulesType?: Maybe<PoulesType>;
+  poules?: Maybe<PouleUpdateManyWithoutTournamentInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutTournamentInput>;
+}
+
+export interface ClanCreateManyWithoutCreatedByInput {
+  create?: Maybe<
+    ClanCreateWithoutCreatedByInput[] | ClanCreateWithoutCreatedByInput
+  >;
+  connect?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
+}
+
+export interface RoundUpdateManyWithoutTournamentInput {
+  create?: Maybe<
+    RoundCreateWithoutTournamentInput[] | RoundCreateWithoutTournamentInput
+  >;
+  delete?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+  connect?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+  set?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+  disconnect?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+  update?: Maybe<
+    | RoundUpdateWithWhereUniqueWithoutTournamentInput[]
+    | RoundUpdateWithWhereUniqueWithoutTournamentInput
+  >;
+  upsert?: Maybe<
+    | RoundUpsertWithWhereUniqueWithoutTournamentInput[]
+    | RoundUpsertWithWhereUniqueWithoutTournamentInput
+  >;
+  deleteMany?: Maybe<RoundScalarWhereInput[] | RoundScalarWhereInput>;
+  updateMany?: Maybe<
+    RoundUpdateManyWithWhereNestedInput[] | RoundUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface AssaultCreateManyWithoutWinnerInput {
+  create?: Maybe<
+    AssaultCreateWithoutWinnerInput[] | AssaultCreateWithoutWinnerInput
+  >;
+  connect?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
+}
+
+export interface RoundUpdateWithWhereUniqueWithoutTournamentInput {
+  where: RoundWhereUniqueInput;
+  data: RoundUpdateWithoutTournamentDataInput;
+}
+
+export interface PlayerCreateOneWithoutCardsInput {
+  create?: Maybe<PlayerCreateWithoutCardsInput>;
+  connect?: Maybe<PlayerWhereUniqueInput>;
+}
+
+export interface RoundUpdateWithoutTournamentDataInput {
+  createdBy?: Maybe<UserUpdateOneWithoutRoundsInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  players?: Maybe<PlayerUpdateManyWithoutRoundsInput>;
+  roundType?: Maybe<RoundsType>;
+}
+
+export interface UserCreateOneWithoutClansInput {
+  create?: Maybe<UserCreateWithoutClansInput>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface RoundUpsertWithWhereUniqueWithoutTournamentInput {
+  where: RoundWhereUniqueInput;
+  update: RoundUpdateWithoutTournamentDataInput;
+  create: RoundCreateWithoutTournamentInput;
+}
+
+export interface SchoolCreateManyWithoutAcademyInput {
+  create?: Maybe<
+    SchoolCreateWithoutAcademyInput[] | SchoolCreateWithoutAcademyInput
+  >;
+  connect?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
+}
+
+export interface RoundScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  roundType?: Maybe<RoundsType>;
+  roundType_not?: Maybe<RoundsType>;
+  roundType_in?: Maybe<RoundsType[] | RoundsType>;
+  roundType_not_in?: Maybe<RoundsType[] | RoundsType>;
+  AND?: Maybe<RoundScalarWhereInput[] | RoundScalarWhereInput>;
+  OR?: Maybe<RoundScalarWhereInput[] | RoundScalarWhereInput>;
+  NOT?: Maybe<RoundScalarWhereInput[] | RoundScalarWhereInput>;
+}
+
+export interface UserCreateOneWithoutSchoolsInput {
+  create?: Maybe<UserCreateWithoutSchoolsInput>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface RoundUpdateManyWithWhereNestedInput {
+  where: RoundScalarWhereInput;
+  data: RoundUpdateManyDataInput;
+}
+
+export interface PlayerCreateManyWithoutFormsInput {
+  create?: Maybe<
+    PlayerCreateWithoutFormsInput[] | PlayerCreateWithoutFormsInput
+  >;
+  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+}
+
+export interface RoundUpdateManyDataInput {
+  roundType?: Maybe<RoundsType>;
+}
+
+export interface AssaultCreateOneWithoutCardsInput {
+  create?: Maybe<AssaultCreateWithoutCardsInput>;
+  connect?: Maybe<AssaultWhereUniqueInput>;
+}
+
+export interface TournamentUpsertWithWhereUniqueWithoutPlayersInput {
+  where: TournamentWhereUniqueInput;
+  update: TournamentUpdateWithoutPlayersDataInput;
+  create: TournamentCreateWithoutPlayersInput;
+}
+
+export interface UserCreateOneInput {
+  create?: Maybe<UserCreateInput>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface TournamentScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  poulesType?: Maybe<PoulesType>;
+  poulesType_not?: Maybe<PoulesType>;
+  poulesType_in?: Maybe<PoulesType[] | PoulesType>;
+  poulesType_not_in?: Maybe<PoulesType[] | PoulesType>;
+  AND?: Maybe<TournamentScalarWhereInput[] | TournamentScalarWhereInput>;
+  OR?: Maybe<TournamentScalarWhereInput[] | TournamentScalarWhereInput>;
+  NOT?: Maybe<TournamentScalarWhereInput[] | TournamentScalarWhereInput>;
+}
+
+export interface FormCreateManyWithoutPlayersInput {
+  create?: Maybe<
+    FormCreateWithoutPlayersInput[] | FormCreateWithoutPlayersInput
+  >;
+  connect?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
+}
+
+export interface TournamentUpdateManyWithWhereNestedInput {
+  where: TournamentScalarWhereInput;
+  data: TournamentUpdateManyDataInput;
+}
+
+export interface PouleCreateManyWithoutCreatedByInput {
+  create?: Maybe<
+    PouleCreateWithoutCreatedByInput[] | PouleCreateWithoutCreatedByInput
+  >;
+  connect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+}
+
+export interface TournamentUpdateManyDataInput {
+  name?: Maybe<String>;
+  poulesType?: Maybe<PoulesType>;
+}
+
+export interface AssaultCreateManyWithoutMatchInput {
+  create?: Maybe<
+    AssaultCreateWithoutMatchInput[] | AssaultCreateWithoutMatchInput
+  >;
+  connect?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
+}
+
+export interface PlayerUpsertWithWhereUniqueWithoutPoulesInput {
+  where: PlayerWhereUniqueInput;
+  update: PlayerUpdateWithoutPoulesDataInput;
+  create: PlayerCreateWithoutPoulesInput;
+}
+
+export interface UserCreateOneWithoutPlayersInput {
+  create?: Maybe<UserCreateWithoutPlayersInput>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface PlayerScalarWhereInput {
+  familyName?: Maybe<String>;
+  familyName_not?: Maybe<String>;
+  familyName_in?: Maybe<String[] | String>;
+  familyName_not_in?: Maybe<String[] | String>;
+  familyName_lt?: Maybe<String>;
+  familyName_lte?: Maybe<String>;
+  familyName_gt?: Maybe<String>;
+  familyName_gte?: Maybe<String>;
+  familyName_contains?: Maybe<String>;
+  familyName_not_contains?: Maybe<String>;
+  familyName_starts_with?: Maybe<String>;
+  familyName_not_starts_with?: Maybe<String>;
+  familyName_ends_with?: Maybe<String>;
+  familyName_not_ends_with?: Maybe<String>;
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  nickname?: Maybe<String>;
+  nickname_not?: Maybe<String>;
+  nickname_in?: Maybe<String[] | String>;
+  nickname_not_in?: Maybe<String[] | String>;
+  nickname_lt?: Maybe<String>;
+  nickname_lte?: Maybe<String>;
+  nickname_gt?: Maybe<String>;
+  nickname_gte?: Maybe<String>;
+  nickname_contains?: Maybe<String>;
+  nickname_not_contains?: Maybe<String>;
+  nickname_starts_with?: Maybe<String>;
+  nickname_not_starts_with?: Maybe<String>;
+  nickname_ends_with?: Maybe<String>;
+  nickname_not_ends_with?: Maybe<String>;
+  AND?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
+  OR?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
+  NOT?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
+}
+
+export interface PlayerCreateManyWithoutRoundsInput {
+  create?: Maybe<
+    PlayerCreateWithoutRoundsInput[] | PlayerCreateWithoutRoundsInput
+  >;
+  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+}
+
+export interface PlayerUpdateManyWithWhereNestedInput {
+  where: PlayerScalarWhereInput;
+  data: PlayerUpdateManyDataInput;
+}
+
+export interface UserCreateOneWithoutPoulesInput {
+  create?: Maybe<UserCreateWithoutPoulesInput>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface PlayerUpdateManyDataInput {
+  familyName?: Maybe<String>;
+  name?: Maybe<String>;
+  nickname?: Maybe<String>;
+}
+
+export interface AcademyCreateOneWithoutSchoolsInput {
+  create?: Maybe<AcademyCreateWithoutSchoolsInput>;
+  connect?: Maybe<AcademyWhereUniqueInput>;
+}
+
+export interface PouleUpsertWithWhereUniqueWithoutTournamentInput {
+  where: PouleWhereUniqueInput;
+  update: PouleUpdateWithoutTournamentDataInput;
+  create: PouleCreateWithoutTournamentInput;
+}
+
+export interface PlayerCreateManyWithoutTournamentsInput {
+  create?: Maybe<
+    PlayerCreateWithoutTournamentsInput[] | PlayerCreateWithoutTournamentsInput
+  >;
+  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+}
+
+export interface PouleScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  AND?: Maybe<PouleScalarWhereInput[] | PouleScalarWhereInput>;
+  OR?: Maybe<PouleScalarWhereInput[] | PouleScalarWhereInput>;
+  NOT?: Maybe<PouleScalarWhereInput[] | PouleScalarWhereInput>;
+}
+
+export interface UserCreateOneWithoutRoundsInput {
+  create?: Maybe<UserCreateWithoutRoundsInput>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface PouleUpdateManyWithWhereNestedInput {
+  where: PouleScalarWhereInput;
+  data: PouleUpdateManyDataInput;
+}
+
+export interface UserCreateOneWithoutTournamentsInput {
+  create?: Maybe<UserCreateWithoutTournamentsInput>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface PouleUpdateManyDataInput {
+  name?: Maybe<String>;
+}
+
+export interface PlayerCreateManyWithoutPoulesInput {
+  create?: Maybe<
+    PlayerCreateWithoutPoulesInput[] | PlayerCreateWithoutPoulesInput
+  >;
+  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+}
+
+export interface TournamentUpsertWithoutRoundsInput {
+  update: TournamentUpdateWithoutRoundsDataInput;
+  create: TournamentCreateWithoutRoundsInput;
+}
+
+export interface RoundCreateManyWithoutTournamentInput {
+  create?: Maybe<
+    RoundCreateWithoutTournamentInput[] | RoundCreateWithoutTournamentInput
+  >;
+  connect?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
+}
+
+export interface RoundUpsertWithWhereUniqueWithoutPlayersInput {
+  where: RoundWhereUniqueInput;
+  update: RoundUpdateWithoutPlayersDataInput;
+  create: RoundCreateWithoutPlayersInput;
+}
+
+export interface PlayerCreateOneInput {
+  create?: Maybe<PlayerCreateInput>;
+  connect?: Maybe<PlayerWhereUniqueInput>;
+}
+
+export interface PlayerUpsertWithWhereUniqueWithoutTournamentsInput {
+  where: PlayerWhereUniqueInput;
+  update: PlayerUpdateWithoutTournamentsDataInput;
+  create: PlayerCreateWithoutTournamentsInput;
+}
+
+export interface AcademyUpdateInput {
+  country?: Maybe<String>;
+  createdBy?: Maybe<UserUpdateOneWithoutAcademiesInput>;
+  name?: Maybe<String>;
+  schools?: Maybe<SchoolUpdateManyWithoutAcademyInput>;
+}
+
+export interface TournamentUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: TournamentWhereUniqueInput;
+  update: TournamentUpdateWithoutCreatedByDataInput;
+  create: TournamentCreateWithoutCreatedByInput;
+}
+
+export interface ClanUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: ClanWhereUniqueInput;
+  data: ClanUpdateWithoutCreatedByDataInput;
+}
+
+export interface UserUpsertWithoutPoulesInput {
+  update: UserUpdateWithoutPoulesDataInput;
+  create: UserCreateWithoutPoulesInput;
+}
+
+export interface PlayerUpdateWithoutClanDataInput {
+  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
+  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
+  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
+  familyName?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  nickname?: Maybe<String>;
+  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
+}
+
+export interface TournamentUpdateOneRequiredWithoutPoulesInput {
+  create?: Maybe<TournamentCreateWithoutPoulesInput>;
+  update?: Maybe<TournamentUpdateWithoutPoulesDataInput>;
+  upsert?: Maybe<TournamentUpsertWithoutPoulesInput>;
+  connect?: Maybe<TournamentWhereUniqueInput>;
+}
+
+export interface CardUpdateManyWithoutAssaultInput {
+  create?: Maybe<
+    CardCreateWithoutAssaultInput[] | CardCreateWithoutAssaultInput
+  >;
+  delete?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
+  connect?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
+  set?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
+  disconnect?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
+  update?: Maybe<
+    | CardUpdateWithWhereUniqueWithoutAssaultInput[]
+    | CardUpdateWithWhereUniqueWithoutAssaultInput
+  >;
+  upsert?: Maybe<
+    | CardUpsertWithWhereUniqueWithoutAssaultInput[]
+    | CardUpsertWithWhereUniqueWithoutAssaultInput
+  >;
+  deleteMany?: Maybe<CardScalarWhereInput[] | CardScalarWhereInput>;
+  updateMany?: Maybe<
+    CardUpdateManyWithWhereNestedInput[] | CardUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface TournamentUpdateWithoutPoulesDataInput {
+  createdBy?: Maybe<UserUpdateOneWithoutTournamentsInput>;
+  name?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutTournamentsInput>;
+  poulesType?: Maybe<PoulesType>;
+  rounds?: Maybe<RoundUpdateManyWithoutTournamentInput>;
+}
+
+export interface RoundSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<RoundWhereInput>;
+  AND?: Maybe<RoundSubscriptionWhereInput[] | RoundSubscriptionWhereInput>;
+  OR?: Maybe<RoundSubscriptionWhereInput[] | RoundSubscriptionWhereInput>;
+  NOT?: Maybe<RoundSubscriptionWhereInput[] | RoundSubscriptionWhereInput>;
+}
+
+export interface TournamentUpsertWithoutPoulesInput {
+  update: TournamentUpdateWithoutPoulesDataInput;
+  create: TournamentCreateWithoutPoulesInput;
+}
+
+export interface UserWhereInput {
+  academies_every?: Maybe<AcademyWhereInput>;
+  academies_some?: Maybe<AcademyWhereInput>;
+  academies_none?: Maybe<AcademyWhereInput>;
+  clans_every?: Maybe<ClanWhereInput>;
+  clans_some?: Maybe<ClanWhereInput>;
+  clans_none?: Maybe<ClanWhereInput>;
+  email?: Maybe<String>;
+  email_not?: Maybe<String>;
+  email_in?: Maybe<String[] | String>;
+  email_not_in?: Maybe<String[] | String>;
+  email_lt?: Maybe<String>;
+  email_lte?: Maybe<String>;
+  email_gt?: Maybe<String>;
+  email_gte?: Maybe<String>;
+  email_contains?: Maybe<String>;
+  email_not_contains?: Maybe<String>;
+  email_starts_with?: Maybe<String>;
+  email_not_starts_with?: Maybe<String>;
+  email_ends_with?: Maybe<String>;
+  email_not_ends_with?: Maybe<String>;
+  forms_every?: Maybe<FormWhereInput>;
+  forms_some?: Maybe<FormWhereInput>;
+  forms_none?: Maybe<FormWhereInput>;
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  password?: Maybe<String>;
+  password_not?: Maybe<String>;
+  password_in?: Maybe<String[] | String>;
+  password_not_in?: Maybe<String[] | String>;
+  password_lt?: Maybe<String>;
+  password_lte?: Maybe<String>;
+  password_gt?: Maybe<String>;
+  password_gte?: Maybe<String>;
+  password_contains?: Maybe<String>;
+  password_not_contains?: Maybe<String>;
+  password_starts_with?: Maybe<String>;
+  password_not_starts_with?: Maybe<String>;
+  password_ends_with?: Maybe<String>;
+  password_not_ends_with?: Maybe<String>;
+  players_every?: Maybe<PlayerWhereInput>;
+  players_some?: Maybe<PlayerWhereInput>;
+  players_none?: Maybe<PlayerWhereInput>;
+  poules_every?: Maybe<PouleWhereInput>;
+  poules_some?: Maybe<PouleWhereInput>;
+  poules_none?: Maybe<PouleWhereInput>;
+  rounds_every?: Maybe<RoundWhereInput>;
+  rounds_some?: Maybe<RoundWhereInput>;
+  rounds_none?: Maybe<RoundWhereInput>;
+  schools_every?: Maybe<SchoolWhereInput>;
+  schools_some?: Maybe<SchoolWhereInput>;
+  schools_none?: Maybe<SchoolWhereInput>;
+  tournaments_every?: Maybe<TournamentWhereInput>;
+  tournaments_some?: Maybe<TournamentWhereInput>;
+  tournaments_none?: Maybe<TournamentWhereInput>;
+  AND?: Maybe<UserWhereInput[] | UserWhereInput>;
+  OR?: Maybe<UserWhereInput[] | UserWhereInput>;
+  NOT?: Maybe<UserWhereInput[] | UserWhereInput>;
+}
+
+export interface PouleUpsertWithWhereUniqueWithoutPlayersInput {
+  where: PouleWhereUniqueInput;
+  update: PouleUpdateWithoutPlayersDataInput;
+  create: PouleCreateWithoutPlayersInput;
+}
+
+export interface TournamentUpdateManyMutationInput {
+  name?: Maybe<String>;
+  poulesType?: Maybe<PoulesType>;
+}
+
+export interface PlayerUpsertWithWhereUniqueWithoutRoundsInput {
+  where: PlayerWhereUniqueInput;
+  update: PlayerUpdateWithoutRoundsDataInput;
+  create: PlayerCreateWithoutRoundsInput;
+}
+
+export interface RoundUpdateManyMutationInput {
+  roundType?: Maybe<RoundsType>;
+}
+
+export interface RoundUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: RoundWhereUniqueInput;
+  update: RoundUpdateWithoutCreatedByDataInput;
+  create: RoundCreateWithoutCreatedByInput;
+}
+
+export interface PlayerUpdateManyMutationInput {
+  familyName?: Maybe<String>;
+  name?: Maybe<String>;
+  nickname?: Maybe<String>;
+}
+
+export interface UserUpsertWithoutPlayersInput {
+  update: UserUpdateWithoutPlayersDataInput;
+  create: UserCreateWithoutPlayersInput;
+}
+
+export interface FormCreateInput {
+  createdBy?: Maybe<UserCreateOneWithoutFormsInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  players?: Maybe<PlayerCreateManyWithoutFormsInput>;
+}
+
+export interface PlayerUpsertWithoutAssaultsWonInput {
+  update: PlayerUpdateWithoutAssaultsWonDataInput;
+  create: PlayerCreateWithoutAssaultsWonInput;
+}
+
+export interface CardCreateInput {
+  assault: AssaultCreateOneWithoutCardsInput;
+  id?: Maybe<ID_Input>;
+  reason?: Maybe<String>;
+  type: CardsType;
+  player: PlayerCreateOneWithoutCardsInput;
+}
+
+export interface AssaultUpsertWithWhereUniqueWithoutMatchInput {
+  where: AssaultWhereUniqueInput;
+  update: AssaultUpdateWithoutMatchDataInput;
+  create: AssaultCreateWithoutMatchInput;
+}
+
+export interface ClanUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: ClanWhereUniqueInput;
+  update: ClanUpdateWithoutCreatedByDataInput;
+  create: ClanCreateWithoutCreatedByInput;
+}
+
+export interface AssaultScalarWhereInput {
+  doppio?: Maybe<Boolean>;
+  doppio_not?: Maybe<Boolean>;
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  nullo?: Maybe<Boolean>;
+  nullo_not?: Maybe<Boolean>;
+  number?: Maybe<Int>;
+  number_not?: Maybe<Int>;
+  number_in?: Maybe<Int[] | Int>;
+  number_not_in?: Maybe<Int[] | Int>;
+  number_lt?: Maybe<Int>;
+  number_lte?: Maybe<Int>;
+  number_gt?: Maybe<Int>;
+  number_gte?: Maybe<Int>;
+  AND?: Maybe<AssaultScalarWhereInput[] | AssaultScalarWhereInput>;
+  OR?: Maybe<AssaultScalarWhereInput[] | AssaultScalarWhereInput>;
+  NOT?: Maybe<AssaultScalarWhereInput[] | AssaultScalarWhereInput>;
+}
+
+export interface UserCreateOneWithoutAcademiesInput {
+  create?: Maybe<UserCreateWithoutAcademiesInput>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface AssaultUpdateManyWithWhereNestedInput {
+  where: AssaultScalarWhereInput;
+  data: AssaultUpdateManyDataInput;
+}
+
+export interface CardCreateManyWithoutAssaultInput {
+  create?: Maybe<
+    CardCreateWithoutAssaultInput[] | CardCreateWithoutAssaultInput
+  >;
+  connect?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
+}
+
+export interface AssaultUpdateManyDataInput {
+  doppio?: Maybe<Boolean>;
+  nullo?: Maybe<Boolean>;
+  number?: Maybe<Int>;
+}
+
+export interface AcademyCreateManyWithoutCreatedByInput {
+  create?: Maybe<
+    AcademyCreateWithoutCreatedByInput[] | AcademyCreateWithoutCreatedByInput
+  >;
+  connect?: Maybe<AcademyWhereUniqueInput[] | AcademyWhereUniqueInput>;
+}
+
+export interface PlayerUpdateOneRequiredInput {
+  create?: Maybe<PlayerCreateInput>;
+  update?: Maybe<PlayerUpdateDataInput>;
+  upsert?: Maybe<PlayerUpsertNestedInput>;
+  connect?: Maybe<PlayerWhereUniqueInput>;
+}
+
+export interface FormCreateManyWithoutCreatedByInput {
+  create?: Maybe<
+    FormCreateWithoutCreatedByInput[] | FormCreateWithoutCreatedByInput
+  >;
+  connect?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
+}
+
+export interface PlayerUpdateDataInput {
+  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
+  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
+  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
+  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
+  familyName?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
+  matches?: Maybe<MatchUpdateManyInput>;
+  name?: Maybe<String>;
+  nickname?: Maybe<String>;
+  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutPlayersInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
+}
+
+export interface MatchCreateOneWithoutAssaultsInput {
+  create?: Maybe<MatchCreateWithoutAssaultsInput>;
+  connect?: Maybe<MatchWhereUniqueInput>;
+}
+
+export interface PlayerUpsertNestedInput {
+  update: PlayerUpdateDataInput;
+  create: PlayerCreateInput;
+}
+
+export interface UserCreateOneWithoutFormsInput {
+  create?: Maybe<UserCreateWithoutFormsInput>;
+  connect?: Maybe<UserWhereUniqueInput>;
+}
+
+export interface MatchUpsertWithWhereUniqueNestedInput {
+  where: MatchWhereUniqueInput;
+  update: MatchUpdateDataInput;
+  create: MatchCreateInput;
+}
+
+export interface PlayerCreateOneWithoutAssaultsWonInput {
+  create?: Maybe<PlayerCreateWithoutAssaultsWonInput>;
+  connect?: Maybe<PlayerWhereUniqueInput>;
+}
+
+export interface MatchScalarWhereInput {
+  duration?: Maybe<Int>;
+  duration_not?: Maybe<Int>;
+  duration_in?: Maybe<Int[] | Int>;
+  duration_not_in?: Maybe<Int[] | Int>;
+  duration_lt?: Maybe<Int>;
+  duration_lte?: Maybe<Int>;
+  duration_gt?: Maybe<Int>;
+  duration_gte?: Maybe<Int>;
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  order?: Maybe<Int>;
+  order_not?: Maybe<Int>;
+  order_in?: Maybe<Int[] | Int>;
+  order_not_in?: Maybe<Int[] | Int>;
+  order_lt?: Maybe<Int>;
+  order_lte?: Maybe<Int>;
+  order_gt?: Maybe<Int>;
+  order_gte?: Maybe<Int>;
+  resultPlayer1?: Maybe<Int>;
+  resultPlayer1_not?: Maybe<Int>;
+  resultPlayer1_in?: Maybe<Int[] | Int>;
+  resultPlayer1_not_in?: Maybe<Int[] | Int>;
+  resultPlayer1_lt?: Maybe<Int>;
+  resultPlayer1_lte?: Maybe<Int>;
+  resultPlayer1_gt?: Maybe<Int>;
+  resultPlayer1_gte?: Maybe<Int>;
+  resultPlayer2?: Maybe<Int>;
+  resultPlayer2_not?: Maybe<Int>;
+  resultPlayer2_in?: Maybe<Int[] | Int>;
+  resultPlayer2_not_in?: Maybe<Int[] | Int>;
+  resultPlayer2_lt?: Maybe<Int>;
+  resultPlayer2_lte?: Maybe<Int>;
+  resultPlayer2_gt?: Maybe<Int>;
+  resultPlayer2_gte?: Maybe<Int>;
+  AND?: Maybe<MatchScalarWhereInput[] | MatchScalarWhereInput>;
+  OR?: Maybe<MatchScalarWhereInput[] | MatchScalarWhereInput>;
+  NOT?: Maybe<MatchScalarWhereInput[] | MatchScalarWhereInput>;
+}
+
+export interface PouleCreateManyWithoutPlayersInput {
+  create?: Maybe<
+    PouleCreateWithoutPlayersInput[] | PouleCreateWithoutPlayersInput
+  >;
+  connect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+}
+
+export interface MatchUpdateManyWithWhereNestedInput {
+  where: MatchScalarWhereInput;
+  data: MatchUpdateManyDataInput;
+}
+
+export interface TournamentCreateManyWithoutCreatedByInput {
+  create?: Maybe<
+    | TournamentCreateWithoutCreatedByInput[]
+    | TournamentCreateWithoutCreatedByInput
+  >;
+  connect?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
+}
+
+export interface MatchUpdateManyDataInput {
+  duration?: Maybe<Int>;
+  order?: Maybe<Int>;
+  resultPlayer1?: Maybe<Int>;
+  resultPlayer2?: Maybe<Int>;
+}
+
+export interface TournamentCreateOneWithoutRoundsInput {
+  create?: Maybe<TournamentCreateWithoutRoundsInput>;
+  connect?: Maybe<TournamentWhereUniqueInput>;
+}
+
+export interface PouleUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: PouleWhereUniqueInput;
+  update: PouleUpdateWithoutCreatedByDataInput;
+  create: PouleCreateWithoutCreatedByInput;
+}
+
+export interface TournamentCreateManyWithoutPlayersInput {
+  create?: Maybe<
+    TournamentCreateWithoutPlayersInput[] | TournamentCreateWithoutPlayersInput
+  >;
+  connect?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
+}
+
+export interface UserUpsertWithoutFormsInput {
+  update: UserUpdateWithoutFormsDataInput;
+  create: UserCreateWithoutFormsInput;
+}
+
+export interface SchoolCreateOneWithoutClansInput {
+  create?: Maybe<SchoolCreateWithoutClansInput>;
+  connect?: Maybe<SchoolWhereUniqueInput>;
+}
+
+export interface FormUpsertWithWhereUniqueWithoutPlayersInput {
+  where: FormWhereUniqueInput;
+  update: FormUpdateWithoutPlayersDataInput;
+  create: FormCreateWithoutPlayersInput;
+}
+
+export interface PlayerUpdateManyWithoutClanInput {
+  create?: Maybe<PlayerCreateWithoutClanInput[] | PlayerCreateWithoutClanInput>;
+  delete?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  set?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  disconnect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  update?: Maybe<
+    | PlayerUpdateWithWhereUniqueWithoutClanInput[]
+    | PlayerUpdateWithWhereUniqueWithoutClanInput
+  >;
+  upsert?: Maybe<
+    | PlayerUpsertWithWhereUniqueWithoutClanInput[]
+    | PlayerUpsertWithWhereUniqueWithoutClanInput
+  >;
+  deleteMany?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
+  updateMany?: Maybe<
+    | PlayerUpdateManyWithWhereNestedInput[]
+    | PlayerUpdateManyWithWhereNestedInput
+  >;
+}
+
+export interface FormScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  name?: Maybe<String>;
+  name_not?: Maybe<String>;
+  name_in?: Maybe<String[] | String>;
+  name_not_in?: Maybe<String[] | String>;
+  name_lt?: Maybe<String>;
+  name_lte?: Maybe<String>;
+  name_gt?: Maybe<String>;
+  name_gte?: Maybe<String>;
+  name_contains?: Maybe<String>;
+  name_not_contains?: Maybe<String>;
+  name_starts_with?: Maybe<String>;
+  name_not_starts_with?: Maybe<String>;
+  name_ends_with?: Maybe<String>;
+  name_not_ends_with?: Maybe<String>;
+  AND?: Maybe<FormScalarWhereInput[] | FormScalarWhereInput>;
+  OR?: Maybe<FormScalarWhereInput[] | FormScalarWhereInput>;
+  NOT?: Maybe<FormScalarWhereInput[] | FormScalarWhereInput>;
+}
+
+export interface UserSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<UserWhereInput>;
+  AND?: Maybe<UserSubscriptionWhereInput[] | UserSubscriptionWhereInput>;
+  OR?: Maybe<UserSubscriptionWhereInput[] | UserSubscriptionWhereInput>;
+  NOT?: Maybe<UserSubscriptionWhereInput[] | UserSubscriptionWhereInput>;
+}
+
+export interface FormUpdateManyWithWhereNestedInput {
+  where: FormScalarWhereInput;
+  data: FormUpdateManyDataInput;
+}
+
+export interface AssaultSubscriptionWhereInput {
+  mutation_in?: Maybe<MutationType[] | MutationType>;
+  updatedFields_contains?: Maybe<String>;
+  updatedFields_contains_every?: Maybe<String[] | String>;
+  updatedFields_contains_some?: Maybe<String[] | String>;
+  node?: Maybe<AssaultWhereInput>;
+  AND?: Maybe<AssaultSubscriptionWhereInput[] | AssaultSubscriptionWhereInput>;
+  OR?: Maybe<AssaultSubscriptionWhereInput[] | AssaultSubscriptionWhereInput>;
+  NOT?: Maybe<AssaultSubscriptionWhereInput[] | AssaultSubscriptionWhereInput>;
+}
+
+export interface FormUpdateManyDataInput {
+  name?: Maybe<String>;
+}
+
+export interface PouleUpdateManyMutationInput {
+  name?: Maybe<String>;
+}
+
+export interface PlayerUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: PlayerWhereUniqueInput;
+  update: PlayerUpdateWithoutCreatedByDataInput;
+  create: PlayerCreateWithoutCreatedByInput;
+}
+
+export interface ClanCreateInput {
+  createdBy?: Maybe<UserCreateOneWithoutClansInput>;
+  id?: Maybe<ID_Input>;
+  name: String;
+  players?: Maybe<PlayerCreateManyWithoutClanInput>;
+  school: SchoolCreateOneWithoutClansInput;
+}
+
+export interface UserUpsertNestedInput {
+  update: UserUpdateDataInput;
+  create: UserCreateInput;
+}
+
+export interface CardUpsertWithWhereUniqueWithoutAssaultInput {
+  where: CardWhereUniqueInput;
+  update: CardUpdateWithoutAssaultDataInput;
+  create: CardCreateWithoutAssaultInput;
+}
+
+export interface MatchUpsertWithoutAssaultsInput {
+  update: MatchUpdateWithoutAssaultsDataInput;
+  create: MatchCreateWithoutAssaultsInput;
+}
+
+export interface ClanCreateOneWithoutPlayersInput {
   create?: Maybe<ClanCreateWithoutPlayersInput>;
-  update?: Maybe<ClanUpdateWithoutPlayersDataInput>;
-  upsert?: Maybe<ClanUpsertWithoutPlayersInput>;
   connect?: Maybe<ClanWhereUniqueInput>;
+}
+
+export interface AssaultUpsertWithoutCardsInput {
+  update: AssaultUpdateWithoutCardsDataInput;
+  create: AssaultCreateWithoutCardsInput;
+}
+
+export interface CardCreateManyWithoutPlayerInput {
+  create?: Maybe<CardCreateWithoutPlayerInput[] | CardCreateWithoutPlayerInput>;
+  connect?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
+}
+
+export interface CardUpsertWithWhereUniqueWithoutPlayerInput {
+  where: CardWhereUniqueInput;
+  update: CardUpdateWithoutPlayerDataInput;
+  create: CardCreateWithoutPlayerInput;
+}
+
+export interface MatchCreateManyInput {
+  create?: Maybe<MatchCreateInput[] | MatchCreateInput>;
+  connect?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
+}
+
+export interface CardScalarWhereInput {
+  id?: Maybe<ID_Input>;
+  id_not?: Maybe<ID_Input>;
+  id_in?: Maybe<ID_Input[] | ID_Input>;
+  id_not_in?: Maybe<ID_Input[] | ID_Input>;
+  id_lt?: Maybe<ID_Input>;
+  id_lte?: Maybe<ID_Input>;
+  id_gt?: Maybe<ID_Input>;
+  id_gte?: Maybe<ID_Input>;
+  id_contains?: Maybe<ID_Input>;
+  id_not_contains?: Maybe<ID_Input>;
+  id_starts_with?: Maybe<ID_Input>;
+  id_not_starts_with?: Maybe<ID_Input>;
+  id_ends_with?: Maybe<ID_Input>;
+  id_not_ends_with?: Maybe<ID_Input>;
+  reason?: Maybe<String>;
+  reason_not?: Maybe<String>;
+  reason_in?: Maybe<String[] | String>;
+  reason_not_in?: Maybe<String[] | String>;
+  reason_lt?: Maybe<String>;
+  reason_lte?: Maybe<String>;
+  reason_gt?: Maybe<String>;
+  reason_gte?: Maybe<String>;
+  reason_contains?: Maybe<String>;
+  reason_not_contains?: Maybe<String>;
+  reason_starts_with?: Maybe<String>;
+  reason_not_starts_with?: Maybe<String>;
+  reason_ends_with?: Maybe<String>;
+  reason_not_ends_with?: Maybe<String>;
+  type?: Maybe<CardsType>;
+  type_not?: Maybe<CardsType>;
+  type_in?: Maybe<CardsType[] | CardsType>;
+  type_not_in?: Maybe<CardsType[] | CardsType>;
+  AND?: Maybe<CardScalarWhereInput[] | CardScalarWhereInput>;
+  OR?: Maybe<CardScalarWhereInput[] | CardScalarWhereInput>;
+  NOT?: Maybe<CardScalarWhereInput[] | CardScalarWhereInput>;
+}
+
+export interface SchoolCreateManyWithoutCreatedByInput {
+  create?: Maybe<
+    SchoolCreateWithoutCreatedByInput[] | SchoolCreateWithoutCreatedByInput
+  >;
+  connect?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
+}
+
+export interface CardUpdateManyWithWhereNestedInput {
+  where: CardScalarWhereInput;
+  data: CardUpdateManyDataInput;
+}
+
+export interface PouleCreateManyWithoutTournamentInput {
+  create?: Maybe<
+    PouleCreateWithoutTournamentInput[] | PouleCreateWithoutTournamentInput
+  >;
+  connect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+}
+
+export interface CardUpdateManyDataInput {
+  reason?: Maybe<String>;
+  type?: Maybe<CardsType>;
+}
+
+export interface UserUpdateWithoutAcademiesDataInput {
+  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
+  email?: Maybe<String>;
+  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
+  name?: Maybe<String>;
+  password?: Maybe<String>;
+  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
+  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
+  rounds?: Maybe<RoundUpdateManyWithoutCreatedByInput>;
+  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
+  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
+}
+
+export interface PlayerUpsertWithWhereUniqueWithoutFormsInput {
+  where: PlayerWhereUniqueInput;
+  update: PlayerUpdateWithoutFormsDataInput;
+  create: PlayerCreateWithoutFormsInput;
 }
 
 export interface PlayerWhereInput {
@@ -959,6 +4324,9 @@ export interface PlayerWhereInput {
   poules_every?: Maybe<PouleWhereInput>;
   poules_some?: Maybe<PouleWhereInput>;
   poules_none?: Maybe<PouleWhereInput>;
+  rounds_every?: Maybe<RoundWhereInput>;
+  rounds_some?: Maybe<RoundWhereInput>;
+  rounds_none?: Maybe<RoundWhereInput>;
   tournaments_every?: Maybe<TournamentWhereInput>;
   tournaments_some?: Maybe<TournamentWhereInput>;
   tournaments_none?: Maybe<TournamentWhereInput>;
@@ -967,238 +4335,10 @@ export interface PlayerWhereInput {
   NOT?: Maybe<PlayerWhereInput[] | PlayerWhereInput>;
 }
 
-export interface ClanUpdateWithoutPlayersDataInput {
-  createdBy?: Maybe<UserUpdateOneWithoutClansInput>;
-  name?: Maybe<String>;
-  school?: Maybe<SchoolUpdateOneRequiredWithoutClansInput>;
-}
-
-export interface ClanWhereInput {
-  createdBy?: Maybe<UserWhereInput>;
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  players_every?: Maybe<PlayerWhereInput>;
-  players_some?: Maybe<PlayerWhereInput>;
-  players_none?: Maybe<PlayerWhereInput>;
-  school?: Maybe<SchoolWhereInput>;
-  AND?: Maybe<ClanWhereInput[] | ClanWhereInput>;
-  OR?: Maybe<ClanWhereInput[] | ClanWhereInput>;
-  NOT?: Maybe<ClanWhereInput[] | ClanWhereInput>;
-}
-
-export interface UserUpdateOneWithoutClansInput {
-  create?: Maybe<UserCreateWithoutClansInput>;
-  update?: Maybe<UserUpdateWithoutClansDataInput>;
-  upsert?: Maybe<UserUpsertWithoutClansInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface CardSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<CardWhereInput>;
-  AND?: Maybe<CardSubscriptionWhereInput[] | CardSubscriptionWhereInput>;
-  OR?: Maybe<CardSubscriptionWhereInput[] | CardSubscriptionWhereInput>;
-  NOT?: Maybe<CardSubscriptionWhereInput[] | CardSubscriptionWhereInput>;
-}
-
-export interface UserUpdateWithoutClansDataInput {
-  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
-  email?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
-  name?: Maybe<String>;
-  password?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
-}
-
-export interface AssaultSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<AssaultWhereInput>;
-  AND?: Maybe<AssaultSubscriptionWhereInput[] | AssaultSubscriptionWhereInput>;
-  OR?: Maybe<AssaultSubscriptionWhereInput[] | AssaultSubscriptionWhereInput>;
-  NOT?: Maybe<AssaultSubscriptionWhereInput[] | AssaultSubscriptionWhereInput>;
-}
-
-export interface AcademyUpdateManyWithoutCreatedByInput {
-  create?: Maybe<
-    AcademyCreateWithoutCreatedByInput[] | AcademyCreateWithoutCreatedByInput
-  >;
-  delete?: Maybe<AcademyWhereUniqueInput[] | AcademyWhereUniqueInput>;
-  connect?: Maybe<AcademyWhereUniqueInput[] | AcademyWhereUniqueInput>;
-  set?: Maybe<AcademyWhereUniqueInput[] | AcademyWhereUniqueInput>;
-  disconnect?: Maybe<AcademyWhereUniqueInput[] | AcademyWhereUniqueInput>;
-  update?: Maybe<
-    | AcademyUpdateWithWhereUniqueWithoutCreatedByInput[]
-    | AcademyUpdateWithWhereUniqueWithoutCreatedByInput
-  >;
-  upsert?: Maybe<
-    | AcademyUpsertWithWhereUniqueWithoutCreatedByInput[]
-    | AcademyUpsertWithWhereUniqueWithoutCreatedByInput
-  >;
-  deleteMany?: Maybe<AcademyScalarWhereInput[] | AcademyScalarWhereInput>;
-  updateMany?: Maybe<
-    | AcademyUpdateManyWithWhereNestedInput[]
-    | AcademyUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface UserUpdateManyMutationInput {
-  email?: Maybe<String>;
-  name?: Maybe<String>;
-  password?: Maybe<String>;
-}
-
-export interface AcademyUpdateWithWhereUniqueWithoutCreatedByInput {
-  where: AcademyWhereUniqueInput;
-  data: AcademyUpdateWithoutCreatedByDataInput;
-}
-
-export interface TournamentUpdateManyMutationInput {
-  name?: Maybe<String>;
-  poulesType?: Maybe<PoulesType>;
-}
-
-export interface AcademyUpdateWithoutCreatedByDataInput {
-  country?: Maybe<String>;
-  name?: Maybe<String>;
-  schools?: Maybe<SchoolUpdateManyWithoutAcademyInput>;
-}
-
-export type AssaultWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface SchoolUpdateManyWithoutAcademyInput {
-  create?: Maybe<
-    SchoolCreateWithoutAcademyInput[] | SchoolCreateWithoutAcademyInput
-  >;
-  delete?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
-  connect?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
-  set?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
-  disconnect?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
-  update?: Maybe<
-    | SchoolUpdateWithWhereUniqueWithoutAcademyInput[]
-    | SchoolUpdateWithWhereUniqueWithoutAcademyInput
-  >;
-  upsert?: Maybe<
-    | SchoolUpsertWithWhereUniqueWithoutAcademyInput[]
-    | SchoolUpsertWithWhereUniqueWithoutAcademyInput
-  >;
-  deleteMany?: Maybe<SchoolScalarWhereInput[] | SchoolScalarWhereInput>;
-  updateMany?: Maybe<
-    | SchoolUpdateManyWithWhereNestedInput[]
-    | SchoolUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface SchoolUpdateManyMutationInput {
-  name?: Maybe<String>;
-}
-
-export interface SchoolUpdateWithWhereUniqueWithoutAcademyInput {
-  where: SchoolWhereUniqueInput;
-  data: SchoolUpdateWithoutAcademyDataInput;
-}
-
-export type CardWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface SchoolUpdateWithoutAcademyDataInput {
-  clans?: Maybe<ClanUpdateManyWithoutSchoolInput>;
-  createdBy?: Maybe<UserUpdateOneWithoutSchoolsInput>;
-  name?: Maybe<String>;
-}
-
-export interface PouleUpdateManyMutationInput {
-  name?: Maybe<String>;
-}
-
-export interface ClanUpdateManyWithoutSchoolInput {
-  create?: Maybe<ClanCreateWithoutSchoolInput[] | ClanCreateWithoutSchoolInput>;
-  delete?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
-  connect?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
-  set?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
-  disconnect?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
-  update?: Maybe<
-    | ClanUpdateWithWhereUniqueWithoutSchoolInput[]
-    | ClanUpdateWithWhereUniqueWithoutSchoolInput
-  >;
-  upsert?: Maybe<
-    | ClanUpsertWithWhereUniqueWithoutSchoolInput[]
-    | ClanUpsertWithWhereUniqueWithoutSchoolInput
-  >;
-  deleteMany?: Maybe<ClanScalarWhereInput[] | ClanScalarWhereInput>;
-  updateMany?: Maybe<
-    ClanUpdateManyWithWhereNestedInput[] | ClanUpdateManyWithWhereNestedInput
-  >;
-}
-
-export type ClanWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface ClanUpdateWithWhereUniqueWithoutSchoolInput {
-  where: ClanWhereUniqueInput;
-  data: ClanUpdateWithoutSchoolDataInput;
-}
-
-export interface PlayerUpdateManyMutationInput {
-  familyName?: Maybe<String>;
-  name?: Maybe<String>;
-  nickname?: Maybe<String>;
-}
-
-export interface ClanUpdateWithoutSchoolDataInput {
-  createdBy?: Maybe<UserUpdateOneWithoutClansInput>;
-  name?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutClanInput>;
-}
-
-export type FormWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface ClanUpsertWithWhereUniqueWithoutSchoolInput {
-  where: ClanWhereUniqueInput;
-  update: ClanUpdateWithoutSchoolDataInput;
-  create: ClanCreateWithoutSchoolInput;
+export interface FormUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: FormWhereUniqueInput;
+  update: FormUpdateWithoutCreatedByDataInput;
+  create: FormCreateWithoutCreatedByInput;
 }
 
 export interface MatchUpdateInput {
@@ -1208,1741 +4348,13 @@ export interface MatchUpdateInput {
   order?: Maybe<Int>;
   player1?: Maybe<PlayerUpdateOneRequiredInput>;
   player2?: Maybe<PlayerUpdateOneRequiredInput>;
-  poule?: Maybe<PouleUpdateOneRequiredWithoutMatchesInput>;
   resultPlayer1?: Maybe<Int>;
   resultPlayer2?: Maybe<Int>;
 }
 
-export interface ClanScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  AND?: Maybe<ClanScalarWhereInput[] | ClanScalarWhereInput>;
-  OR?: Maybe<ClanScalarWhereInput[] | ClanScalarWhereInput>;
-  NOT?: Maybe<ClanScalarWhereInput[] | ClanScalarWhereInput>;
-}
-
-export type MatchWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface ClanUpdateManyWithWhereNestedInput {
-  where: ClanScalarWhereInput;
-  data: ClanUpdateManyDataInput;
-}
-
-export interface FormCreateInput {
-  createdBy?: Maybe<UserCreateOneWithoutFormsInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  players?: Maybe<PlayerCreateManyWithoutFormsInput>;
-}
-
-export interface ClanUpdateManyDataInput {
-  name?: Maybe<String>;
-}
-
-export type PlayerWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface UserUpdateOneWithoutSchoolsInput {
-  create?: Maybe<UserCreateWithoutSchoolsInput>;
-  update?: Maybe<UserUpdateWithoutSchoolsDataInput>;
-  upsert?: Maybe<UserUpsertWithoutSchoolsInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface ClanCreateInput {
-  createdBy?: Maybe<UserCreateOneWithoutClansInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  players?: Maybe<PlayerCreateManyWithoutClanInput>;
-  school: SchoolCreateOneWithoutClansInput;
-}
-
-export interface UserUpdateWithoutSchoolsDataInput {
-  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
-  email?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
-  name?: Maybe<String>;
-  password?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
-}
-
-export type PouleWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface SchoolUpsertWithoutClansInput {
-  update: SchoolUpdateWithoutClansDataInput;
-  create: SchoolCreateWithoutClansInput;
-}
-
-export interface CardCreateInput {
-  assault: AssaultCreateOneWithoutCardsInput;
-  id?: Maybe<ID_Input>;
-  reason?: Maybe<String>;
-  type: CardsType;
-  player: PlayerCreateOneWithoutCardsInput;
-}
-
-export interface FormUpdateWithWhereUniqueWithoutCreatedByInput {
-  where: FormWhereUniqueInput;
-  data: FormUpdateWithoutCreatedByDataInput;
-}
-
-export type SchoolWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface FormUpdateWithoutCreatedByDataInput {
-  name?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutFormsInput>;
-}
-
-export interface AssaultCreateInput {
-  cards?: Maybe<CardCreateManyWithoutAssaultInput>;
-  doppio?: Maybe<Boolean>;
-  id?: Maybe<ID_Input>;
-  match?: Maybe<MatchCreateOneWithoutAssaultsInput>;
-  nullo?: Maybe<Boolean>;
-  number: Int;
-  winner?: Maybe<PlayerCreateOneWithoutAssaultsWonInput>;
-}
-
-export interface PlayerUpdateManyWithoutFormsInput {
-  create?: Maybe<
-    PlayerCreateWithoutFormsInput[] | PlayerCreateWithoutFormsInput
-  >;
-  delete?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  set?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  disconnect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  update?: Maybe<
-    | PlayerUpdateWithWhereUniqueWithoutFormsInput[]
-    | PlayerUpdateWithWhereUniqueWithoutFormsInput
-  >;
-  upsert?: Maybe<
-    | PlayerUpsertWithWhereUniqueWithoutFormsInput[]
-    | PlayerUpsertWithWhereUniqueWithoutFormsInput
-  >;
-  deleteMany?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
-  updateMany?: Maybe<
-    | PlayerUpdateManyWithWhereNestedInput[]
-    | PlayerUpdateManyWithWhereNestedInput
-  >;
-}
-
-export type TournamentWhereUniqueInput = AtLeastOne<{
-  id: Maybe<ID_Input>;
-}>;
-
-export interface PlayerUpdateWithWhereUniqueWithoutFormsInput {
-  where: PlayerWhereUniqueInput;
-  data: PlayerUpdateWithoutFormsDataInput;
-}
-
-export interface ClanUpsertWithWhereUniqueWithoutCreatedByInput {
-  where: ClanWhereUniqueInput;
-  update: ClanUpdateWithoutCreatedByDataInput;
-  create: ClanCreateWithoutCreatedByInput;
-}
-
-export interface PlayerUpdateWithoutFormsDataInput {
-  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
-  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
-  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
-  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
-  familyName?: Maybe<String>;
-  matches?: Maybe<MatchUpdateManyInput>;
-  name?: Maybe<String>;
-  nickname?: Maybe<String>;
-  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
-}
-
-export type UserWhereUniqueInput = AtLeastOne<{
-  email: Maybe<String>;
-  id?: Maybe<ID_Input>;
-}>;
-
-export interface CardUpdateManyWithoutPlayerInput {
-  create?: Maybe<CardCreateWithoutPlayerInput[] | CardCreateWithoutPlayerInput>;
-  delete?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
-  connect?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
-  set?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
-  disconnect?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
-  update?: Maybe<
-    | CardUpdateWithWhereUniqueWithoutPlayerInput[]
-    | CardUpdateWithWhereUniqueWithoutPlayerInput
-  >;
-  upsert?: Maybe<
-    | CardUpsertWithWhereUniqueWithoutPlayerInput[]
-    | CardUpsertWithWhereUniqueWithoutPlayerInput
-  >;
-  deleteMany?: Maybe<CardScalarWhereInput[] | CardScalarWhereInput>;
-  updateMany?: Maybe<
-    CardUpdateManyWithWhereNestedInput[] | CardUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface CardUpsertWithWhereUniqueWithoutAssaultInput {
-  where: CardWhereUniqueInput;
-  update: CardUpdateWithoutAssaultDataInput;
-  create: CardCreateWithoutAssaultInput;
-}
-
-export interface CardUpdateWithWhereUniqueWithoutPlayerInput {
-  where: CardWhereUniqueInput;
-  data: CardUpdateWithoutPlayerDataInput;
-}
-
-export interface ClanUpsertWithoutPlayersInput {
-  update: ClanUpdateWithoutPlayersDataInput;
-  create: ClanCreateWithoutPlayersInput;
-}
-
-export interface PouleWhereInput {
-  createdBy?: Maybe<UserWhereInput>;
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  matches_every?: Maybe<MatchWhereInput>;
-  matches_some?: Maybe<MatchWhereInput>;
-  matches_none?: Maybe<MatchWhereInput>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  players_every?: Maybe<PlayerWhereInput>;
-  players_some?: Maybe<PlayerWhereInput>;
-  players_none?: Maybe<PlayerWhereInput>;
-  tournament?: Maybe<TournamentWhereInput>;
-  AND?: Maybe<PouleWhereInput[] | PouleWhereInput>;
-  OR?: Maybe<PouleWhereInput[] | PouleWhereInput>;
-  NOT?: Maybe<PouleWhereInput[] | PouleWhereInput>;
-}
-
-export interface AcademyCreateInput {
-  country: String;
-  createdBy?: Maybe<UserCreateOneWithoutAcademiesInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  schools?: Maybe<SchoolCreateManyWithoutAcademyInput>;
-}
-
-export interface SchoolWhereInput {
-  academy?: Maybe<AcademyWhereInput>;
-  clans_every?: Maybe<ClanWhereInput>;
-  clans_some?: Maybe<ClanWhereInput>;
-  clans_none?: Maybe<ClanWhereInput>;
-  createdBy?: Maybe<UserWhereInput>;
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  AND?: Maybe<SchoolWhereInput[] | SchoolWhereInput>;
-  OR?: Maybe<SchoolWhereInput[] | SchoolWhereInput>;
-  NOT?: Maybe<SchoolWhereInput[] | SchoolWhereInput>;
-}
-
-export interface UserCreateWithoutAcademiesInput {
-  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
-  email: String;
-  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  password: String;
-  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
-}
-
-export interface MatchWhereInput {
-  assaults_every?: Maybe<AssaultWhereInput>;
-  assaults_some?: Maybe<AssaultWhereInput>;
-  assaults_none?: Maybe<AssaultWhereInput>;
-  createdBy?: Maybe<UserWhereInput>;
-  duration?: Maybe<Int>;
-  duration_not?: Maybe<Int>;
-  duration_in?: Maybe<Int[] | Int>;
-  duration_not_in?: Maybe<Int[] | Int>;
-  duration_lt?: Maybe<Int>;
-  duration_lte?: Maybe<Int>;
-  duration_gt?: Maybe<Int>;
-  duration_gte?: Maybe<Int>;
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  order?: Maybe<Int>;
-  order_not?: Maybe<Int>;
-  order_in?: Maybe<Int[] | Int>;
-  order_not_in?: Maybe<Int[] | Int>;
-  order_lt?: Maybe<Int>;
-  order_lte?: Maybe<Int>;
-  order_gt?: Maybe<Int>;
-  order_gte?: Maybe<Int>;
-  player1?: Maybe<PlayerWhereInput>;
-  player2?: Maybe<PlayerWhereInput>;
-  poule?: Maybe<PouleWhereInput>;
-  resultPlayer1?: Maybe<Int>;
-  resultPlayer1_not?: Maybe<Int>;
-  resultPlayer1_in?: Maybe<Int[] | Int>;
-  resultPlayer1_not_in?: Maybe<Int[] | Int>;
-  resultPlayer1_lt?: Maybe<Int>;
-  resultPlayer1_lte?: Maybe<Int>;
-  resultPlayer1_gt?: Maybe<Int>;
-  resultPlayer1_gte?: Maybe<Int>;
-  resultPlayer2?: Maybe<Int>;
-  resultPlayer2_not?: Maybe<Int>;
-  resultPlayer2_in?: Maybe<Int[] | Int>;
-  resultPlayer2_not_in?: Maybe<Int[] | Int>;
-  resultPlayer2_lt?: Maybe<Int>;
-  resultPlayer2_lte?: Maybe<Int>;
-  resultPlayer2_gt?: Maybe<Int>;
-  resultPlayer2_gte?: Maybe<Int>;
-  AND?: Maybe<MatchWhereInput[] | MatchWhereInput>;
-  OR?: Maybe<MatchWhereInput[] | MatchWhereInput>;
-  NOT?: Maybe<MatchWhereInput[] | MatchWhereInput>;
-}
-
-export interface ClanCreateWithoutCreatedByInput {
-  id?: Maybe<ID_Input>;
-  name: String;
-  players?: Maybe<PlayerCreateManyWithoutClanInput>;
-  school: SchoolCreateOneWithoutClansInput;
-}
-
-export interface MatchUpdateOneWithoutAssaultsInput {
-  create?: Maybe<MatchCreateWithoutAssaultsInput>;
-  update?: Maybe<MatchUpdateWithoutAssaultsDataInput>;
-  upsert?: Maybe<MatchUpsertWithoutAssaultsInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
-  connect?: Maybe<MatchWhereUniqueInput>;
-}
-
-export interface PlayerCreateWithoutClanInput {
-  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
-  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
-  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
-  familyName: String;
-  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
-  id?: Maybe<ID_Input>;
-  matches?: Maybe<MatchCreateManyInput>;
-  name: String;
-  nickname: String;
-  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
-}
-
-export interface MatchUpdateWithoutAssaultsDataInput {
-  createdBy?: Maybe<UserUpdateOneInput>;
-  duration?: Maybe<Int>;
-  order?: Maybe<Int>;
-  player1?: Maybe<PlayerUpdateOneRequiredInput>;
-  player2?: Maybe<PlayerUpdateOneRequiredInput>;
-  poule?: Maybe<PouleUpdateOneRequiredWithoutMatchesInput>;
-  resultPlayer1?: Maybe<Int>;
-  resultPlayer2?: Maybe<Int>;
-}
-
-export interface AssaultCreateWithoutWinnerInput {
-  cards?: Maybe<CardCreateManyWithoutAssaultInput>;
-  doppio?: Maybe<Boolean>;
-  id?: Maybe<ID_Input>;
-  match?: Maybe<MatchCreateOneWithoutAssaultsInput>;
-  nullo?: Maybe<Boolean>;
-  number: Int;
-}
-
-export interface UserUpdateOneInput {
-  create?: Maybe<UserCreateInput>;
-  update?: Maybe<UserUpdateDataInput>;
-  upsert?: Maybe<UserUpsertNestedInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface CardCreateWithoutAssaultInput {
-  id?: Maybe<ID_Input>;
-  reason?: Maybe<String>;
-  type: CardsType;
-  player: PlayerCreateOneWithoutCardsInput;
-}
-
-export interface UserUpdateDataInput {
-  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
-  email?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
-  name?: Maybe<String>;
-  password?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
-}
-
-export interface PlayerCreateWithoutCardsInput {
-  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
-  clan: ClanCreateOneWithoutPlayersInput;
-  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
-  familyName: String;
-  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
-  id?: Maybe<ID_Input>;
-  matches?: Maybe<MatchCreateManyInput>;
-  name: String;
-  nickname: String;
-  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
-}
-
-export interface PlayerUpdateManyWithoutCreatedByInput {
-  create?: Maybe<
-    PlayerCreateWithoutCreatedByInput[] | PlayerCreateWithoutCreatedByInput
-  >;
-  delete?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  set?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  disconnect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  update?: Maybe<
-    | PlayerUpdateWithWhereUniqueWithoutCreatedByInput[]
-    | PlayerUpdateWithWhereUniqueWithoutCreatedByInput
-  >;
-  upsert?: Maybe<
-    | PlayerUpsertWithWhereUniqueWithoutCreatedByInput[]
-    | PlayerUpsertWithWhereUniqueWithoutCreatedByInput
-  >;
-  deleteMany?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
-  updateMany?: Maybe<
-    | PlayerUpdateManyWithWhereNestedInput[]
-    | PlayerUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface ClanCreateWithoutPlayersInput {
-  createdBy?: Maybe<UserCreateOneWithoutClansInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  school: SchoolCreateOneWithoutClansInput;
-}
-
-export interface PlayerUpdateWithWhereUniqueWithoutCreatedByInput {
-  where: PlayerWhereUniqueInput;
-  data: PlayerUpdateWithoutCreatedByDataInput;
-}
-
-export interface UserCreateWithoutClansInput {
-  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
-  email: String;
-  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  password: String;
-  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
-}
-
-export interface PlayerUpdateWithoutCreatedByDataInput {
-  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
-  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
-  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
-  familyName?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
-  matches?: Maybe<MatchUpdateManyInput>;
-  name?: Maybe<String>;
-  nickname?: Maybe<String>;
-  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
-}
-
-export interface AcademyCreateWithoutCreatedByInput {
-  country: String;
-  id?: Maybe<ID_Input>;
-  name: String;
-  schools?: Maybe<SchoolCreateManyWithoutAcademyInput>;
-}
-
-export interface FormUpdateManyWithoutPlayersInput {
-  create?: Maybe<
-    FormCreateWithoutPlayersInput[] | FormCreateWithoutPlayersInput
-  >;
-  delete?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
-  connect?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
-  set?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
-  disconnect?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
-  update?: Maybe<
-    | FormUpdateWithWhereUniqueWithoutPlayersInput[]
-    | FormUpdateWithWhereUniqueWithoutPlayersInput
-  >;
-  upsert?: Maybe<
-    | FormUpsertWithWhereUniqueWithoutPlayersInput[]
-    | FormUpsertWithWhereUniqueWithoutPlayersInput
-  >;
-  deleteMany?: Maybe<FormScalarWhereInput[] | FormScalarWhereInput>;
-  updateMany?: Maybe<
-    FormUpdateManyWithWhereNestedInput[] | FormUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface SchoolCreateWithoutAcademyInput {
-  clans?: Maybe<ClanCreateManyWithoutSchoolInput>;
-  createdBy?: Maybe<UserCreateOneWithoutSchoolsInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-}
-
-export interface FormUpdateWithWhereUniqueWithoutPlayersInput {
-  where: FormWhereUniqueInput;
-  data: FormUpdateWithoutPlayersDataInput;
-}
-
-export interface ClanCreateWithoutSchoolInput {
-  createdBy?: Maybe<UserCreateOneWithoutClansInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  players?: Maybe<PlayerCreateManyWithoutClanInput>;
-}
-
-export interface FormUpdateWithoutPlayersDataInput {
-  createdBy?: Maybe<UserUpdateOneWithoutFormsInput>;
-  name?: Maybe<String>;
-}
-
-export interface UserCreateWithoutSchoolsInput {
-  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
-  email: String;
-  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  password: String;
-  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
-}
-
-export interface UserUpdateOneWithoutFormsInput {
-  create?: Maybe<UserCreateWithoutFormsInput>;
-  update?: Maybe<UserUpdateWithoutFormsDataInput>;
-  upsert?: Maybe<UserUpsertWithoutFormsInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface FormCreateWithoutCreatedByInput {
-  id?: Maybe<ID_Input>;
-  name: String;
-  players?: Maybe<PlayerCreateManyWithoutFormsInput>;
-}
-
-export interface UserUpdateWithoutFormsDataInput {
-  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
-  email?: Maybe<String>;
-  name?: Maybe<String>;
-  password?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
-}
-
-export interface PlayerCreateWithoutFormsInput {
-  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
-  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
-  clan: ClanCreateOneWithoutPlayersInput;
-  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
-  familyName: String;
-  id?: Maybe<ID_Input>;
-  matches?: Maybe<MatchCreateManyInput>;
-  name: String;
-  nickname: String;
-  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
-}
-
-export interface PouleUpdateManyWithoutCreatedByInput {
-  create?: Maybe<
-    PouleCreateWithoutCreatedByInput[] | PouleCreateWithoutCreatedByInput
-  >;
-  delete?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-  connect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-  set?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-  disconnect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-  update?: Maybe<
-    | PouleUpdateWithWhereUniqueWithoutCreatedByInput[]
-    | PouleUpdateWithWhereUniqueWithoutCreatedByInput
-  >;
-  upsert?: Maybe<
-    | PouleUpsertWithWhereUniqueWithoutCreatedByInput[]
-    | PouleUpsertWithWhereUniqueWithoutCreatedByInput
-  >;
-  deleteMany?: Maybe<PouleScalarWhereInput[] | PouleScalarWhereInput>;
-  updateMany?: Maybe<
-    PouleUpdateManyWithWhereNestedInput[] | PouleUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface CardCreateWithoutPlayerInput {
-  assault: AssaultCreateOneWithoutCardsInput;
-  id?: Maybe<ID_Input>;
-  reason?: Maybe<String>;
-  type: CardsType;
-}
-
-export interface PouleUpdateWithWhereUniqueWithoutCreatedByInput {
-  where: PouleWhereUniqueInput;
-  data: PouleUpdateWithoutCreatedByDataInput;
-}
-
-export interface AssaultCreateWithoutCardsInput {
-  doppio?: Maybe<Boolean>;
-  id?: Maybe<ID_Input>;
-  match?: Maybe<MatchCreateOneWithoutAssaultsInput>;
-  nullo?: Maybe<Boolean>;
-  number: Int;
-  winner?: Maybe<PlayerCreateOneWithoutAssaultsWonInput>;
-}
-
-export interface PouleUpdateWithoutCreatedByDataInput {
-  matches?: Maybe<MatchUpdateManyWithoutPouleInput>;
-  name?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutPoulesInput>;
-  tournament?: Maybe<TournamentUpdateOneRequiredWithoutPoulesInput>;
-}
-
-export interface MatchCreateWithoutAssaultsInput {
-  createdBy?: Maybe<UserCreateOneInput>;
-  duration?: Maybe<Int>;
-  id?: Maybe<ID_Input>;
-  order: Int;
-  player1: PlayerCreateOneInput;
-  player2: PlayerCreateOneInput;
-  poule: PouleCreateOneWithoutMatchesInput;
-  resultPlayer1?: Maybe<Int>;
-  resultPlayer2?: Maybe<Int>;
-}
-
-export interface MatchUpdateManyWithoutPouleInput {
-  create?: Maybe<MatchCreateWithoutPouleInput[] | MatchCreateWithoutPouleInput>;
-  delete?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
-  connect?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
-  set?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
-  disconnect?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
-  update?: Maybe<
-    | MatchUpdateWithWhereUniqueWithoutPouleInput[]
-    | MatchUpdateWithWhereUniqueWithoutPouleInput
-  >;
-  upsert?: Maybe<
-    | MatchUpsertWithWhereUniqueWithoutPouleInput[]
-    | MatchUpsertWithWhereUniqueWithoutPouleInput
-  >;
-  deleteMany?: Maybe<MatchScalarWhereInput[] | MatchScalarWhereInput>;
-  updateMany?: Maybe<
-    MatchUpdateManyWithWhereNestedInput[] | MatchUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface UserCreateInput {
-  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
-  email: String;
-  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  password: String;
-  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
-}
-
-export interface MatchUpdateWithWhereUniqueWithoutPouleInput {
-  where: MatchWhereUniqueInput;
-  data: MatchUpdateWithoutPouleDataInput;
-}
-
-export interface PlayerCreateWithoutCreatedByInput {
-  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
-  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
-  clan: ClanCreateOneWithoutPlayersInput;
-  familyName: String;
-  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
-  id?: Maybe<ID_Input>;
-  matches?: Maybe<MatchCreateManyInput>;
-  name: String;
-  nickname: String;
-  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
-}
-
-export interface MatchUpdateWithoutPouleDataInput {
-  assaults?: Maybe<AssaultUpdateManyWithoutMatchInput>;
-  createdBy?: Maybe<UserUpdateOneInput>;
-  duration?: Maybe<Int>;
-  order?: Maybe<Int>;
-  player1?: Maybe<PlayerUpdateOneRequiredInput>;
-  player2?: Maybe<PlayerUpdateOneRequiredInput>;
-  resultPlayer1?: Maybe<Int>;
-  resultPlayer2?: Maybe<Int>;
-}
-
-export interface FormCreateWithoutPlayersInput {
-  createdBy?: Maybe<UserCreateOneWithoutFormsInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-}
-
-export interface AssaultUpdateManyWithoutMatchInput {
-  create?: Maybe<
-    AssaultCreateWithoutMatchInput[] | AssaultCreateWithoutMatchInput
-  >;
-  delete?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
-  connect?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
-  set?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
-  disconnect?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
-  update?: Maybe<
-    | AssaultUpdateWithWhereUniqueWithoutMatchInput[]
-    | AssaultUpdateWithWhereUniqueWithoutMatchInput
-  >;
-  upsert?: Maybe<
-    | AssaultUpsertWithWhereUniqueWithoutMatchInput[]
-    | AssaultUpsertWithWhereUniqueWithoutMatchInput
-  >;
-  deleteMany?: Maybe<AssaultScalarWhereInput[] | AssaultScalarWhereInput>;
-  updateMany?: Maybe<
-    | AssaultUpdateManyWithWhereNestedInput[]
-    | AssaultUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface UserCreateWithoutFormsInput {
-  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
-  email: String;
-  id?: Maybe<ID_Input>;
-  name: String;
-  password: String;
-  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
-}
-
-export interface AssaultUpdateWithWhereUniqueWithoutMatchInput {
-  where: AssaultWhereUniqueInput;
-  data: AssaultUpdateWithoutMatchDataInput;
-}
-
-export interface PouleCreateWithoutCreatedByInput {
-  id?: Maybe<ID_Input>;
-  matches?: Maybe<MatchCreateManyWithoutPouleInput>;
-  name: String;
-  players?: Maybe<PlayerCreateManyWithoutPoulesInput>;
-  tournament: TournamentCreateOneWithoutPoulesInput;
-}
-
-export interface AssaultUpdateWithoutMatchDataInput {
-  cards?: Maybe<CardUpdateManyWithoutAssaultInput>;
-  doppio?: Maybe<Boolean>;
-  nullo?: Maybe<Boolean>;
-  number?: Maybe<Int>;
-  winner?: Maybe<PlayerUpdateOneWithoutAssaultsWonInput>;
-}
-
-export interface MatchCreateWithoutPouleInput {
-  assaults?: Maybe<AssaultCreateManyWithoutMatchInput>;
-  createdBy?: Maybe<UserCreateOneInput>;
-  duration?: Maybe<Int>;
-  id?: Maybe<ID_Input>;
-  order: Int;
-  player1: PlayerCreateOneInput;
-  player2: PlayerCreateOneInput;
-  resultPlayer1?: Maybe<Int>;
-  resultPlayer2?: Maybe<Int>;
-}
-
-export interface PlayerUpdateOneWithoutAssaultsWonInput {
-  create?: Maybe<PlayerCreateWithoutAssaultsWonInput>;
-  update?: Maybe<PlayerUpdateWithoutAssaultsWonDataInput>;
-  upsert?: Maybe<PlayerUpsertWithoutAssaultsWonInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
-  connect?: Maybe<PlayerWhereUniqueInput>;
-}
-
-export interface AssaultCreateWithoutMatchInput {
-  cards?: Maybe<CardCreateManyWithoutAssaultInput>;
-  doppio?: Maybe<Boolean>;
-  id?: Maybe<ID_Input>;
-  nullo?: Maybe<Boolean>;
-  number: Int;
-  winner?: Maybe<PlayerCreateOneWithoutAssaultsWonInput>;
-}
-
-export interface PlayerUpdateWithoutAssaultsWonDataInput {
-  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
-  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
-  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
-  familyName?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
-  matches?: Maybe<MatchUpdateManyInput>;
-  name?: Maybe<String>;
-  nickname?: Maybe<String>;
-  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
-}
-
-export interface PlayerCreateWithoutAssaultsWonInput {
-  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
-  clan: ClanCreateOneWithoutPlayersInput;
-  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
-  familyName: String;
-  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
-  id?: Maybe<ID_Input>;
-  matches?: Maybe<MatchCreateManyInput>;
-  name: String;
-  nickname: String;
-  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
-}
-
-export interface UserUpdateOneWithoutPlayersInput {
-  create?: Maybe<UserCreateWithoutPlayersInput>;
-  update?: Maybe<UserUpdateWithoutPlayersDataInput>;
-  upsert?: Maybe<UserUpsertWithoutPlayersInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface UserCreateWithoutPlayersInput {
-  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
-  email: String;
-  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  password: String;
-  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
-}
-
-export interface UserUpdateWithoutPlayersDataInput {
-  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
-  email?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
-  name?: Maybe<String>;
-  password?: Maybe<String>;
-  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
-}
-
-export interface SchoolCreateWithoutCreatedByInput {
-  academy: AcademyCreateOneWithoutSchoolsInput;
-  clans?: Maybe<ClanCreateManyWithoutSchoolInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-}
-
-export interface SchoolUpdateManyWithoutCreatedByInput {
-  create?: Maybe<
-    SchoolCreateWithoutCreatedByInput[] | SchoolCreateWithoutCreatedByInput
-  >;
-  delete?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
-  connect?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
-  set?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
-  disconnect?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
-  update?: Maybe<
-    | SchoolUpdateWithWhereUniqueWithoutCreatedByInput[]
-    | SchoolUpdateWithWhereUniqueWithoutCreatedByInput
-  >;
-  upsert?: Maybe<
-    | SchoolUpsertWithWhereUniqueWithoutCreatedByInput[]
-    | SchoolUpsertWithWhereUniqueWithoutCreatedByInput
-  >;
-  deleteMany?: Maybe<SchoolScalarWhereInput[] | SchoolScalarWhereInput>;
-  updateMany?: Maybe<
-    | SchoolUpdateManyWithWhereNestedInput[]
-    | SchoolUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface AcademyCreateWithoutSchoolsInput {
-  country: String;
-  createdBy?: Maybe<UserCreateOneWithoutAcademiesInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-}
-
-export interface SchoolUpdateWithWhereUniqueWithoutCreatedByInput {
-  where: SchoolWhereUniqueInput;
-  data: SchoolUpdateWithoutCreatedByDataInput;
-}
-
-export interface TournamentCreateWithoutCreatedByInput {
-  id?: Maybe<ID_Input>;
-  name: String;
-  players?: Maybe<PlayerCreateManyWithoutTournamentsInput>;
-  poules?: Maybe<PouleCreateManyWithoutTournamentInput>;
-  poulesType: PoulesType;
-}
-
-export interface SchoolUpdateWithoutCreatedByDataInput {
-  academy?: Maybe<AcademyUpdateOneRequiredWithoutSchoolsInput>;
-  clans?: Maybe<ClanUpdateManyWithoutSchoolInput>;
-  name?: Maybe<String>;
-}
-
-export interface PlayerCreateWithoutTournamentsInput {
-  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
-  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
-  clan: ClanCreateOneWithoutPlayersInput;
-  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
-  familyName: String;
-  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
-  id?: Maybe<ID_Input>;
-  matches?: Maybe<MatchCreateManyInput>;
-  name: String;
-  nickname: String;
-  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
-}
-
-export interface AcademyUpdateOneRequiredWithoutSchoolsInput {
-  create?: Maybe<AcademyCreateWithoutSchoolsInput>;
-  update?: Maybe<AcademyUpdateWithoutSchoolsDataInput>;
-  upsert?: Maybe<AcademyUpsertWithoutSchoolsInput>;
-  connect?: Maybe<AcademyWhereUniqueInput>;
-}
-
-export interface MatchCreateInput {
-  assaults?: Maybe<AssaultCreateManyWithoutMatchInput>;
-  createdBy?: Maybe<UserCreateOneInput>;
-  duration?: Maybe<Int>;
-  id?: Maybe<ID_Input>;
-  order: Int;
-  player1: PlayerCreateOneInput;
-  player2: PlayerCreateOneInput;
-  poule: PouleCreateOneWithoutMatchesInput;
-  resultPlayer1?: Maybe<Int>;
-  resultPlayer2?: Maybe<Int>;
-}
-
-export interface AcademyUpdateWithoutSchoolsDataInput {
-  country?: Maybe<String>;
-  createdBy?: Maybe<UserUpdateOneWithoutAcademiesInput>;
-  name?: Maybe<String>;
-}
-
-export interface PlayerCreateInput {
-  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
-  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
-  clan: ClanCreateOneWithoutPlayersInput;
-  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
-  familyName: String;
-  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
-  id?: Maybe<ID_Input>;
-  matches?: Maybe<MatchCreateManyInput>;
-  name: String;
-  nickname: String;
-  poules?: Maybe<PouleCreateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
-}
-
-export interface AcademyUpsertWithoutSchoolsInput {
-  update: AcademyUpdateWithoutSchoolsDataInput;
-  create: AcademyCreateWithoutSchoolsInput;
-}
-
-export interface PouleCreateWithoutPlayersInput {
-  createdBy?: Maybe<UserCreateOneWithoutPoulesInput>;
-  id?: Maybe<ID_Input>;
-  matches?: Maybe<MatchCreateManyWithoutPouleInput>;
-  name: String;
-  tournament: TournamentCreateOneWithoutPoulesInput;
-}
-
-export interface SchoolUpsertWithWhereUniqueWithoutCreatedByInput {
-  where: SchoolWhereUniqueInput;
-  update: SchoolUpdateWithoutCreatedByDataInput;
-  create: SchoolCreateWithoutCreatedByInput;
-}
-
-export interface UserCreateWithoutPoulesInput {
-  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
-  email: String;
-  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  password: String;
-  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentCreateManyWithoutCreatedByInput>;
-}
-
-export interface SchoolScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  AND?: Maybe<SchoolScalarWhereInput[] | SchoolScalarWhereInput>;
-  OR?: Maybe<SchoolScalarWhereInput[] | SchoolScalarWhereInput>;
-  NOT?: Maybe<SchoolScalarWhereInput[] | SchoolScalarWhereInput>;
-}
-
-export interface TournamentCreateWithoutPoulesInput {
-  createdBy?: Maybe<UserCreateOneWithoutTournamentsInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  players?: Maybe<PlayerCreateManyWithoutTournamentsInput>;
-  poulesType: PoulesType;
-}
-
-export interface SchoolUpdateManyWithWhereNestedInput {
-  where: SchoolScalarWhereInput;
-  data: SchoolUpdateManyDataInput;
-}
-
-export interface UserCreateWithoutTournamentsInput {
-  academies?: Maybe<AcademyCreateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanCreateManyWithoutCreatedByInput>;
-  email: String;
-  forms?: Maybe<FormCreateManyWithoutCreatedByInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  password: String;
-  players?: Maybe<PlayerCreateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleCreateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolCreateManyWithoutCreatedByInput>;
-}
-
-export interface SchoolUpdateManyDataInput {
-  name?: Maybe<String>;
-}
-
-export interface TournamentCreateWithoutPlayersInput {
-  createdBy?: Maybe<UserCreateOneWithoutTournamentsInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  poules?: Maybe<PouleCreateManyWithoutTournamentInput>;
-  poulesType: PoulesType;
-}
-
-export interface TournamentUpdateManyWithoutCreatedByInput {
-  create?: Maybe<
-    | TournamentCreateWithoutCreatedByInput[]
-    | TournamentCreateWithoutCreatedByInput
-  >;
-  delete?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
-  connect?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
-  set?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
-  disconnect?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
-  update?: Maybe<
-    | TournamentUpdateWithWhereUniqueWithoutCreatedByInput[]
-    | TournamentUpdateWithWhereUniqueWithoutCreatedByInput
-  >;
-  upsert?: Maybe<
-    | TournamentUpsertWithWhereUniqueWithoutCreatedByInput[]
-    | TournamentUpsertWithWhereUniqueWithoutCreatedByInput
-  >;
-  deleteMany?: Maybe<TournamentScalarWhereInput[] | TournamentScalarWhereInput>;
-  updateMany?: Maybe<
-    | TournamentUpdateManyWithWhereNestedInput[]
-    | TournamentUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface PouleCreateWithoutTournamentInput {
-  createdBy?: Maybe<UserCreateOneWithoutPoulesInput>;
-  id?: Maybe<ID_Input>;
-  matches?: Maybe<MatchCreateManyWithoutPouleInput>;
-  name: String;
-  players?: Maybe<PlayerCreateManyWithoutPoulesInput>;
-}
-
-export interface TournamentUpdateWithWhereUniqueWithoutCreatedByInput {
-  where: TournamentWhereUniqueInput;
-  data: TournamentUpdateWithoutCreatedByDataInput;
-}
-
-export interface PlayerCreateWithoutPoulesInput {
-  assaultsWon?: Maybe<AssaultCreateManyWithoutWinnerInput>;
-  cards?: Maybe<CardCreateManyWithoutPlayerInput>;
-  clan: ClanCreateOneWithoutPlayersInput;
-  createdBy?: Maybe<UserCreateOneWithoutPlayersInput>;
-  familyName: String;
-  forms?: Maybe<FormCreateManyWithoutPlayersInput>;
-  id?: Maybe<ID_Input>;
-  matches?: Maybe<MatchCreateManyInput>;
-  name: String;
-  nickname: String;
-  tournaments?: Maybe<TournamentCreateManyWithoutPlayersInput>;
-}
-
-export interface TournamentUpdateWithoutCreatedByDataInput {
-  name?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutTournamentsInput>;
-  poules?: Maybe<PouleUpdateManyWithoutTournamentInput>;
-  poulesType?: Maybe<PoulesType>;
-}
-
-export interface PouleCreateWithoutMatchesInput {
-  createdBy?: Maybe<UserCreateOneWithoutPoulesInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  players?: Maybe<PlayerCreateManyWithoutPoulesInput>;
-  tournament: TournamentCreateOneWithoutPoulesInput;
-}
-
-export interface PlayerUpdateManyWithoutTournamentsInput {
-  create?: Maybe<
-    PlayerCreateWithoutTournamentsInput[] | PlayerCreateWithoutTournamentsInput
-  >;
-  delete?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  set?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  disconnect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  update?: Maybe<
-    | PlayerUpdateWithWhereUniqueWithoutTournamentsInput[]
-    | PlayerUpdateWithWhereUniqueWithoutTournamentsInput
-  >;
-  upsert?: Maybe<
-    | PlayerUpsertWithWhereUniqueWithoutTournamentsInput[]
-    | PlayerUpsertWithWhereUniqueWithoutTournamentsInput
-  >;
-  deleteMany?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
-  updateMany?: Maybe<
-    | PlayerUpdateManyWithWhereNestedInput[]
-    | PlayerUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface SchoolCreateWithoutClansInput {
-  academy: AcademyCreateOneWithoutSchoolsInput;
-  createdBy?: Maybe<UserCreateOneWithoutSchoolsInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-}
-
-export interface PlayerUpdateWithWhereUniqueWithoutTournamentsInput {
-  where: PlayerWhereUniqueInput;
-  data: PlayerUpdateWithoutTournamentsDataInput;
-}
-
-export interface UserUpdateOneWithoutAcademiesInput {
-  create?: Maybe<UserCreateWithoutAcademiesInput>;
-  update?: Maybe<UserUpdateWithoutAcademiesDataInput>;
-  upsert?: Maybe<UserUpsertWithoutAcademiesInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface PlayerUpdateWithoutTournamentsDataInput {
-  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
-  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
-  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
-  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
-  familyName?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
-  matches?: Maybe<MatchUpdateManyInput>;
-  name?: Maybe<String>;
-  nickname?: Maybe<String>;
-  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
-}
-
-export interface ClanUpdateManyWithoutCreatedByInput {
-  create?: Maybe<
-    ClanCreateWithoutCreatedByInput[] | ClanCreateWithoutCreatedByInput
-  >;
-  delete?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
-  connect?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
-  set?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
-  disconnect?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
-  update?: Maybe<
-    | ClanUpdateWithWhereUniqueWithoutCreatedByInput[]
-    | ClanUpdateWithWhereUniqueWithoutCreatedByInput
-  >;
-  upsert?: Maybe<
-    | ClanUpsertWithWhereUniqueWithoutCreatedByInput[]
-    | ClanUpsertWithWhereUniqueWithoutCreatedByInput
-  >;
-  deleteMany?: Maybe<ClanScalarWhereInput[] | ClanScalarWhereInput>;
-  updateMany?: Maybe<
-    ClanUpdateManyWithWhereNestedInput[] | ClanUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface MatchUpdateManyInput {
-  create?: Maybe<MatchCreateInput[] | MatchCreateInput>;
-  update?: Maybe<
-    | MatchUpdateWithWhereUniqueNestedInput[]
-    | MatchUpdateWithWhereUniqueNestedInput
-  >;
-  upsert?: Maybe<
-    | MatchUpsertWithWhereUniqueNestedInput[]
-    | MatchUpsertWithWhereUniqueNestedInput
-  >;
-  delete?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
-  connect?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
-  set?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
-  disconnect?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
-  deleteMany?: Maybe<MatchScalarWhereInput[] | MatchScalarWhereInput>;
-  updateMany?: Maybe<
-    MatchUpdateManyWithWhereNestedInput[] | MatchUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface ClanUpdateWithoutCreatedByDataInput {
-  name?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutClanInput>;
-  school?: Maybe<SchoolUpdateOneRequiredWithoutClansInput>;
-}
-
-export interface MatchUpdateWithWhereUniqueNestedInput {
-  where: MatchWhereUniqueInput;
-  data: MatchUpdateDataInput;
-}
-
-export interface PlayerUpdateWithWhereUniqueWithoutClanInput {
-  where: PlayerWhereUniqueInput;
-  data: PlayerUpdateWithoutClanDataInput;
-}
-
-export interface MatchUpdateDataInput {
-  assaults?: Maybe<AssaultUpdateManyWithoutMatchInput>;
-  createdBy?: Maybe<UserUpdateOneInput>;
-  duration?: Maybe<Int>;
-  order?: Maybe<Int>;
-  player1?: Maybe<PlayerUpdateOneRequiredInput>;
-  player2?: Maybe<PlayerUpdateOneRequiredInput>;
-  poule?: Maybe<PouleUpdateOneRequiredWithoutMatchesInput>;
-  resultPlayer1?: Maybe<Int>;
-  resultPlayer2?: Maybe<Int>;
-}
-
-export interface AssaultUpdateManyWithoutWinnerInput {
-  create?: Maybe<
-    AssaultCreateWithoutWinnerInput[] | AssaultCreateWithoutWinnerInput
-  >;
-  delete?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
-  connect?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
-  set?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
-  disconnect?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
-  update?: Maybe<
-    | AssaultUpdateWithWhereUniqueWithoutWinnerInput[]
-    | AssaultUpdateWithWhereUniqueWithoutWinnerInput
-  >;
-  upsert?: Maybe<
-    | AssaultUpsertWithWhereUniqueWithoutWinnerInput[]
-    | AssaultUpsertWithWhereUniqueWithoutWinnerInput
-  >;
-  deleteMany?: Maybe<AssaultScalarWhereInput[] | AssaultScalarWhereInput>;
-  updateMany?: Maybe<
-    | AssaultUpdateManyWithWhereNestedInput[]
-    | AssaultUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface PlayerUpdateOneRequiredInput {
-  create?: Maybe<PlayerCreateInput>;
-  update?: Maybe<PlayerUpdateDataInput>;
-  upsert?: Maybe<PlayerUpsertNestedInput>;
-  connect?: Maybe<PlayerWhereUniqueInput>;
-}
-
-export interface UserSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<UserWhereInput>;
-  AND?: Maybe<UserSubscriptionWhereInput[] | UserSubscriptionWhereInput>;
-  OR?: Maybe<UserSubscriptionWhereInput[] | UserSubscriptionWhereInput>;
-  NOT?: Maybe<UserSubscriptionWhereInput[] | UserSubscriptionWhereInput>;
-}
-
-export interface PlayerUpdateDataInput {
-  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
-  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
-  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
-  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
-  familyName?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
-  matches?: Maybe<MatchUpdateManyInput>;
-  name?: Maybe<String>;
-  nickname?: Maybe<String>;
-  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
-}
-
-export interface PouleSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<PouleWhereInput>;
-  AND?: Maybe<PouleSubscriptionWhereInput[] | PouleSubscriptionWhereInput>;
-  OR?: Maybe<PouleSubscriptionWhereInput[] | PouleSubscriptionWhereInput>;
-  NOT?: Maybe<PouleSubscriptionWhereInput[] | PouleSubscriptionWhereInput>;
-}
-
-export interface PouleUpdateManyWithoutPlayersInput {
-  create?: Maybe<
-    PouleCreateWithoutPlayersInput[] | PouleCreateWithoutPlayersInput
-  >;
-  delete?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-  connect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-  set?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-  disconnect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-  update?: Maybe<
-    | PouleUpdateWithWhereUniqueWithoutPlayersInput[]
-    | PouleUpdateWithWhereUniqueWithoutPlayersInput
-  >;
-  upsert?: Maybe<
-    | PouleUpsertWithWhereUniqueWithoutPlayersInput[]
-    | PouleUpsertWithWhereUniqueWithoutPlayersInput
-  >;
-  deleteMany?: Maybe<PouleScalarWhereInput[] | PouleScalarWhereInput>;
-  updateMany?: Maybe<
-    PouleUpdateManyWithWhereNestedInput[] | PouleUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface FormSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<FormWhereInput>;
-  AND?: Maybe<FormSubscriptionWhereInput[] | FormSubscriptionWhereInput>;
-  OR?: Maybe<FormSubscriptionWhereInput[] | FormSubscriptionWhereInput>;
-  NOT?: Maybe<FormSubscriptionWhereInput[] | FormSubscriptionWhereInput>;
-}
-
-export interface PouleUpdateWithWhereUniqueWithoutPlayersInput {
-  where: PouleWhereUniqueInput;
-  data: PouleUpdateWithoutPlayersDataInput;
-}
-
-export interface UserWhereInput {
-  academies_every?: Maybe<AcademyWhereInput>;
-  academies_some?: Maybe<AcademyWhereInput>;
-  academies_none?: Maybe<AcademyWhereInput>;
-  clans_every?: Maybe<ClanWhereInput>;
-  clans_some?: Maybe<ClanWhereInput>;
-  clans_none?: Maybe<ClanWhereInput>;
-  email?: Maybe<String>;
-  email_not?: Maybe<String>;
-  email_in?: Maybe<String[] | String>;
-  email_not_in?: Maybe<String[] | String>;
-  email_lt?: Maybe<String>;
-  email_lte?: Maybe<String>;
-  email_gt?: Maybe<String>;
-  email_gte?: Maybe<String>;
-  email_contains?: Maybe<String>;
-  email_not_contains?: Maybe<String>;
-  email_starts_with?: Maybe<String>;
-  email_not_starts_with?: Maybe<String>;
-  email_ends_with?: Maybe<String>;
-  email_not_ends_with?: Maybe<String>;
-  forms_every?: Maybe<FormWhereInput>;
-  forms_some?: Maybe<FormWhereInput>;
-  forms_none?: Maybe<FormWhereInput>;
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  password?: Maybe<String>;
-  password_not?: Maybe<String>;
-  password_in?: Maybe<String[] | String>;
-  password_not_in?: Maybe<String[] | String>;
-  password_lt?: Maybe<String>;
-  password_lte?: Maybe<String>;
-  password_gt?: Maybe<String>;
-  password_gte?: Maybe<String>;
-  password_contains?: Maybe<String>;
-  password_not_contains?: Maybe<String>;
-  password_starts_with?: Maybe<String>;
-  password_not_starts_with?: Maybe<String>;
-  password_ends_with?: Maybe<String>;
-  password_not_ends_with?: Maybe<String>;
-  players_every?: Maybe<PlayerWhereInput>;
-  players_some?: Maybe<PlayerWhereInput>;
-  players_none?: Maybe<PlayerWhereInput>;
-  poules_every?: Maybe<PouleWhereInput>;
-  poules_some?: Maybe<PouleWhereInput>;
-  poules_none?: Maybe<PouleWhereInput>;
-  schools_every?: Maybe<SchoolWhereInput>;
-  schools_some?: Maybe<SchoolWhereInput>;
-  schools_none?: Maybe<SchoolWhereInput>;
-  tournaments_every?: Maybe<TournamentWhereInput>;
-  tournaments_some?: Maybe<TournamentWhereInput>;
-  tournaments_none?: Maybe<TournamentWhereInput>;
-  AND?: Maybe<UserWhereInput[] | UserWhereInput>;
-  OR?: Maybe<UserWhereInput[] | UserWhereInput>;
-  NOT?: Maybe<UserWhereInput[] | UserWhereInput>;
-}
-
-export interface PouleUpdateWithoutPlayersDataInput {
-  createdBy?: Maybe<UserUpdateOneWithoutPoulesInput>;
-  matches?: Maybe<MatchUpdateManyWithoutPouleInput>;
-  name?: Maybe<String>;
-  tournament?: Maybe<TournamentUpdateOneRequiredWithoutPoulesInput>;
-}
-
-export interface AcademySubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<AcademyWhereInput>;
-  AND?: Maybe<AcademySubscriptionWhereInput[] | AcademySubscriptionWhereInput>;
-  OR?: Maybe<AcademySubscriptionWhereInput[] | AcademySubscriptionWhereInput>;
-  NOT?: Maybe<AcademySubscriptionWhereInput[] | AcademySubscriptionWhereInput>;
-}
-
-export interface UserUpdateOneWithoutPoulesInput {
-  create?: Maybe<UserCreateWithoutPoulesInput>;
-  update?: Maybe<UserUpdateWithoutPoulesDataInput>;
-  upsert?: Maybe<UserUpsertWithoutPoulesInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface TournamentUpdateInput {
-  createdBy?: Maybe<UserUpdateOneWithoutTournamentsInput>;
-  name?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutTournamentsInput>;
-  poules?: Maybe<PouleUpdateManyWithoutTournamentInput>;
-  poulesType?: Maybe<PoulesType>;
-}
-
-export interface UserUpdateWithoutPoulesDataInput {
-  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
-  email?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
-  name?: Maybe<String>;
-  password?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
-}
-
-export interface SchoolUpdateInput {
-  academy?: Maybe<AcademyUpdateOneRequiredWithoutSchoolsInput>;
-  clans?: Maybe<ClanUpdateManyWithoutSchoolInput>;
-  createdBy?: Maybe<UserUpdateOneWithoutSchoolsInput>;
-  name?: Maybe<String>;
-}
-
-export interface UserUpsertWithoutPoulesInput {
-  update: UserUpdateWithoutPoulesDataInput;
-  create: UserCreateWithoutPoulesInput;
-}
-
-export interface PouleUpdateInput {
-  createdBy?: Maybe<UserUpdateOneWithoutPoulesInput>;
-  matches?: Maybe<MatchUpdateManyWithoutPouleInput>;
-  name?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutPoulesInput>;
-  tournament?: Maybe<TournamentUpdateOneRequiredWithoutPoulesInput>;
-}
-
-export interface TournamentUpdateOneRequiredWithoutPoulesInput {
-  create?: Maybe<TournamentCreateWithoutPoulesInput>;
-  update?: Maybe<TournamentUpdateWithoutPoulesDataInput>;
-  upsert?: Maybe<TournamentUpsertWithoutPoulesInput>;
-  connect?: Maybe<TournamentWhereUniqueInput>;
-}
-
-export interface PlayerUpdateInput {
-  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
-  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
-  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
-  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
-  familyName?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
-  matches?: Maybe<MatchUpdateManyInput>;
-  name?: Maybe<String>;
-  nickname?: Maybe<String>;
-  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
-}
-
-export interface TournamentUpdateWithoutPoulesDataInput {
-  createdBy?: Maybe<UserUpdateOneWithoutTournamentsInput>;
-  name?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutTournamentsInput>;
-  poulesType?: Maybe<PoulesType>;
-}
-
-export interface FormUpdateManyMutationInput {
-  name?: Maybe<String>;
-}
-
-export interface UserUpdateOneWithoutTournamentsInput {
-  create?: Maybe<UserCreateWithoutTournamentsInput>;
-  update?: Maybe<UserUpdateWithoutTournamentsDataInput>;
-  upsert?: Maybe<UserUpsertWithoutTournamentsInput>;
-  delete?: Maybe<Boolean>;
-  disconnect?: Maybe<Boolean>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface ClanUpdateManyMutationInput {
-  name?: Maybe<String>;
-}
-
-export interface UserUpdateWithoutTournamentsDataInput {
-  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
-  email?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
-  name?: Maybe<String>;
-  password?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
-}
-
-export interface CardUpdateManyMutationInput {
-  reason?: Maybe<String>;
-  type?: Maybe<CardsType>;
-}
-
-export interface UserUpsertWithoutTournamentsInput {
-  update: UserUpdateWithoutTournamentsDataInput;
-  create: UserCreateWithoutTournamentsInput;
-}
-
-export interface AssaultUpdateManyMutationInput {
-  doppio?: Maybe<Boolean>;
-  nullo?: Maybe<Boolean>;
-  number?: Maybe<Int>;
-}
-
-export interface TournamentUpsertWithoutPoulesInput {
-  update: TournamentUpdateWithoutPoulesDataInput;
-  create: TournamentCreateWithoutPoulesInput;
-}
-
-export interface AcademyUpdateManyMutationInput {
-  country?: Maybe<String>;
-  name?: Maybe<String>;
-}
-
-export interface PouleUpsertWithWhereUniqueWithoutPlayersInput {
-  where: PouleWhereUniqueInput;
-  update: PouleUpdateWithoutPlayersDataInput;
-  create: PouleCreateWithoutPlayersInput;
-}
-
-export interface PlayerUpsertWithWhereUniqueWithoutClanInput {
-  where: PlayerWhereUniqueInput;
-  update: PlayerUpdateWithoutClanDataInput;
-  create: PlayerCreateWithoutClanInput;
-}
-
-export interface PouleScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  AND?: Maybe<PouleScalarWhereInput[] | PouleScalarWhereInput>;
-  OR?: Maybe<PouleScalarWhereInput[] | PouleScalarWhereInput>;
-  NOT?: Maybe<PouleScalarWhereInput[] | PouleScalarWhereInput>;
-}
-
-export interface PlayerUpsertWithoutCardsInput {
-  update: PlayerUpdateWithoutCardsDataInput;
-  create: PlayerCreateWithoutCardsInput;
-}
-
-export interface PouleUpdateManyWithWhereNestedInput {
-  where: PouleScalarWhereInput;
-  data: PouleUpdateManyDataInput;
-}
-
-export interface UserCreateOneWithoutAcademiesInput {
-  create?: Maybe<UserCreateWithoutAcademiesInput>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface PouleUpdateManyDataInput {
-  name?: Maybe<String>;
+export interface UserUpsertWithoutSchoolsInput {
+  update: UserUpdateWithoutSchoolsDataInput;
+  create: UserCreateWithoutSchoolsInput;
 }
 
 export interface PlayerCreateManyWithoutClanInput {
@@ -2950,142 +4362,10 @@ export interface PlayerCreateManyWithoutClanInput {
   connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
 }
 
-export interface TournamentUpdateManyWithoutPlayersInput {
-  create?: Maybe<
-    TournamentCreateWithoutPlayersInput[] | TournamentCreateWithoutPlayersInput
-  >;
-  delete?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
-  connect?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
-  set?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
-  disconnect?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
-  update?: Maybe<
-    | TournamentUpdateWithWhereUniqueWithoutPlayersInput[]
-    | TournamentUpdateWithWhereUniqueWithoutPlayersInput
-  >;
-  upsert?: Maybe<
-    | TournamentUpsertWithWhereUniqueWithoutPlayersInput[]
-    | TournamentUpsertWithWhereUniqueWithoutPlayersInput
-  >;
-  deleteMany?: Maybe<TournamentScalarWhereInput[] | TournamentScalarWhereInput>;
-  updateMany?: Maybe<
-    | TournamentUpdateManyWithWhereNestedInput[]
-    | TournamentUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface CardCreateManyWithoutAssaultInput {
-  create?: Maybe<
-    CardCreateWithoutAssaultInput[] | CardCreateWithoutAssaultInput
-  >;
-  connect?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
-}
-
-export interface TournamentUpdateWithWhereUniqueWithoutPlayersInput {
-  where: TournamentWhereUniqueInput;
-  data: TournamentUpdateWithoutPlayersDataInput;
-}
-
-export interface ClanCreateOneWithoutPlayersInput {
-  create?: Maybe<ClanCreateWithoutPlayersInput>;
-  connect?: Maybe<ClanWhereUniqueInput>;
-}
-
-export interface TournamentUpdateWithoutPlayersDataInput {
-  createdBy?: Maybe<UserUpdateOneWithoutTournamentsInput>;
-  name?: Maybe<String>;
-  poules?: Maybe<PouleUpdateManyWithoutTournamentInput>;
-  poulesType?: Maybe<PoulesType>;
-}
-
-export interface AcademyCreateManyWithoutCreatedByInput {
-  create?: Maybe<
-    AcademyCreateWithoutCreatedByInput[] | AcademyCreateWithoutCreatedByInput
-  >;
-  connect?: Maybe<AcademyWhereUniqueInput[] | AcademyWhereUniqueInput>;
-}
-
-export interface PouleUpdateManyWithoutTournamentInput {
-  create?: Maybe<
-    PouleCreateWithoutTournamentInput[] | PouleCreateWithoutTournamentInput
-  >;
-  delete?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-  connect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-  set?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-  disconnect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-  update?: Maybe<
-    | PouleUpdateWithWhereUniqueWithoutTournamentInput[]
-    | PouleUpdateWithWhereUniqueWithoutTournamentInput
-  >;
-  upsert?: Maybe<
-    | PouleUpsertWithWhereUniqueWithoutTournamentInput[]
-    | PouleUpsertWithWhereUniqueWithoutTournamentInput
-  >;
-  deleteMany?: Maybe<PouleScalarWhereInput[] | PouleScalarWhereInput>;
-  updateMany?: Maybe<
-    PouleUpdateManyWithWhereNestedInput[] | PouleUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface ClanCreateManyWithoutSchoolInput {
-  create?: Maybe<ClanCreateWithoutSchoolInput[] | ClanCreateWithoutSchoolInput>;
-  connect?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
-}
-
-export interface PouleUpdateWithWhereUniqueWithoutTournamentInput {
-  where: PouleWhereUniqueInput;
-  data: PouleUpdateWithoutTournamentDataInput;
-}
-
-export interface FormCreateManyWithoutCreatedByInput {
-  create?: Maybe<
-    FormCreateWithoutCreatedByInput[] | FormCreateWithoutCreatedByInput
-  >;
-  connect?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
-}
-
-export interface PouleUpdateWithoutTournamentDataInput {
-  createdBy?: Maybe<UserUpdateOneWithoutPoulesInput>;
-  matches?: Maybe<MatchUpdateManyWithoutPouleInput>;
-  name?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutPoulesInput>;
-}
-
-export interface CardCreateManyWithoutPlayerInput {
-  create?: Maybe<CardCreateWithoutPlayerInput[] | CardCreateWithoutPlayerInput>;
-  connect?: Maybe<CardWhereUniqueInput[] | CardWhereUniqueInput>;
-}
-
-export interface PlayerUpdateManyWithoutPoulesInput {
-  create?: Maybe<
-    PlayerCreateWithoutPoulesInput[] | PlayerCreateWithoutPoulesInput
-  >;
-  delete?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  set?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  disconnect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  update?: Maybe<
-    | PlayerUpdateWithWhereUniqueWithoutPoulesInput[]
-    | PlayerUpdateWithWhereUniqueWithoutPoulesInput
-  >;
-  upsert?: Maybe<
-    | PlayerUpsertWithWhereUniqueWithoutPoulesInput[]
-    | PlayerUpsertWithWhereUniqueWithoutPoulesInput
-  >;
-  deleteMany?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
-  updateMany?: Maybe<
-    | PlayerUpdateManyWithWhereNestedInput[]
-    | PlayerUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface MatchCreateOneWithoutAssaultsInput {
-  create?: Maybe<MatchCreateWithoutAssaultsInput>;
-  connect?: Maybe<MatchWhereUniqueInput>;
-}
-
-export interface PlayerUpdateWithWhereUniqueWithoutPoulesInput {
-  where: PlayerWhereUniqueInput;
-  data: PlayerUpdateWithoutPoulesDataInput;
+export interface SchoolUpsertWithWhereUniqueWithoutAcademyInput {
+  where: SchoolWhereUniqueInput;
+  update: SchoolUpdateWithoutAcademyDataInput;
+  create: SchoolCreateWithoutAcademyInput;
 }
 
 export interface PlayerCreateManyWithoutCreatedByInput {
@@ -3095,861 +4375,17 @@ export interface PlayerCreateManyWithoutCreatedByInput {
   connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
 }
 
-export interface PlayerUpdateWithoutPoulesDataInput {
-  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
-  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
-  clan?: Maybe<ClanUpdateOneRequiredWithoutPlayersInput>;
-  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
-  familyName?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
-  matches?: Maybe<MatchUpdateManyInput>;
-  name?: Maybe<String>;
-  nickname?: Maybe<String>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
-}
-
-export interface UserCreateOneWithoutFormsInput {
-  create?: Maybe<UserCreateWithoutFormsInput>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface PlayerUpsertWithWhereUniqueWithoutPoulesInput {
-  where: PlayerWhereUniqueInput;
-  update: PlayerUpdateWithoutPoulesDataInput;
-  create: PlayerCreateWithoutPoulesInput;
-}
-
-export interface MatchCreateManyWithoutPouleInput {
-  create?: Maybe<MatchCreateWithoutPouleInput[] | MatchCreateWithoutPouleInput>;
-  connect?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
-}
-
-export interface PlayerScalarWhereInput {
-  familyName?: Maybe<String>;
-  familyName_not?: Maybe<String>;
-  familyName_in?: Maybe<String[] | String>;
-  familyName_not_in?: Maybe<String[] | String>;
-  familyName_lt?: Maybe<String>;
-  familyName_lte?: Maybe<String>;
-  familyName_gt?: Maybe<String>;
-  familyName_gte?: Maybe<String>;
-  familyName_contains?: Maybe<String>;
-  familyName_not_contains?: Maybe<String>;
-  familyName_starts_with?: Maybe<String>;
-  familyName_not_starts_with?: Maybe<String>;
-  familyName_ends_with?: Maybe<String>;
-  familyName_not_ends_with?: Maybe<String>;
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  nickname?: Maybe<String>;
-  nickname_not?: Maybe<String>;
-  nickname_in?: Maybe<String[] | String>;
-  nickname_not_in?: Maybe<String[] | String>;
-  nickname_lt?: Maybe<String>;
-  nickname_lte?: Maybe<String>;
-  nickname_gt?: Maybe<String>;
-  nickname_gte?: Maybe<String>;
-  nickname_contains?: Maybe<String>;
-  nickname_not_contains?: Maybe<String>;
-  nickname_starts_with?: Maybe<String>;
-  nickname_not_starts_with?: Maybe<String>;
-  nickname_ends_with?: Maybe<String>;
-  nickname_not_ends_with?: Maybe<String>;
-  AND?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
-  OR?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
-  NOT?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
-}
-
-export interface PlayerCreateOneWithoutAssaultsWonInput {
-  create?: Maybe<PlayerCreateWithoutAssaultsWonInput>;
-  connect?: Maybe<PlayerWhereUniqueInput>;
-}
-
-export interface PlayerUpdateManyWithWhereNestedInput {
-  where: PlayerScalarWhereInput;
-  data: PlayerUpdateManyDataInput;
-}
-
-export interface SchoolCreateManyWithoutCreatedByInput {
-  create?: Maybe<
-    SchoolCreateWithoutCreatedByInput[] | SchoolCreateWithoutCreatedByInput
-  >;
-  connect?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
-}
-
-export interface PlayerUpdateManyDataInput {
-  familyName?: Maybe<String>;
-  name?: Maybe<String>;
-  nickname?: Maybe<String>;
-}
-
-export interface TournamentCreateManyWithoutCreatedByInput {
-  create?: Maybe<
-    | TournamentCreateWithoutCreatedByInput[]
-    | TournamentCreateWithoutCreatedByInput
-  >;
-  connect?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
-}
-
-export interface PouleUpsertWithWhereUniqueWithoutTournamentInput {
-  where: PouleWhereUniqueInput;
-  update: PouleUpdateWithoutTournamentDataInput;
-  create: PouleCreateWithoutTournamentInput;
-}
-
-export interface MatchCreateManyInput {
-  create?: Maybe<MatchCreateInput[] | MatchCreateInput>;
-  connect?: Maybe<MatchWhereUniqueInput[] | MatchWhereUniqueInput>;
-}
-
-export interface TournamentUpsertWithWhereUniqueWithoutPlayersInput {
-  where: TournamentWhereUniqueInput;
-  update: TournamentUpdateWithoutPlayersDataInput;
-  create: TournamentCreateWithoutPlayersInput;
-}
-
-export interface PouleCreateManyWithoutPlayersInput {
-  create?: Maybe<
-    PouleCreateWithoutPlayersInput[] | PouleCreateWithoutPlayersInput
-  >;
-  connect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
-}
-
-export interface TournamentScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  poulesType?: Maybe<PoulesType>;
-  poulesType_not?: Maybe<PoulesType>;
-  poulesType_in?: Maybe<PoulesType[] | PoulesType>;
-  poulesType_not_in?: Maybe<PoulesType[] | PoulesType>;
-  AND?: Maybe<TournamentScalarWhereInput[] | TournamentScalarWhereInput>;
-  OR?: Maybe<TournamentScalarWhereInput[] | TournamentScalarWhereInput>;
-  NOT?: Maybe<TournamentScalarWhereInput[] | TournamentScalarWhereInput>;
-}
-
-export interface TournamentCreateOneWithoutPoulesInput {
-  create?: Maybe<TournamentCreateWithoutPoulesInput>;
-  connect?: Maybe<TournamentWhereUniqueInput>;
-}
-
-export interface TournamentUpdateManyWithWhereNestedInput {
-  where: TournamentScalarWhereInput;
-  data: TournamentUpdateManyDataInput;
-}
-
-export interface TournamentCreateManyWithoutPlayersInput {
-  create?: Maybe<
-    TournamentCreateWithoutPlayersInput[] | TournamentCreateWithoutPlayersInput
-  >;
-  connect?: Maybe<TournamentWhereUniqueInput[] | TournamentWhereUniqueInput>;
-}
-
-export interface TournamentUpdateManyDataInput {
-  name?: Maybe<String>;
-  poulesType?: Maybe<PoulesType>;
-}
-
-export interface PlayerCreateManyWithoutPoulesInput {
-  create?: Maybe<
-    PlayerCreateWithoutPoulesInput[] | PlayerCreateWithoutPoulesInput
-  >;
-  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-}
-
-export interface PlayerUpsertNestedInput {
-  update: PlayerUpdateDataInput;
-  create: PlayerCreateInput;
-}
-
-export interface SchoolCreateOneWithoutClansInput {
-  create?: Maybe<SchoolCreateWithoutClansInput>;
-  connect?: Maybe<SchoolWhereUniqueInput>;
-}
-
-export interface PouleUpdateOneRequiredWithoutMatchesInput {
-  create?: Maybe<PouleCreateWithoutMatchesInput>;
-  update?: Maybe<PouleUpdateWithoutMatchesDataInput>;
-  upsert?: Maybe<PouleUpsertWithoutMatchesInput>;
-  connect?: Maybe<PouleWhereUniqueInput>;
-}
-
-export interface UserUpdateWithoutAcademiesDataInput {
-  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
-  email?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
-  name?: Maybe<String>;
-  password?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
-}
-
-export interface PouleUpdateWithoutMatchesDataInput {
-  createdBy?: Maybe<UserUpdateOneWithoutPoulesInput>;
-  name?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutPoulesInput>;
-  tournament?: Maybe<TournamentUpdateOneRequiredWithoutPoulesInput>;
-}
-
-export interface PlayerUpdateManyWithoutClanInput {
-  create?: Maybe<PlayerCreateWithoutClanInput[] | PlayerCreateWithoutClanInput>;
-  delete?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  set?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  disconnect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
-  update?: Maybe<
-    | PlayerUpdateWithWhereUniqueWithoutClanInput[]
-    | PlayerUpdateWithWhereUniqueWithoutClanInput
-  >;
-  upsert?: Maybe<
-    | PlayerUpsertWithWhereUniqueWithoutClanInput[]
-    | PlayerUpsertWithWhereUniqueWithoutClanInput
-  >;
-  deleteMany?: Maybe<PlayerScalarWhereInput[] | PlayerScalarWhereInput>;
-  updateMany?: Maybe<
-    | PlayerUpdateManyWithWhereNestedInput[]
-    | PlayerUpdateManyWithWhereNestedInput
-  >;
-}
-
-export interface PouleUpsertWithoutMatchesInput {
-  update: PouleUpdateWithoutMatchesDataInput;
-  create: PouleCreateWithoutMatchesInput;
-}
-
-export interface AssaultUpdateWithWhereUniqueWithoutWinnerInput {
-  where: AssaultWhereUniqueInput;
-  data: AssaultUpdateWithoutWinnerDataInput;
-}
-
-export interface MatchUpsertWithWhereUniqueNestedInput {
-  where: MatchWhereUniqueInput;
-  update: MatchUpdateDataInput;
-  create: MatchCreateInput;
-}
-
-export interface PlayerSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<PlayerWhereInput>;
-  AND?: Maybe<PlayerSubscriptionWhereInput[] | PlayerSubscriptionWhereInput>;
-  OR?: Maybe<PlayerSubscriptionWhereInput[] | PlayerSubscriptionWhereInput>;
-  NOT?: Maybe<PlayerSubscriptionWhereInput[] | PlayerSubscriptionWhereInput>;
-}
-
-export interface MatchScalarWhereInput {
-  duration?: Maybe<Int>;
-  duration_not?: Maybe<Int>;
-  duration_in?: Maybe<Int[] | Int>;
-  duration_not_in?: Maybe<Int[] | Int>;
-  duration_lt?: Maybe<Int>;
-  duration_lte?: Maybe<Int>;
-  duration_gt?: Maybe<Int>;
-  duration_gte?: Maybe<Int>;
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  order?: Maybe<Int>;
-  order_not?: Maybe<Int>;
-  order_in?: Maybe<Int[] | Int>;
-  order_not_in?: Maybe<Int[] | Int>;
-  order_lt?: Maybe<Int>;
-  order_lte?: Maybe<Int>;
-  order_gt?: Maybe<Int>;
-  order_gte?: Maybe<Int>;
-  resultPlayer1?: Maybe<Int>;
-  resultPlayer1_not?: Maybe<Int>;
-  resultPlayer1_in?: Maybe<Int[] | Int>;
-  resultPlayer1_not_in?: Maybe<Int[] | Int>;
-  resultPlayer1_lt?: Maybe<Int>;
-  resultPlayer1_lte?: Maybe<Int>;
-  resultPlayer1_gt?: Maybe<Int>;
-  resultPlayer1_gte?: Maybe<Int>;
-  resultPlayer2?: Maybe<Int>;
-  resultPlayer2_not?: Maybe<Int>;
-  resultPlayer2_in?: Maybe<Int[] | Int>;
-  resultPlayer2_not_in?: Maybe<Int[] | Int>;
-  resultPlayer2_lt?: Maybe<Int>;
-  resultPlayer2_lte?: Maybe<Int>;
-  resultPlayer2_gt?: Maybe<Int>;
-  resultPlayer2_gte?: Maybe<Int>;
-  AND?: Maybe<MatchScalarWhereInput[] | MatchScalarWhereInput>;
-  OR?: Maybe<MatchScalarWhereInput[] | MatchScalarWhereInput>;
-  NOT?: Maybe<MatchScalarWhereInput[] | MatchScalarWhereInput>;
-}
-
-export interface AcademyWhereInput {
-  country?: Maybe<String>;
-  country_not?: Maybe<String>;
-  country_in?: Maybe<String[] | String>;
-  country_not_in?: Maybe<String[] | String>;
-  country_lt?: Maybe<String>;
-  country_lte?: Maybe<String>;
-  country_gt?: Maybe<String>;
-  country_gte?: Maybe<String>;
-  country_contains?: Maybe<String>;
-  country_not_contains?: Maybe<String>;
-  country_starts_with?: Maybe<String>;
-  country_not_starts_with?: Maybe<String>;
-  country_ends_with?: Maybe<String>;
-  country_not_ends_with?: Maybe<String>;
-  createdBy?: Maybe<UserWhereInput>;
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  schools_every?: Maybe<SchoolWhereInput>;
-  schools_some?: Maybe<SchoolWhereInput>;
-  schools_none?: Maybe<SchoolWhereInput>;
-  AND?: Maybe<AcademyWhereInput[] | AcademyWhereInput>;
-  OR?: Maybe<AcademyWhereInput[] | AcademyWhereInput>;
-  NOT?: Maybe<AcademyWhereInput[] | AcademyWhereInput>;
-}
-
-export interface MatchUpdateManyWithWhereNestedInput {
-  where: MatchScalarWhereInput;
-  data: MatchUpdateManyDataInput;
-}
-
-export interface TournamentCreateInput {
-  createdBy?: Maybe<UserCreateOneWithoutTournamentsInput>;
-  id?: Maybe<ID_Input>;
-  name: String;
-  players?: Maybe<PlayerCreateManyWithoutTournamentsInput>;
-  poules?: Maybe<PouleCreateManyWithoutTournamentInput>;
-  poulesType: PoulesType;
-}
-
-export interface MatchUpdateManyDataInput {
-  duration?: Maybe<Int>;
-  order?: Maybe<Int>;
-  resultPlayer1?: Maybe<Int>;
-  resultPlayer2?: Maybe<Int>;
-}
-
-export interface PouleCreateInput {
-  createdBy?: Maybe<UserCreateOneWithoutPoulesInput>;
-  id?: Maybe<ID_Input>;
-  matches?: Maybe<MatchCreateManyWithoutPouleInput>;
-  name: String;
-  players?: Maybe<PlayerCreateManyWithoutPoulesInput>;
-  tournament: TournamentCreateOneWithoutPoulesInput;
-}
-
-export interface PlayerUpsertWithWhereUniqueWithoutTournamentsInput {
-  where: PlayerWhereUniqueInput;
-  update: PlayerUpdateWithoutTournamentsDataInput;
-  create: PlayerCreateWithoutTournamentsInput;
-}
-
-export interface FormUpdateInput {
-  createdBy?: Maybe<UserUpdateOneWithoutFormsInput>;
-  name?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutFormsInput>;
-}
-
-export interface TournamentUpsertWithWhereUniqueWithoutCreatedByInput {
-  where: TournamentWhereUniqueInput;
-  update: TournamentUpdateWithoutCreatedByDataInput;
-  create: TournamentCreateWithoutCreatedByInput;
-}
-
-export interface CardUpdateInput {
-  assault?: Maybe<AssaultUpdateOneRequiredWithoutCardsInput>;
-  reason?: Maybe<String>;
-  type?: Maybe<CardsType>;
-  player?: Maybe<PlayerUpdateOneRequiredWithoutCardsInput>;
-}
-
-export interface UserUpsertWithoutPlayersInput {
-  update: UserUpdateWithoutPlayersDataInput;
-  create: UserCreateWithoutPlayersInput;
-}
-
-export interface UserUpsertWithoutAcademiesInput {
-  update: UserUpdateWithoutAcademiesDataInput;
-  create: UserCreateWithoutAcademiesInput;
-}
-
-export interface PlayerUpsertWithoutAssaultsWonInput {
-  update: PlayerUpdateWithoutAssaultsWonDataInput;
-  create: PlayerCreateWithoutAssaultsWonInput;
-}
-
-export interface AssaultCreateManyWithoutWinnerInput {
-  create?: Maybe<
-    AssaultCreateWithoutWinnerInput[] | AssaultCreateWithoutWinnerInput
-  >;
-  connect?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
-}
-
-export interface AssaultUpsertWithWhereUniqueWithoutMatchInput {
-  where: AssaultWhereUniqueInput;
-  update: AssaultUpdateWithoutMatchDataInput;
-  create: AssaultCreateWithoutMatchInput;
-}
-
-export interface UserCreateOneWithoutClansInput {
-  create?: Maybe<UserCreateWithoutClansInput>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface AssaultScalarWhereInput {
-  doppio?: Maybe<Boolean>;
-  doppio_not?: Maybe<Boolean>;
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  nullo?: Maybe<Boolean>;
-  nullo_not?: Maybe<Boolean>;
-  number?: Maybe<Int>;
-  number_not?: Maybe<Int>;
-  number_in?: Maybe<Int[] | Int>;
-  number_not_in?: Maybe<Int[] | Int>;
-  number_lt?: Maybe<Int>;
-  number_lte?: Maybe<Int>;
-  number_gt?: Maybe<Int>;
-  number_gte?: Maybe<Int>;
-  AND?: Maybe<AssaultScalarWhereInput[] | AssaultScalarWhereInput>;
-  OR?: Maybe<AssaultScalarWhereInput[] | AssaultScalarWhereInput>;
-  NOT?: Maybe<AssaultScalarWhereInput[] | AssaultScalarWhereInput>;
-}
-
-export interface UserCreateOneWithoutSchoolsInput {
-  create?: Maybe<UserCreateWithoutSchoolsInput>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface AssaultUpdateManyWithWhereNestedInput {
-  where: AssaultScalarWhereInput;
-  data: AssaultUpdateManyDataInput;
-}
-
-export interface AssaultCreateOneWithoutCardsInput {
-  create?: Maybe<AssaultCreateWithoutCardsInput>;
-  connect?: Maybe<AssaultWhereUniqueInput>;
-}
-
-export interface AssaultUpdateManyDataInput {
-  doppio?: Maybe<Boolean>;
-  nullo?: Maybe<Boolean>;
-  number?: Maybe<Int>;
-}
-
-export interface FormCreateManyWithoutPlayersInput {
-  create?: Maybe<
-    FormCreateWithoutPlayersInput[] | FormCreateWithoutPlayersInput
-  >;
-  connect?: Maybe<FormWhereUniqueInput[] | FormWhereUniqueInput>;
-}
-
-export interface MatchUpsertWithWhereUniqueWithoutPouleInput {
-  where: MatchWhereUniqueInput;
-  update: MatchUpdateWithoutPouleDataInput;
-  create: MatchCreateWithoutPouleInput;
-}
-
-export interface AssaultCreateManyWithoutMatchInput {
-  create?: Maybe<
-    AssaultCreateWithoutMatchInput[] | AssaultCreateWithoutMatchInput
-  >;
-  connect?: Maybe<AssaultWhereUniqueInput[] | AssaultWhereUniqueInput>;
-}
-
-export interface PouleUpsertWithWhereUniqueWithoutCreatedByInput {
-  where: PouleWhereUniqueInput;
-  update: PouleUpdateWithoutCreatedByDataInput;
-  create: PouleCreateWithoutCreatedByInput;
-}
-
-export interface AcademyCreateOneWithoutSchoolsInput {
-  create?: Maybe<AcademyCreateWithoutSchoolsInput>;
-  connect?: Maybe<AcademyWhereUniqueInput>;
-}
-
-export interface UserUpsertWithoutFormsInput {
-  update: UserUpdateWithoutFormsDataInput;
-  create: UserCreateWithoutFormsInput;
-}
-
-export interface PlayerCreateOneInput {
-  create?: Maybe<PlayerCreateInput>;
-  connect?: Maybe<PlayerWhereUniqueInput>;
-}
-
-export interface FormUpsertWithWhereUniqueWithoutPlayersInput {
-  where: FormWhereUniqueInput;
-  update: FormUpdateWithoutPlayersDataInput;
-  create: FormCreateWithoutPlayersInput;
-}
-
-export interface UserCreateOneWithoutTournamentsInput {
-  create?: Maybe<UserCreateWithoutTournamentsInput>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface FormScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  name?: Maybe<String>;
-  name_not?: Maybe<String>;
-  name_in?: Maybe<String[] | String>;
-  name_not_in?: Maybe<String[] | String>;
-  name_lt?: Maybe<String>;
-  name_lte?: Maybe<String>;
-  name_gt?: Maybe<String>;
-  name_gte?: Maybe<String>;
-  name_contains?: Maybe<String>;
-  name_not_contains?: Maybe<String>;
-  name_starts_with?: Maybe<String>;
-  name_not_starts_with?: Maybe<String>;
-  name_ends_with?: Maybe<String>;
-  name_not_ends_with?: Maybe<String>;
-  AND?: Maybe<FormScalarWhereInput[] | FormScalarWhereInput>;
-  OR?: Maybe<FormScalarWhereInput[] | FormScalarWhereInput>;
-  NOT?: Maybe<FormScalarWhereInput[] | FormScalarWhereInput>;
-}
-
-export interface PouleCreateOneWithoutMatchesInput {
-  create?: Maybe<PouleCreateWithoutMatchesInput>;
-  connect?: Maybe<PouleWhereUniqueInput>;
-}
-
-export interface FormUpdateManyWithWhereNestedInput {
-  where: FormScalarWhereInput;
-  data: FormUpdateManyDataInput;
-}
-
-export interface ClanUpdateWithWhereUniqueWithoutCreatedByInput {
-  where: ClanWhereUniqueInput;
-  data: ClanUpdateWithoutCreatedByDataInput;
-}
-
-export interface FormUpdateManyDataInput {
-  name?: Maybe<String>;
-}
-
-export interface SchoolSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<SchoolWhereInput>;
-  AND?: Maybe<SchoolSubscriptionWhereInput[] | SchoolSubscriptionWhereInput>;
-  OR?: Maybe<SchoolSubscriptionWhereInput[] | SchoolSubscriptionWhereInput>;
-  NOT?: Maybe<SchoolSubscriptionWhereInput[] | SchoolSubscriptionWhereInput>;
-}
-
-export interface PlayerUpsertWithWhereUniqueWithoutCreatedByInput {
-  where: PlayerWhereUniqueInput;
-  update: PlayerUpdateWithoutCreatedByDataInput;
-  create: PlayerCreateWithoutCreatedByInput;
-}
-
-export interface UserUpdateInput {
-  academies?: Maybe<AcademyUpdateManyWithoutCreatedByInput>;
-  clans?: Maybe<ClanUpdateManyWithoutCreatedByInput>;
-  email?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutCreatedByInput>;
-  name?: Maybe<String>;
-  password?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutCreatedByInput>;
-  poules?: Maybe<PouleUpdateManyWithoutCreatedByInput>;
-  schools?: Maybe<SchoolUpdateManyWithoutCreatedByInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutCreatedByInput>;
-}
-
-export interface UserUpsertNestedInput {
-  update: UserUpdateDataInput;
-  create: UserCreateInput;
-}
-
-export interface MatchUpdateManyMutationInput {
-  duration?: Maybe<Int>;
-  order?: Maybe<Int>;
-  resultPlayer1?: Maybe<Int>;
-  resultPlayer2?: Maybe<Int>;
-}
-
-export interface MatchUpsertWithoutAssaultsInput {
-  update: MatchUpdateWithoutAssaultsDataInput;
-  create: MatchCreateWithoutAssaultsInput;
-}
-
-export interface AssaultUpdateInput {
-  cards?: Maybe<CardUpdateManyWithoutAssaultInput>;
-  doppio?: Maybe<Boolean>;
-  match?: Maybe<MatchUpdateOneWithoutAssaultsInput>;
-  nullo?: Maybe<Boolean>;
-  number?: Maybe<Int>;
-  winner?: Maybe<PlayerUpdateOneWithoutAssaultsWonInput>;
-}
-
-export interface AssaultUpsertWithoutCardsInput {
-  update: AssaultUpdateWithoutCardsDataInput;
-  create: AssaultCreateWithoutCardsInput;
-}
-
-export interface ClanCreateManyWithoutCreatedByInput {
-  create?: Maybe<
-    ClanCreateWithoutCreatedByInput[] | ClanCreateWithoutCreatedByInput
-  >;
-  connect?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
-}
-
-export interface CardUpsertWithWhereUniqueWithoutPlayerInput {
-  where: CardWhereUniqueInput;
-  update: CardUpdateWithoutPlayerDataInput;
-  create: CardCreateWithoutPlayerInput;
-}
-
-export interface SchoolCreateManyWithoutAcademyInput {
-  create?: Maybe<
-    SchoolCreateWithoutAcademyInput[] | SchoolCreateWithoutAcademyInput
-  >;
-  connect?: Maybe<SchoolWhereUniqueInput[] | SchoolWhereUniqueInput>;
-}
-
-export interface CardScalarWhereInput {
-  id?: Maybe<ID_Input>;
-  id_not?: Maybe<ID_Input>;
-  id_in?: Maybe<ID_Input[] | ID_Input>;
-  id_not_in?: Maybe<ID_Input[] | ID_Input>;
-  id_lt?: Maybe<ID_Input>;
-  id_lte?: Maybe<ID_Input>;
-  id_gt?: Maybe<ID_Input>;
-  id_gte?: Maybe<ID_Input>;
-  id_contains?: Maybe<ID_Input>;
-  id_not_contains?: Maybe<ID_Input>;
-  id_starts_with?: Maybe<ID_Input>;
-  id_not_starts_with?: Maybe<ID_Input>;
-  id_ends_with?: Maybe<ID_Input>;
-  id_not_ends_with?: Maybe<ID_Input>;
-  reason?: Maybe<String>;
-  reason_not?: Maybe<String>;
-  reason_in?: Maybe<String[] | String>;
-  reason_not_in?: Maybe<String[] | String>;
-  reason_lt?: Maybe<String>;
-  reason_lte?: Maybe<String>;
-  reason_gt?: Maybe<String>;
-  reason_gte?: Maybe<String>;
-  reason_contains?: Maybe<String>;
-  reason_not_contains?: Maybe<String>;
-  reason_starts_with?: Maybe<String>;
-  reason_not_starts_with?: Maybe<String>;
-  reason_ends_with?: Maybe<String>;
-  reason_not_ends_with?: Maybe<String>;
-  type?: Maybe<CardsType>;
-  type_not?: Maybe<CardsType>;
-  type_in?: Maybe<CardsType[] | CardsType>;
-  type_not_in?: Maybe<CardsType[] | CardsType>;
-  AND?: Maybe<CardScalarWhereInput[] | CardScalarWhereInput>;
-  OR?: Maybe<CardScalarWhereInput[] | CardScalarWhereInput>;
-  NOT?: Maybe<CardScalarWhereInput[] | CardScalarWhereInput>;
-}
-
-export interface UserCreateOneInput {
-  create?: Maybe<UserCreateInput>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface CardUpdateManyWithWhereNestedInput {
-  where: CardScalarWhereInput;
-  data: CardUpdateManyDataInput;
-}
-
-export interface UserCreateOneWithoutPlayersInput {
-  create?: Maybe<UserCreateWithoutPlayersInput>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface CardUpdateManyDataInput {
-  reason?: Maybe<String>;
-  type?: Maybe<CardsType>;
-}
-
-export interface UserCreateOneWithoutPoulesInput {
-  create?: Maybe<UserCreateWithoutPoulesInput>;
-  connect?: Maybe<UserWhereUniqueInput>;
-}
-
-export interface PlayerUpsertWithWhereUniqueWithoutFormsInput {
-  where: PlayerWhereUniqueInput;
-  update: PlayerUpdateWithoutFormsDataInput;
-  create: PlayerCreateWithoutFormsInput;
-}
-
-export interface AcademyUpdateInput {
-  country?: Maybe<String>;
-  createdBy?: Maybe<UserUpdateOneWithoutAcademiesInput>;
-  name?: Maybe<String>;
-  schools?: Maybe<SchoolUpdateManyWithoutAcademyInput>;
-}
-
-export interface FormUpsertWithWhereUniqueWithoutCreatedByInput {
-  where: FormWhereUniqueInput;
-  update: FormUpdateWithoutCreatedByDataInput;
-  create: FormCreateWithoutCreatedByInput;
-}
-
-export interface ClanSubscriptionWhereInput {
-  mutation_in?: Maybe<MutationType[] | MutationType>;
-  updatedFields_contains?: Maybe<String>;
-  updatedFields_contains_every?: Maybe<String[] | String>;
-  updatedFields_contains_some?: Maybe<String[] | String>;
-  node?: Maybe<ClanWhereInput>;
-  AND?: Maybe<ClanSubscriptionWhereInput[] | ClanSubscriptionWhereInput>;
-  OR?: Maybe<ClanSubscriptionWhereInput[] | ClanSubscriptionWhereInput>;
-  NOT?: Maybe<ClanSubscriptionWhereInput[] | ClanSubscriptionWhereInput>;
-}
-
-export interface UserUpsertWithoutSchoolsInput {
-  update: UserUpdateWithoutSchoolsDataInput;
-  create: UserCreateWithoutSchoolsInput;
-}
-
-export interface ClanUpdateInput {
-  createdBy?: Maybe<UserUpdateOneWithoutClansInput>;
-  name?: Maybe<String>;
-  players?: Maybe<PlayerUpdateManyWithoutClanInput>;
-  school?: Maybe<SchoolUpdateOneRequiredWithoutClansInput>;
-}
-
-export interface SchoolUpsertWithWhereUniqueWithoutAcademyInput {
-  where: SchoolWhereUniqueInput;
-  update: SchoolUpdateWithoutAcademyDataInput;
-  create: SchoolCreateWithoutAcademyInput;
-}
-
-export interface PlayerCreateOneWithoutCardsInput {
-  create?: Maybe<PlayerCreateWithoutCardsInput>;
-  connect?: Maybe<PlayerWhereUniqueInput>;
-}
-
 export interface AcademyUpsertWithWhereUniqueWithoutCreatedByInput {
   where: AcademyWhereUniqueInput;
   update: AcademyUpdateWithoutCreatedByDataInput;
   create: AcademyCreateWithoutCreatedByInput;
 }
 
-export interface PouleCreateManyWithoutCreatedByInput {
+export interface RoundCreateManyWithoutPlayersInput {
   create?: Maybe<
-    PouleCreateWithoutCreatedByInput[] | PouleCreateWithoutCreatedByInput
+    RoundCreateWithoutPlayersInput[] | RoundCreateWithoutPlayersInput
   >;
-  connect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+  connect?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
 }
 
 export interface AcademyScalarWhereInput {
@@ -4000,11 +4436,9 @@ export interface AcademyScalarWhereInput {
   NOT?: Maybe<AcademyScalarWhereInput[] | AcademyScalarWhereInput>;
 }
 
-export interface PouleCreateManyWithoutTournamentInput {
-  create?: Maybe<
-    PouleCreateWithoutTournamentInput[] | PouleCreateWithoutTournamentInput
-  >;
-  connect?: Maybe<PouleWhereUniqueInput[] | PouleWhereUniqueInput>;
+export interface AssaultUpdateWithWhereUniqueWithoutWinnerInput {
+  where: AssaultWhereUniqueInput;
+  data: AssaultUpdateWithoutWinnerDataInput;
 }
 
 export interface SchoolUpdateOneRequiredWithoutClansInput {
@@ -4029,45 +4463,35 @@ export interface AcademyUpdateManyWithWhereNestedInput {
   data: AcademyUpdateManyDataInput;
 }
 
-export interface PlayerUpdateWithoutClanDataInput {
-  assaultsWon?: Maybe<AssaultUpdateManyWithoutWinnerInput>;
-  cards?: Maybe<CardUpdateManyWithoutPlayerInput>;
-  createdBy?: Maybe<UserUpdateOneWithoutPlayersInput>;
-  familyName?: Maybe<String>;
-  forms?: Maybe<FormUpdateManyWithoutPlayersInput>;
-  matches?: Maybe<MatchUpdateManyInput>;
+export interface SchoolUpdateManyMutationInput {
   name?: Maybe<String>;
-  nickname?: Maybe<String>;
-  poules?: Maybe<PouleUpdateManyWithoutPlayersInput>;
-  tournaments?: Maybe<TournamentUpdateManyWithoutPlayersInput>;
 }
 
-export interface PlayerCreateManyWithoutTournamentsInput {
+export interface TournamentCreateOneWithoutPoulesInput {
+  create?: Maybe<TournamentCreateWithoutPoulesInput>;
+  connect?: Maybe<TournamentWhereUniqueInput>;
+}
+
+export interface RoundCreateManyWithoutCreatedByInput {
   create?: Maybe<
-    PlayerCreateWithoutTournamentsInput[] | PlayerCreateWithoutTournamentsInput
+    RoundCreateWithoutCreatedByInput[] | RoundCreateWithoutCreatedByInput
   >;
-  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+  connect?: Maybe<RoundWhereUniqueInput[] | RoundWhereUniqueInput>;
 }
 
-export interface PlayerCreateManyWithoutFormsInput {
-  create?: Maybe<
-    PlayerCreateWithoutFormsInput[] | PlayerCreateWithoutFormsInput
-  >;
-  connect?: Maybe<PlayerWhereUniqueInput[] | PlayerWhereUniqueInput>;
+export interface ClanCreateManyWithoutSchoolInput {
+  create?: Maybe<ClanCreateWithoutSchoolInput[] | ClanCreateWithoutSchoolInput>;
+  connect?: Maybe<ClanWhereUniqueInput[] | ClanWhereUniqueInput>;
 }
 
-export interface AssaultUpsertWithWhereUniqueWithoutWinnerInput {
-  where: AssaultWhereUniqueInput;
-  update: AssaultUpdateWithoutWinnerDataInput;
-  create: AssaultCreateWithoutWinnerInput;
-}
-
-export interface SchoolCreateInput {
-  academy: AcademyCreateOneWithoutSchoolsInput;
-  clans?: Maybe<ClanCreateManyWithoutSchoolInput>;
-  createdBy?: Maybe<UserCreateOneWithoutSchoolsInput>;
+export interface AssaultCreateInput {
+  cards?: Maybe<CardCreateManyWithoutAssaultInput>;
+  doppio?: Maybe<Boolean>;
   id?: Maybe<ID_Input>;
-  name: String;
+  match?: Maybe<MatchCreateOneWithoutAssaultsInput>;
+  nullo?: Maybe<Boolean>;
+  number: Int;
+  winner?: Maybe<PlayerCreateOneWithoutAssaultsWonInput>;
 }
 
 export interface NodeNode {
@@ -4099,47 +4523,6 @@ export interface UserPreviousValuesSubscription
   password: () => Promise<AsyncIterator<String>>;
 }
 
-export interface AggregateAcademy {
-  count: Int;
-}
-
-export interface AggregateAcademyPromise
-  extends Promise<AggregateAcademy>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateAcademySubscription
-  extends Promise<AsyncIterator<AggregateAcademy>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface TournamentSubscriptionPayload {
-  mutation: MutationType;
-  node: Tournament;
-  updatedFields: String[];
-  previousValues: TournamentPreviousValues;
-}
-
-export interface TournamentSubscriptionPayloadPromise
-  extends Promise<TournamentSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = TournamentPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = TournamentPreviousValuesPromise>() => T;
-}
-
-export interface TournamentSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<TournamentSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = TournamentSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = TournamentPreviousValuesSubscription>() => T;
-}
-
 export interface AcademyEdge {
   node: Academy;
   cursor: String;
@@ -4155,6 +4538,63 @@ export interface AcademyEdgeSubscription
     Fragmentable {
   node: <T = AcademySubscription>() => T;
   cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface Clan {
+  id: ID_Output;
+  name: String;
+}
+
+export interface ClanPromise extends Promise<Clan>, Fragmentable {
+  createdBy: <T = UserPromise>() => T;
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  players: <T = FragmentableArray<Player>>(args?: {
+    where?: PlayerWhereInput;
+    orderBy?: PlayerOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  school: <T = SchoolPromise>() => T;
+}
+
+export interface ClanSubscription
+  extends Promise<AsyncIterator<Clan>>,
+    Fragmentable {
+  createdBy: <T = UserSubscription>() => T;
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  players: <T = Promise<AsyncIterator<PlayerSubscription>>>(args?: {
+    where?: PlayerWhereInput;
+    orderBy?: PlayerOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  school: <T = SchoolSubscription>() => T;
+}
+
+export interface ClanNullablePromise
+  extends Promise<Clan | null>,
+    Fragmentable {
+  createdBy: <T = UserPromise>() => T;
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  players: <T = FragmentableArray<Player>>(args?: {
+    where?: PlayerWhereInput;
+    orderBy?: PlayerOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  school: <T = SchoolPromise>() => T;
 }
 
 export interface PageInfo {
@@ -4196,27 +4636,6 @@ export interface AggregateUserSubscription
   count: () => Promise<AsyncIterator<Int>>;
 }
 
-export interface UserConnection {
-  pageInfo: PageInfo;
-  edges: UserEdge[];
-}
-
-export interface UserConnectionPromise
-  extends Promise<UserConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<UserEdge>>() => T;
-  aggregate: <T = AggregateUserPromise>() => T;
-}
-
-export interface UserConnectionSubscription
-  extends Promise<AsyncIterator<UserConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<UserEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateUserSubscription>() => T;
-}
-
 export interface AcademyConnection {
   pageInfo: PageInfo;
   edges: AcademyEdge[];
@@ -4238,6 +4657,127 @@ export interface AcademyConnectionSubscription
   aggregate: <T = AggregateAcademySubscription>() => T;
 }
 
+export interface UserConnection {
+  pageInfo: PageInfo;
+  edges: UserEdge[];
+}
+
+export interface UserConnectionPromise
+  extends Promise<UserConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<UserEdge>>() => T;
+  aggregate: <T = AggregateUserPromise>() => T;
+}
+
+export interface UserConnectionSubscription
+  extends Promise<AsyncIterator<UserConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<UserEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateUserSubscription>() => T;
+}
+
+export interface UserEdge {
+  node: User;
+  cursor: String;
+}
+
+export interface UserEdgePromise extends Promise<UserEdge>, Fragmentable {
+  node: <T = UserPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface UserEdgeSubscription
+  extends Promise<AsyncIterator<UserEdge>>,
+    Fragmentable {
+  node: <T = UserSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface TournamentSubscriptionPayload {
+  mutation: MutationType;
+  node: Tournament;
+  updatedFields: String[];
+  previousValues: TournamentPreviousValues;
+}
+
+export interface TournamentSubscriptionPayloadPromise
+  extends Promise<TournamentSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = TournamentPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = TournamentPreviousValuesPromise>() => T;
+}
+
+export interface TournamentSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<TournamentSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = TournamentSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = TournamentPreviousValuesSubscription>() => T;
+}
+
+export interface Academy {
+  country: String;
+  id: ID_Output;
+  name: String;
+}
+
+export interface AcademyPromise extends Promise<Academy>, Fragmentable {
+  country: () => Promise<String>;
+  createdBy: <T = UserPromise>() => T;
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  schools: <T = FragmentableArray<School>>(args?: {
+    where?: SchoolWhereInput;
+    orderBy?: SchoolOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface AcademySubscription
+  extends Promise<AsyncIterator<Academy>>,
+    Fragmentable {
+  country: () => Promise<AsyncIterator<String>>;
+  createdBy: <T = UserSubscription>() => T;
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  schools: <T = Promise<AsyncIterator<SchoolSubscription>>>(args?: {
+    where?: SchoolWhereInput;
+    orderBy?: SchoolOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface AcademyNullablePromise
+  extends Promise<Academy | null>,
+    Fragmentable {
+  country: () => Promise<String>;
+  createdBy: <T = UserPromise>() => T;
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  schools: <T = FragmentableArray<School>>(args?: {
+    where?: SchoolWhereInput;
+    orderBy?: SchoolOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
 export interface AggregateTournament {
   count: Int;
 }
@@ -4252,6 +4792,125 @@ export interface AggregateTournamentSubscription
   extends Promise<AsyncIterator<AggregateTournament>>,
     Fragmentable {
   count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface TournamentEdge {
+  node: Tournament;
+  cursor: String;
+}
+
+export interface TournamentEdgePromise
+  extends Promise<TournamentEdge>,
+    Fragmentable {
+  node: <T = TournamentPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface TournamentEdgeSubscription
+  extends Promise<AsyncIterator<TournamentEdge>>,
+    Fragmentable {
+  node: <T = TournamentSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface BatchPayload {
+  count: Long;
+}
+
+export interface BatchPayloadPromise
+  extends Promise<BatchPayload>,
+    Fragmentable {
+  count: () => Promise<Long>;
+}
+
+export interface BatchPayloadSubscription
+  extends Promise<AsyncIterator<BatchPayload>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Long>>;
+}
+
+export interface AcademySubscriptionPayload {
+  mutation: MutationType;
+  node: Academy;
+  updatedFields: String[];
+  previousValues: AcademyPreviousValues;
+}
+
+export interface AcademySubscriptionPayloadPromise
+  extends Promise<AcademySubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = AcademyPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = AcademyPreviousValuesPromise>() => T;
+}
+
+export interface AcademySubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<AcademySubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = AcademySubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = AcademyPreviousValuesSubscription>() => T;
+}
+
+export interface AggregateSchool {
+  count: Int;
+}
+
+export interface AggregateSchoolPromise
+  extends Promise<AggregateSchool>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateSchoolSubscription
+  extends Promise<AsyncIterator<AggregateSchool>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface AcademyPreviousValues {
+  country: String;
+  id: ID_Output;
+  name: String;
+}
+
+export interface AcademyPreviousValuesPromise
+  extends Promise<AcademyPreviousValues>,
+    Fragmentable {
+  country: () => Promise<String>;
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+}
+
+export interface AcademyPreviousValuesSubscription
+  extends Promise<AsyncIterator<AcademyPreviousValues>>,
+    Fragmentable {
+  country: () => Promise<AsyncIterator<String>>;
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+}
+
+export interface SchoolConnection {
+  pageInfo: PageInfo;
+  edges: SchoolEdge[];
+}
+
+export interface SchoolConnectionPromise
+  extends Promise<SchoolConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<SchoolEdge>>() => T;
+  aggregate: <T = AggregateSchoolPromise>() => T;
+}
+
+export interface SchoolConnectionSubscription
+  extends Promise<AsyncIterator<SchoolConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<SchoolEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateSchoolSubscription>() => T;
 }
 
 export interface User {
@@ -4305,6 +4964,15 @@ export interface UserPromise extends Promise<User>, Fragmentable {
   poules: <T = FragmentableArray<Poule>>(args?: {
     where?: PouleWhereInput;
     orderBy?: PouleOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  rounds: <T = FragmentableArray<Round>>(args?: {
+    where?: RoundWhereInput;
+    orderBy?: RoundOrderByInput;
     skip?: Int;
     after?: String;
     before?: String;
@@ -4383,6 +5051,15 @@ export interface UserSubscription
     first?: Int;
     last?: Int;
   }) => T;
+  rounds: <T = Promise<AsyncIterator<RoundSubscription>>>(args?: {
+    where?: RoundWhereInput;
+    orderBy?: RoundOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
   schools: <T = Promise<AsyncIterator<SchoolSubscription>>>(args?: {
     where?: SchoolWhereInput;
     orderBy?: SchoolOrderByInput;
@@ -4455,6 +5132,15 @@ export interface UserNullablePromise
     first?: Int;
     last?: Int;
   }) => T;
+  rounds: <T = FragmentableArray<Round>>(args?: {
+    where?: RoundWhereInput;
+    orderBy?: RoundOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
   schools: <T = FragmentableArray<School>>(args?: {
     where?: SchoolWhereInput;
     orderBy?: SchoolOrderByInput;
@@ -4475,162 +5161,46 @@ export interface UserNullablePromise
   }) => T;
 }
 
-export interface TournamentConnection {
-  pageInfo: PageInfo;
-  edges: TournamentEdge[];
-}
-
-export interface TournamentConnectionPromise
-  extends Promise<TournamentConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<TournamentEdge>>() => T;
-  aggregate: <T = AggregateTournamentPromise>() => T;
-}
-
-export interface TournamentConnectionSubscription
-  extends Promise<AsyncIterator<TournamentConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<TournamentEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateTournamentSubscription>() => T;
-}
-
-export interface Clan {
-  id: ID_Output;
-  name: String;
-}
-
-export interface ClanPromise extends Promise<Clan>, Fragmentable {
-  createdBy: <T = UserPromise>() => T;
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  players: <T = FragmentableArray<Player>>(args?: {
-    where?: PlayerWhereInput;
-    orderBy?: PlayerOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  school: <T = SchoolPromise>() => T;
-}
-
-export interface ClanSubscription
-  extends Promise<AsyncIterator<Clan>>,
-    Fragmentable {
-  createdBy: <T = UserSubscription>() => T;
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-  players: <T = Promise<AsyncIterator<PlayerSubscription>>>(args?: {
-    where?: PlayerWhereInput;
-    orderBy?: PlayerOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  school: <T = SchoolSubscription>() => T;
-}
-
-export interface ClanNullablePromise
-  extends Promise<Clan | null>,
-    Fragmentable {
-  createdBy: <T = UserPromise>() => T;
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  players: <T = FragmentableArray<Player>>(args?: {
-    where?: PlayerWhereInput;
-    orderBy?: PlayerOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  school: <T = SchoolPromise>() => T;
-}
-
-export interface BatchPayload {
-  count: Long;
-}
-
-export interface BatchPayloadPromise
-  extends Promise<BatchPayload>,
-    Fragmentable {
-  count: () => Promise<Long>;
-}
-
-export interface BatchPayloadSubscription
-  extends Promise<AsyncIterator<BatchPayload>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Long>>;
-}
-
-export interface AcademySubscriptionPayload {
-  mutation: MutationType;
-  node: Academy;
-  updatedFields: String[];
-  previousValues: AcademyPreviousValues;
-}
-
-export interface AcademySubscriptionPayloadPromise
-  extends Promise<AcademySubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = AcademyPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = AcademyPreviousValuesPromise>() => T;
-}
-
-export interface AcademySubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<AcademySubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = AcademySubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = AcademyPreviousValuesSubscription>() => T;
-}
-
-export interface SchoolEdge {
-  node: School;
+export interface RoundEdge {
+  node: Round;
   cursor: String;
 }
 
-export interface SchoolEdgePromise extends Promise<SchoolEdge>, Fragmentable {
-  node: <T = SchoolPromise>() => T;
+export interface RoundEdgePromise extends Promise<RoundEdge>, Fragmentable {
+  node: <T = RoundPromise>() => T;
   cursor: () => Promise<String>;
 }
 
-export interface SchoolEdgeSubscription
-  extends Promise<AsyncIterator<SchoolEdge>>,
+export interface RoundEdgeSubscription
+  extends Promise<AsyncIterator<RoundEdge>>,
     Fragmentable {
-  node: <T = SchoolSubscription>() => T;
+  node: <T = RoundSubscription>() => T;
   cursor: () => Promise<AsyncIterator<String>>;
 }
 
-export interface AcademyPreviousValues {
-  country: String;
-  id: ID_Output;
-  name: String;
+export interface AssaultSubscriptionPayload {
+  mutation: MutationType;
+  node: Assault;
+  updatedFields: String[];
+  previousValues: AssaultPreviousValues;
 }
 
-export interface AcademyPreviousValuesPromise
-  extends Promise<AcademyPreviousValues>,
+export interface AssaultSubscriptionPayloadPromise
+  extends Promise<AssaultSubscriptionPayload>,
     Fragmentable {
-  country: () => Promise<String>;
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
+  mutation: () => Promise<MutationType>;
+  node: <T = AssaultPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = AssaultPreviousValuesPromise>() => T;
 }
 
-export interface AcademyPreviousValuesSubscription
-  extends Promise<AsyncIterator<AcademyPreviousValues>>,
+export interface AssaultSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<AssaultSubscriptionPayload>>,
     Fragmentable {
-  country: () => Promise<AsyncIterator<String>>;
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = AssaultSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = AssaultPreviousValuesSubscription>() => T;
 }
 
 export interface AggregatePoule {
@@ -4647,6 +5217,52 @@ export interface AggregatePouleSubscription
   extends Promise<AsyncIterator<AggregatePoule>>,
     Fragmentable {
   count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface AssaultPreviousValues {
+  doppio?: Boolean;
+  id: ID_Output;
+  nullo?: Boolean;
+  number: Int;
+}
+
+export interface AssaultPreviousValuesPromise
+  extends Promise<AssaultPreviousValues>,
+    Fragmentable {
+  doppio: () => Promise<Boolean>;
+  id: () => Promise<ID_Output>;
+  nullo: () => Promise<Boolean>;
+  number: () => Promise<Int>;
+}
+
+export interface AssaultPreviousValuesSubscription
+  extends Promise<AsyncIterator<AssaultPreviousValues>>,
+    Fragmentable {
+  doppio: () => Promise<AsyncIterator<Boolean>>;
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  nullo: () => Promise<AsyncIterator<Boolean>>;
+  number: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface PouleConnection {
+  pageInfo: PageInfo;
+  edges: PouleEdge[];
+}
+
+export interface PouleConnectionPromise
+  extends Promise<PouleConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<PouleEdge>>() => T;
+  aggregate: <T = AggregatePoulePromise>() => T;
+}
+
+export interface PouleConnectionSubscription
+  extends Promise<AsyncIterator<PouleConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<PouleEdgeSubscription>>>() => T;
+  aggregate: <T = AggregatePouleSubscription>() => T;
 }
 
 export interface School {
@@ -4706,52 +5322,6 @@ export interface SchoolNullablePromise
   name: () => Promise<String>;
 }
 
-export interface PouleConnection {
-  pageInfo: PageInfo;
-  edges: PouleEdge[];
-}
-
-export interface PouleConnectionPromise
-  extends Promise<PouleConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<PouleEdge>>() => T;
-  aggregate: <T = AggregatePoulePromise>() => T;
-}
-
-export interface PouleConnectionSubscription
-  extends Promise<AsyncIterator<PouleConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<PouleEdgeSubscription>>>() => T;
-  aggregate: <T = AggregatePouleSubscription>() => T;
-}
-
-export interface AssaultSubscriptionPayload {
-  mutation: MutationType;
-  node: Assault;
-  updatedFields: String[];
-  previousValues: AssaultPreviousValues;
-}
-
-export interface AssaultSubscriptionPayloadPromise
-  extends Promise<AssaultSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = AssaultPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = AssaultPreviousValuesPromise>() => T;
-}
-
-export interface AssaultSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<AssaultSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = AssaultSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = AssaultPreviousValuesSubscription>() => T;
-}
-
 export interface PlayerEdge {
   node: Player;
   cursor: String;
@@ -4767,122 +5337,6 @@ export interface PlayerEdgeSubscription
     Fragmentable {
   node: <T = PlayerSubscription>() => T;
   cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AssaultPreviousValues {
-  doppio?: Boolean;
-  id: ID_Output;
-  nullo?: Boolean;
-  number: Int;
-}
-
-export interface AssaultPreviousValuesPromise
-  extends Promise<AssaultPreviousValues>,
-    Fragmentable {
-  doppio: () => Promise<Boolean>;
-  id: () => Promise<ID_Output>;
-  nullo: () => Promise<Boolean>;
-  number: () => Promise<Int>;
-}
-
-export interface AssaultPreviousValuesSubscription
-  extends Promise<AsyncIterator<AssaultPreviousValues>>,
-    Fragmentable {
-  doppio: () => Promise<AsyncIterator<Boolean>>;
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  nullo: () => Promise<AsyncIterator<Boolean>>;
-  number: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface AggregateMatch {
-  count: Int;
-}
-
-export interface AggregateMatchPromise
-  extends Promise<AggregateMatch>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateMatchSubscription
-  extends Promise<AsyncIterator<AggregateMatch>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface Form {
-  id: ID_Output;
-  name: String;
-}
-
-export interface FormPromise extends Promise<Form>, Fragmentable {
-  createdBy: <T = UserPromise>() => T;
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  players: <T = FragmentableArray<Player>>(args?: {
-    where?: PlayerWhereInput;
-    orderBy?: PlayerOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-}
-
-export interface FormSubscription
-  extends Promise<AsyncIterator<Form>>,
-    Fragmentable {
-  createdBy: <T = UserSubscription>() => T;
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-  players: <T = Promise<AsyncIterator<PlayerSubscription>>>(args?: {
-    where?: PlayerWhereInput;
-    orderBy?: PlayerOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-}
-
-export interface FormNullablePromise
-  extends Promise<Form | null>,
-    Fragmentable {
-  createdBy: <T = UserPromise>() => T;
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  players: <T = FragmentableArray<Player>>(args?: {
-    where?: PlayerWhereInput;
-    orderBy?: PlayerOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-}
-
-export interface MatchConnection {
-  pageInfo: PageInfo;
-  edges: MatchEdge[];
-}
-
-export interface MatchConnectionPromise
-  extends Promise<MatchConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<MatchEdge>>() => T;
-  aggregate: <T = AggregateMatchPromise>() => T;
-}
-
-export interface MatchConnectionSubscription
-  extends Promise<AsyncIterator<MatchConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<MatchEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateMatchSubscription>() => T;
 }
 
 export interface CardSubscriptionPayload {
@@ -4910,21 +5364,20 @@ export interface CardSubscriptionPayloadSubscription
   previousValues: <T = CardPreviousValuesSubscription>() => T;
 }
 
-export interface FormEdge {
-  node: Form;
-  cursor: String;
+export interface AggregateMatch {
+  count: Int;
 }
 
-export interface FormEdgePromise extends Promise<FormEdge>, Fragmentable {
-  node: <T = FormPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface FormEdgeSubscription
-  extends Promise<AsyncIterator<FormEdge>>,
+export interface AggregateMatchPromise
+  extends Promise<AggregateMatch>,
     Fragmentable {
-  node: <T = FormSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
+  count: () => Promise<Int>;
+}
+
+export interface AggregateMatchSubscription
+  extends Promise<AsyncIterator<AggregateMatch>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
 }
 
 export interface CardPreviousValues {
@@ -4949,32 +5402,44 @@ export interface CardPreviousValuesSubscription
   type: () => Promise<AsyncIterator<CardsType>>;
 }
 
-export interface AggregateClan {
-  count: Int;
+export interface MatchConnection {
+  pageInfo: PageInfo;
+  edges: MatchEdge[];
 }
 
-export interface AggregateClanPromise
-  extends Promise<AggregateClan>,
+export interface MatchConnectionPromise
+  extends Promise<MatchConnection>,
     Fragmentable {
-  count: () => Promise<Int>;
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<MatchEdge>>() => T;
+  aggregate: <T = AggregateMatchPromise>() => T;
 }
 
-export interface AggregateClanSubscription
-  extends Promise<AsyncIterator<AggregateClan>>,
+export interface MatchConnectionSubscription
+  extends Promise<AsyncIterator<MatchConnection>>,
     Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<MatchEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateMatchSubscription>() => T;
 }
 
-export interface Tournament {
+export interface Round {
   id: ID_Output;
-  name: String;
-  poulesType: PoulesType;
+  roundType: RoundsType;
 }
 
-export interface TournamentPromise extends Promise<Tournament>, Fragmentable {
+export interface RoundPromise extends Promise<Round>, Fragmentable {
   createdBy: <T = UserPromise>() => T;
   id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
+  matches: <T = FragmentableArray<Match>>(args?: {
+    where?: MatchWhereInput;
+    orderBy?: MatchOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
   players: <T = FragmentableArray<Player>>(args?: {
     where?: PlayerWhereInput;
     orderBy?: PlayerOrderByInput;
@@ -4984,24 +5449,24 @@ export interface TournamentPromise extends Promise<Tournament>, Fragmentable {
     first?: Int;
     last?: Int;
   }) => T;
-  poules: <T = FragmentableArray<Poule>>(args?: {
-    where?: PouleWhereInput;
-    orderBy?: PouleOrderByInput;
+  roundType: () => Promise<RoundsType>;
+  tournament: <T = TournamentPromise>() => T;
+}
+
+export interface RoundSubscription
+  extends Promise<AsyncIterator<Round>>,
+    Fragmentable {
+  createdBy: <T = UserSubscription>() => T;
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  matches: <T = Promise<AsyncIterator<MatchSubscription>>>(args?: {
+    where?: MatchWhereInput;
+    orderBy?: MatchOrderByInput;
     skip?: Int;
     after?: String;
     before?: String;
     first?: Int;
     last?: Int;
   }) => T;
-  poulesType: () => Promise<PoulesType>;
-}
-
-export interface TournamentSubscription
-  extends Promise<AsyncIterator<Tournament>>,
-    Fragmentable {
-  createdBy: <T = UserSubscription>() => T;
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
   players: <T = Promise<AsyncIterator<PlayerSubscription>>>(args?: {
     where?: PlayerWhereInput;
     orderBy?: PlayerOrderByInput;
@@ -5011,24 +5476,24 @@ export interface TournamentSubscription
     first?: Int;
     last?: Int;
   }) => T;
-  poules: <T = Promise<AsyncIterator<PouleSubscription>>>(args?: {
-    where?: PouleWhereInput;
-    orderBy?: PouleOrderByInput;
+  roundType: () => Promise<AsyncIterator<RoundsType>>;
+  tournament: <T = TournamentSubscription>() => T;
+}
+
+export interface RoundNullablePromise
+  extends Promise<Round | null>,
+    Fragmentable {
+  createdBy: <T = UserPromise>() => T;
+  id: () => Promise<ID_Output>;
+  matches: <T = FragmentableArray<Match>>(args?: {
+    where?: MatchWhereInput;
+    orderBy?: MatchOrderByInput;
     skip?: Int;
     after?: String;
     before?: String;
     first?: Int;
     last?: Int;
   }) => T;
-  poulesType: () => Promise<AsyncIterator<PoulesType>>;
-}
-
-export interface TournamentNullablePromise
-  extends Promise<Tournament | null>,
-    Fragmentable {
-  createdBy: <T = UserPromise>() => T;
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
   players: <T = FragmentableArray<Player>>(args?: {
     where?: PlayerWhereInput;
     orderBy?: PlayerOrderByInput;
@@ -5038,37 +5503,25 @@ export interface TournamentNullablePromise
     first?: Int;
     last?: Int;
   }) => T;
-  poules: <T = FragmentableArray<Poule>>(args?: {
-    where?: PouleWhereInput;
-    orderBy?: PouleOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  poulesType: () => Promise<PoulesType>;
+  roundType: () => Promise<RoundsType>;
+  tournament: <T = TournamentPromise>() => T;
 }
 
-export interface ClanConnection {
-  pageInfo: PageInfo;
-  edges: ClanEdge[];
+export interface FormEdge {
+  node: Form;
+  cursor: String;
 }
 
-export interface ClanConnectionPromise
-  extends Promise<ClanConnection>,
+export interface FormEdgePromise extends Promise<FormEdge>, Fragmentable {
+  node: <T = FormPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface FormEdgeSubscription
+  extends Promise<AsyncIterator<FormEdge>>,
     Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<ClanEdge>>() => T;
-  aggregate: <T = AggregateClanPromise>() => T;
-}
-
-export interface ClanConnectionSubscription
-  extends Promise<AsyncIterator<ClanConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<ClanEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateClanSubscription>() => T;
+  node: <T = FormSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
 }
 
 export interface ClanSubscriptionPayload {
@@ -5096,21 +5549,20 @@ export interface ClanSubscriptionPayloadSubscription
   previousValues: <T = ClanPreviousValuesSubscription>() => T;
 }
 
-export interface CardEdge {
-  node: Card;
-  cursor: String;
+export interface AggregateClan {
+  count: Int;
 }
 
-export interface CardEdgePromise extends Promise<CardEdge>, Fragmentable {
-  node: <T = CardPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface CardEdgeSubscription
-  extends Promise<AsyncIterator<CardEdge>>,
+export interface AggregateClanPromise
+  extends Promise<AggregateClan>,
     Fragmentable {
-  node: <T = CardSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
+  count: () => Promise<Int>;
+}
+
+export interface AggregateClanSubscription
+  extends Promise<AsyncIterator<AggregateClan>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
 }
 
 export interface ClanPreviousValues {
@@ -5132,6 +5584,181 @@ export interface ClanPreviousValuesSubscription
   name: () => Promise<AsyncIterator<String>>;
 }
 
+export interface ClanConnection {
+  pageInfo: PageInfo;
+  edges: ClanEdge[];
+}
+
+export interface ClanConnectionPromise
+  extends Promise<ClanConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<ClanEdge>>() => T;
+  aggregate: <T = AggregateClanPromise>() => T;
+}
+
+export interface ClanConnectionSubscription
+  extends Promise<AsyncIterator<ClanConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<ClanEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateClanSubscription>() => T;
+}
+
+export interface Tournament {
+  id: ID_Output;
+  name: String;
+  poulesType: PoulesType;
+}
+
+export interface TournamentPromise extends Promise<Tournament>, Fragmentable {
+  createdBy: <T = UserPromise>() => T;
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  players: <T = FragmentableArray<Player>>(args?: {
+    where?: PlayerWhereInput;
+    orderBy?: PlayerOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  poulesType: () => Promise<PoulesType>;
+  poules: <T = FragmentableArray<Poule>>(args?: {
+    where?: PouleWhereInput;
+    orderBy?: PouleOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  rounds: <T = FragmentableArray<Round>>(args?: {
+    where?: RoundWhereInput;
+    orderBy?: RoundOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface TournamentSubscription
+  extends Promise<AsyncIterator<Tournament>>,
+    Fragmentable {
+  createdBy: <T = UserSubscription>() => T;
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  players: <T = Promise<AsyncIterator<PlayerSubscription>>>(args?: {
+    where?: PlayerWhereInput;
+    orderBy?: PlayerOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  poulesType: () => Promise<AsyncIterator<PoulesType>>;
+  poules: <T = Promise<AsyncIterator<PouleSubscription>>>(args?: {
+    where?: PouleWhereInput;
+    orderBy?: PouleOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  rounds: <T = Promise<AsyncIterator<RoundSubscription>>>(args?: {
+    where?: RoundWhereInput;
+    orderBy?: RoundOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface TournamentNullablePromise
+  extends Promise<Tournament | null>,
+    Fragmentable {
+  createdBy: <T = UserPromise>() => T;
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  players: <T = FragmentableArray<Player>>(args?: {
+    where?: PlayerWhereInput;
+    orderBy?: PlayerOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  poulesType: () => Promise<PoulesType>;
+  poules: <T = FragmentableArray<Poule>>(args?: {
+    where?: PouleWhereInput;
+    orderBy?: PouleOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  rounds: <T = FragmentableArray<Round>>(args?: {
+    where?: RoundWhereInput;
+    orderBy?: RoundOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface CardEdge {
+  node: Card;
+  cursor: String;
+}
+
+export interface CardEdgePromise extends Promise<CardEdge>, Fragmentable {
+  node: <T = CardPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface CardEdgeSubscription
+  extends Promise<AsyncIterator<CardEdge>>,
+    Fragmentable {
+  node: <T = CardSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface FormSubscriptionPayload {
+  mutation: MutationType;
+  node: Form;
+  updatedFields: String[];
+  previousValues: FormPreviousValues;
+}
+
+export interface FormSubscriptionPayloadPromise
+  extends Promise<FormSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = FormPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = FormPreviousValuesPromise>() => T;
+}
+
+export interface FormSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<FormSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = FormSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = FormPreviousValuesSubscription>() => T;
+}
+
 export interface AggregateAssault {
   count: Int;
 }
@@ -5146,6 +5773,46 @@ export interface AggregateAssaultSubscription
   extends Promise<AsyncIterator<AggregateAssault>>,
     Fragmentable {
   count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface FormPreviousValues {
+  id: ID_Output;
+  name: String;
+}
+
+export interface FormPreviousValuesPromise
+  extends Promise<FormPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+}
+
+export interface FormPreviousValuesSubscription
+  extends Promise<AsyncIterator<FormPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AssaultConnection {
+  pageInfo: PageInfo;
+  edges: AssaultEdge[];
+}
+
+export interface AssaultConnectionPromise
+  extends Promise<AssaultConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<AssaultEdge>>() => T;
+  aggregate: <T = AggregateAssaultPromise>() => T;
+}
+
+export interface AssaultConnectionSubscription
+  extends Promise<AsyncIterator<AssaultConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<AssaultEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateAssaultSubscription>() => T;
 }
 
 export interface Poule {
@@ -5232,713 +5899,6 @@ export interface PouleNullablePromise
   tournament: <T = TournamentPromise>() => T;
 }
 
-export interface AssaultConnection {
-  pageInfo: PageInfo;
-  edges: AssaultEdge[];
-}
-
-export interface AssaultConnectionPromise
-  extends Promise<AssaultConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<AssaultEdge>>() => T;
-  aggregate: <T = AggregateAssaultPromise>() => T;
-}
-
-export interface AssaultConnectionSubscription
-  extends Promise<AsyncIterator<AssaultConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<AssaultEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateAssaultSubscription>() => T;
-}
-
-export interface FormSubscriptionPayload {
-  mutation: MutationType;
-  node: Form;
-  updatedFields: String[];
-  previousValues: FormPreviousValues;
-}
-
-export interface FormSubscriptionPayloadPromise
-  extends Promise<FormSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = FormPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = FormPreviousValuesPromise>() => T;
-}
-
-export interface FormSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<FormSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = FormSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = FormPreviousValuesSubscription>() => T;
-}
-
-export interface Academy {
-  country: String;
-  id: ID_Output;
-  name: String;
-}
-
-export interface AcademyPromise extends Promise<Academy>, Fragmentable {
-  country: () => Promise<String>;
-  createdBy: <T = UserPromise>() => T;
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  schools: <T = FragmentableArray<School>>(args?: {
-    where?: SchoolWhereInput;
-    orderBy?: SchoolOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-}
-
-export interface AcademySubscription
-  extends Promise<AsyncIterator<Academy>>,
-    Fragmentable {
-  country: () => Promise<AsyncIterator<String>>;
-  createdBy: <T = UserSubscription>() => T;
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-  schools: <T = Promise<AsyncIterator<SchoolSubscription>>>(args?: {
-    where?: SchoolWhereInput;
-    orderBy?: SchoolOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-}
-
-export interface AcademyNullablePromise
-  extends Promise<Academy | null>,
-    Fragmentable {
-  country: () => Promise<String>;
-  createdBy: <T = UserPromise>() => T;
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  schools: <T = FragmentableArray<School>>(args?: {
-    where?: SchoolWhereInput;
-    orderBy?: SchoolOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-}
-
-export interface FormPreviousValues {
-  id: ID_Output;
-  name: String;
-}
-
-export interface FormPreviousValuesPromise
-  extends Promise<FormPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-}
-
-export interface FormPreviousValuesSubscription
-  extends Promise<AsyncIterator<FormPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AggregateSchool {
-  count: Int;
-}
-
-export interface AggregateSchoolPromise
-  extends Promise<AggregateSchool>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateSchoolSubscription
-  extends Promise<AsyncIterator<AggregateSchool>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface Match {
-  duration?: Int;
-  id: ID_Output;
-  order: Int;
-  resultPlayer1?: Int;
-  resultPlayer2?: Int;
-}
-
-export interface MatchPromise extends Promise<Match>, Fragmentable {
-  assaults: <T = FragmentableArray<Assault>>(args?: {
-    where?: AssaultWhereInput;
-    orderBy?: AssaultOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  createdBy: <T = UserPromise>() => T;
-  duration: () => Promise<Int>;
-  id: () => Promise<ID_Output>;
-  order: () => Promise<Int>;
-  player1: <T = PlayerPromise>() => T;
-  player2: <T = PlayerPromise>() => T;
-  poule: <T = PoulePromise>() => T;
-  resultPlayer1: () => Promise<Int>;
-  resultPlayer2: () => Promise<Int>;
-}
-
-export interface MatchSubscription
-  extends Promise<AsyncIterator<Match>>,
-    Fragmentable {
-  assaults: <T = Promise<AsyncIterator<AssaultSubscription>>>(args?: {
-    where?: AssaultWhereInput;
-    orderBy?: AssaultOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  createdBy: <T = UserSubscription>() => T;
-  duration: () => Promise<AsyncIterator<Int>>;
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  order: () => Promise<AsyncIterator<Int>>;
-  player1: <T = PlayerSubscription>() => T;
-  player2: <T = PlayerSubscription>() => T;
-  poule: <T = PouleSubscription>() => T;
-  resultPlayer1: () => Promise<AsyncIterator<Int>>;
-  resultPlayer2: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface MatchNullablePromise
-  extends Promise<Match | null>,
-    Fragmentable {
-  assaults: <T = FragmentableArray<Assault>>(args?: {
-    where?: AssaultWhereInput;
-    orderBy?: AssaultOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  createdBy: <T = UserPromise>() => T;
-  duration: () => Promise<Int>;
-  id: () => Promise<ID_Output>;
-  order: () => Promise<Int>;
-  player1: <T = PlayerPromise>() => T;
-  player2: <T = PlayerPromise>() => T;
-  poule: <T = PoulePromise>() => T;
-  resultPlayer1: () => Promise<Int>;
-  resultPlayer2: () => Promise<Int>;
-}
-
-export interface SchoolConnection {
-  pageInfo: PageInfo;
-  edges: SchoolEdge[];
-}
-
-export interface SchoolConnectionPromise
-  extends Promise<SchoolConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<SchoolEdge>>() => T;
-  aggregate: <T = AggregateSchoolPromise>() => T;
-}
-
-export interface SchoolConnectionSubscription
-  extends Promise<AsyncIterator<SchoolConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<SchoolEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateSchoolSubscription>() => T;
-}
-
-export interface MatchSubscriptionPayload {
-  mutation: MutationType;
-  node: Match;
-  updatedFields: String[];
-  previousValues: MatchPreviousValues;
-}
-
-export interface MatchSubscriptionPayloadPromise
-  extends Promise<MatchSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = MatchPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = MatchPreviousValuesPromise>() => T;
-}
-
-export interface MatchSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<MatchSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = MatchSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = MatchPreviousValuesSubscription>() => T;
-}
-
-export interface AggregatePlayer {
-  count: Int;
-}
-
-export interface AggregatePlayerPromise
-  extends Promise<AggregatePlayer>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregatePlayerSubscription
-  extends Promise<AsyncIterator<AggregatePlayer>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface MatchPreviousValues {
-  duration?: Int;
-  id: ID_Output;
-  order: Int;
-  resultPlayer1?: Int;
-  resultPlayer2?: Int;
-}
-
-export interface MatchPreviousValuesPromise
-  extends Promise<MatchPreviousValues>,
-    Fragmentable {
-  duration: () => Promise<Int>;
-  id: () => Promise<ID_Output>;
-  order: () => Promise<Int>;
-  resultPlayer1: () => Promise<Int>;
-  resultPlayer2: () => Promise<Int>;
-}
-
-export interface MatchPreviousValuesSubscription
-  extends Promise<AsyncIterator<MatchPreviousValues>>,
-    Fragmentable {
-  duration: () => Promise<AsyncIterator<Int>>;
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  order: () => Promise<AsyncIterator<Int>>;
-  resultPlayer1: () => Promise<AsyncIterator<Int>>;
-  resultPlayer2: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface MatchEdge {
-  node: Match;
-  cursor: String;
-}
-
-export interface MatchEdgePromise extends Promise<MatchEdge>, Fragmentable {
-  node: <T = MatchPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface MatchEdgeSubscription
-  extends Promise<AsyncIterator<MatchEdge>>,
-    Fragmentable {
-  node: <T = MatchSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface Card {
-  id: ID_Output;
-  reason?: String;
-  type: CardsType;
-}
-
-export interface CardPromise extends Promise<Card>, Fragmentable {
-  assault: <T = AssaultPromise>() => T;
-  id: () => Promise<ID_Output>;
-  reason: () => Promise<String>;
-  type: () => Promise<CardsType>;
-  player: <T = PlayerPromise>() => T;
-}
-
-export interface CardSubscription
-  extends Promise<AsyncIterator<Card>>,
-    Fragmentable {
-  assault: <T = AssaultSubscription>() => T;
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  reason: () => Promise<AsyncIterator<String>>;
-  type: () => Promise<AsyncIterator<CardsType>>;
-  player: <T = PlayerSubscription>() => T;
-}
-
-export interface CardNullablePromise
-  extends Promise<Card | null>,
-    Fragmentable {
-  assault: <T = AssaultPromise>() => T;
-  id: () => Promise<ID_Output>;
-  reason: () => Promise<String>;
-  type: () => Promise<CardsType>;
-  player: <T = PlayerPromise>() => T;
-}
-
-export interface FormConnection {
-  pageInfo: PageInfo;
-  edges: FormEdge[];
-}
-
-export interface FormConnectionPromise
-  extends Promise<FormConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<FormEdge>>() => T;
-  aggregate: <T = AggregateFormPromise>() => T;
-}
-
-export interface FormConnectionSubscription
-  extends Promise<AsyncIterator<FormConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<FormEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateFormSubscription>() => T;
-}
-
-export interface PlayerSubscriptionPayload {
-  mutation: MutationType;
-  node: Player;
-  updatedFields: String[];
-  previousValues: PlayerPreviousValues;
-}
-
-export interface PlayerSubscriptionPayloadPromise
-  extends Promise<PlayerSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = PlayerPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = PlayerPreviousValuesPromise>() => T;
-}
-
-export interface PlayerSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<PlayerSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = PlayerSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = PlayerPreviousValuesSubscription>() => T;
-}
-
-export interface AggregateCard {
-  count: Int;
-}
-
-export interface AggregateCardPromise
-  extends Promise<AggregateCard>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateCardSubscription
-  extends Promise<AsyncIterator<AggregateCard>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface PlayerPreviousValues {
-  familyName: String;
-  id: ID_Output;
-  name: String;
-  nickname: String;
-}
-
-export interface PlayerPreviousValuesPromise
-  extends Promise<PlayerPreviousValues>,
-    Fragmentable {
-  familyName: () => Promise<String>;
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  nickname: () => Promise<String>;
-}
-
-export interface PlayerPreviousValuesSubscription
-  extends Promise<AsyncIterator<PlayerPreviousValues>>,
-    Fragmentable {
-  familyName: () => Promise<AsyncIterator<String>>;
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-  nickname: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AssaultEdge {
-  node: Assault;
-  cursor: String;
-}
-
-export interface AssaultEdgePromise extends Promise<AssaultEdge>, Fragmentable {
-  node: <T = AssaultPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface AssaultEdgeSubscription
-  extends Promise<AsyncIterator<AssaultEdge>>,
-    Fragmentable {
-  node: <T = AssaultSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface Assault {
-  doppio?: Boolean;
-  id: ID_Output;
-  nullo?: Boolean;
-  number: Int;
-}
-
-export interface AssaultPromise extends Promise<Assault>, Fragmentable {
-  cards: <T = FragmentableArray<Card>>(args?: {
-    where?: CardWhereInput;
-    orderBy?: CardOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  doppio: () => Promise<Boolean>;
-  id: () => Promise<ID_Output>;
-  match: <T = MatchPromise>() => T;
-  nullo: () => Promise<Boolean>;
-  number: () => Promise<Int>;
-  winner: <T = PlayerPromise>() => T;
-}
-
-export interface AssaultSubscription
-  extends Promise<AsyncIterator<Assault>>,
-    Fragmentable {
-  cards: <T = Promise<AsyncIterator<CardSubscription>>>(args?: {
-    where?: CardWhereInput;
-    orderBy?: CardOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  doppio: () => Promise<AsyncIterator<Boolean>>;
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  match: <T = MatchSubscription>() => T;
-  nullo: () => Promise<AsyncIterator<Boolean>>;
-  number: () => Promise<AsyncIterator<Int>>;
-  winner: <T = PlayerSubscription>() => T;
-}
-
-export interface AssaultNullablePromise
-  extends Promise<Assault | null>,
-    Fragmentable {
-  cards: <T = FragmentableArray<Card>>(args?: {
-    where?: CardWhereInput;
-    orderBy?: CardOrderByInput;
-    skip?: Int;
-    after?: String;
-    before?: String;
-    first?: Int;
-    last?: Int;
-  }) => T;
-  doppio: () => Promise<Boolean>;
-  id: () => Promise<ID_Output>;
-  match: <T = MatchPromise>() => T;
-  nullo: () => Promise<Boolean>;
-  number: () => Promise<Int>;
-  winner: <T = PlayerPromise>() => T;
-}
-
-export interface TournamentEdge {
-  node: Tournament;
-  cursor: String;
-}
-
-export interface TournamentEdgePromise
-  extends Promise<TournamentEdge>,
-    Fragmentable {
-  node: <T = TournamentPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface TournamentEdgeSubscription
-  extends Promise<AsyncIterator<TournamentEdge>>,
-    Fragmentable {
-  node: <T = TournamentSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface PouleSubscriptionPayload {
-  mutation: MutationType;
-  node: Poule;
-  updatedFields: String[];
-  previousValues: PoulePreviousValues;
-}
-
-export interface PouleSubscriptionPayloadPromise
-  extends Promise<PouleSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = PoulePromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = PoulePreviousValuesPromise>() => T;
-}
-
-export interface PouleSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<PouleSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = PouleSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = PoulePreviousValuesSubscription>() => T;
-}
-
-export interface PouleEdge {
-  node: Poule;
-  cursor: String;
-}
-
-export interface PouleEdgePromise extends Promise<PouleEdge>, Fragmentable {
-  node: <T = PoulePromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface PouleEdgeSubscription
-  extends Promise<AsyncIterator<PouleEdge>>,
-    Fragmentable {
-  node: <T = PouleSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface PoulePreviousValues {
-  id: ID_Output;
-  name: String;
-}
-
-export interface PoulePreviousValuesPromise
-  extends Promise<PoulePreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-}
-
-export interface PoulePreviousValuesSubscription
-  extends Promise<AsyncIterator<PoulePreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-}
-
-export interface AggregateForm {
-  count: Int;
-}
-
-export interface AggregateFormPromise
-  extends Promise<AggregateForm>,
-    Fragmentable {
-  count: () => Promise<Int>;
-}
-
-export interface AggregateFormSubscription
-  extends Promise<AsyncIterator<AggregateForm>>,
-    Fragmentable {
-  count: () => Promise<AsyncIterator<Int>>;
-}
-
-export interface CardConnection {
-  pageInfo: PageInfo;
-  edges: CardEdge[];
-}
-
-export interface CardConnectionPromise
-  extends Promise<CardConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<CardEdge>>() => T;
-  aggregate: <T = AggregateCardPromise>() => T;
-}
-
-export interface CardConnectionSubscription
-  extends Promise<AsyncIterator<CardConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<CardEdgeSubscription>>>() => T;
-  aggregate: <T = AggregateCardSubscription>() => T;
-}
-
-export interface TournamentPreviousValues {
-  id: ID_Output;
-  name: String;
-  poulesType: PoulesType;
-}
-
-export interface TournamentPreviousValuesPromise
-  extends Promise<TournamentPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-  poulesType: () => Promise<PoulesType>;
-}
-
-export interface TournamentPreviousValuesSubscription
-  extends Promise<AsyncIterator<TournamentPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-  poulesType: () => Promise<AsyncIterator<PoulesType>>;
-}
-
-export interface SchoolPreviousValues {
-  id: ID_Output;
-  name: String;
-}
-
-export interface SchoolPreviousValuesPromise
-  extends Promise<SchoolPreviousValues>,
-    Fragmentable {
-  id: () => Promise<ID_Output>;
-  name: () => Promise<String>;
-}
-
-export interface SchoolPreviousValuesSubscription
-  extends Promise<AsyncIterator<SchoolPreviousValues>>,
-    Fragmentable {
-  id: () => Promise<AsyncIterator<ID_Output>>;
-  name: () => Promise<AsyncIterator<String>>;
-}
-
-export interface SchoolSubscriptionPayload {
-  mutation: MutationType;
-  node: School;
-  updatedFields: String[];
-  previousValues: SchoolPreviousValues;
-}
-
-export interface SchoolSubscriptionPayloadPromise
-  extends Promise<SchoolSubscriptionPayload>,
-    Fragmentable {
-  mutation: () => Promise<MutationType>;
-  node: <T = SchoolPromise>() => T;
-  updatedFields: () => Promise<String[]>;
-  previousValues: <T = SchoolPreviousValuesPromise>() => T;
-}
-
-export interface SchoolSubscriptionPayloadSubscription
-  extends Promise<AsyncIterator<SchoolSubscriptionPayload>>,
-    Fragmentable {
-  mutation: () => Promise<AsyncIterator<MutationType>>;
-  node: <T = SchoolSubscription>() => T;
-  updatedFields: () => Promise<AsyncIterator<String[]>>;
-  previousValues: <T = SchoolPreviousValuesSubscription>() => T;
-}
-
 export interface Player {
   familyName: String;
   id: ID_Output;
@@ -5992,6 +5952,15 @@ export interface PlayerPromise extends Promise<Player>, Fragmentable {
   poules: <T = FragmentableArray<Poule>>(args?: {
     where?: PouleWhereInput;
     orderBy?: PouleOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  rounds: <T = FragmentableArray<Round>>(args?: {
+    where?: RoundWhereInput;
+    orderBy?: RoundOrderByInput;
     skip?: Int;
     after?: String;
     before?: String;
@@ -6063,6 +6032,15 @@ export interface PlayerSubscription
     first?: Int;
     last?: Int;
   }) => T;
+  rounds: <T = Promise<AsyncIterator<RoundSubscription>>>(args?: {
+    where?: RoundWhereInput;
+    orderBy?: RoundOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
   tournaments: <T = Promise<AsyncIterator<TournamentSubscription>>>(args?: {
     where?: TournamentWhereInput;
     orderBy?: TournamentOrderByInput;
@@ -6128,6 +6106,15 @@ export interface PlayerNullablePromise
     first?: Int;
     last?: Int;
   }) => T;
+  rounds: <T = FragmentableArray<Round>>(args?: {
+    where?: RoundWhereInput;
+    orderBy?: RoundOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
   tournaments: <T = FragmentableArray<Tournament>>(args?: {
     where?: TournamentWhereInput;
     orderBy?: TournamentOrderByInput;
@@ -6139,59 +6126,29 @@ export interface PlayerNullablePromise
   }) => T;
 }
 
-export interface UserEdge {
-  node: User;
-  cursor: String;
+export interface MatchSubscriptionPayload {
+  mutation: MutationType;
+  node: Match;
+  updatedFields: String[];
+  previousValues: MatchPreviousValues;
 }
 
-export interface UserEdgePromise extends Promise<UserEdge>, Fragmentable {
-  node: <T = UserPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface UserEdgeSubscription
-  extends Promise<AsyncIterator<UserEdge>>,
+export interface MatchSubscriptionPayloadPromise
+  extends Promise<MatchSubscriptionPayload>,
     Fragmentable {
-  node: <T = UserSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
+  mutation: () => Promise<MutationType>;
+  node: <T = MatchPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = MatchPreviousValuesPromise>() => T;
 }
 
-export interface ClanEdge {
-  node: Clan;
-  cursor: String;
-}
-
-export interface ClanEdgePromise extends Promise<ClanEdge>, Fragmentable {
-  node: <T = ClanPromise>() => T;
-  cursor: () => Promise<String>;
-}
-
-export interface ClanEdgeSubscription
-  extends Promise<AsyncIterator<ClanEdge>>,
+export interface MatchSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<MatchSubscriptionPayload>>,
     Fragmentable {
-  node: <T = ClanSubscription>() => T;
-  cursor: () => Promise<AsyncIterator<String>>;
-}
-
-export interface PlayerConnection {
-  pageInfo: PageInfo;
-  edges: PlayerEdge[];
-}
-
-export interface PlayerConnectionPromise
-  extends Promise<PlayerConnection>,
-    Fragmentable {
-  pageInfo: <T = PageInfoPromise>() => T;
-  edges: <T = FragmentableArray<PlayerEdge>>() => T;
-  aggregate: <T = AggregatePlayerPromise>() => T;
-}
-
-export interface PlayerConnectionSubscription
-  extends Promise<AsyncIterator<PlayerConnection>>,
-    Fragmentable {
-  pageInfo: <T = PageInfoSubscription>() => T;
-  edges: <T = Promise<AsyncIterator<PlayerEdgeSubscription>>>() => T;
-  aggregate: <T = AggregatePlayerSubscription>() => T;
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = MatchSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = MatchPreviousValuesSubscription>() => T;
 }
 
 export interface UserSubscriptionPayload {
@@ -6219,23 +6176,750 @@ export interface UserSubscriptionPayloadSubscription
   previousValues: <T = UserPreviousValuesSubscription>() => T;
 }
 
+export interface MatchPreviousValues {
+  duration?: Int;
+  id: ID_Output;
+  order: Int;
+  resultPlayer1?: Int;
+  resultPlayer2?: Int;
+}
+
+export interface MatchPreviousValuesPromise
+  extends Promise<MatchPreviousValues>,
+    Fragmentable {
+  duration: () => Promise<Int>;
+  id: () => Promise<ID_Output>;
+  order: () => Promise<Int>;
+  resultPlayer1: () => Promise<Int>;
+  resultPlayer2: () => Promise<Int>;
+}
+
+export interface MatchPreviousValuesSubscription
+  extends Promise<AsyncIterator<MatchPreviousValues>>,
+    Fragmentable {
+  duration: () => Promise<AsyncIterator<Int>>;
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  order: () => Promise<AsyncIterator<Int>>;
+  resultPlayer1: () => Promise<AsyncIterator<Int>>;
+  resultPlayer2: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface AggregateRound {
+  count: Int;
+}
+
+export interface AggregateRoundPromise
+  extends Promise<AggregateRound>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateRoundSubscription
+  extends Promise<AsyncIterator<AggregateRound>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface Form {
+  id: ID_Output;
+  name: String;
+}
+
+export interface FormPromise extends Promise<Form>, Fragmentable {
+  createdBy: <T = UserPromise>() => T;
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  players: <T = FragmentableArray<Player>>(args?: {
+    where?: PlayerWhereInput;
+    orderBy?: PlayerOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface FormSubscription
+  extends Promise<AsyncIterator<Form>>,
+    Fragmentable {
+  createdBy: <T = UserSubscription>() => T;
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  players: <T = Promise<AsyncIterator<PlayerSubscription>>>(args?: {
+    where?: PlayerWhereInput;
+    orderBy?: PlayerOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface FormNullablePromise
+  extends Promise<Form | null>,
+    Fragmentable {
+  createdBy: <T = UserPromise>() => T;
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  players: <T = FragmentableArray<Player>>(args?: {
+    where?: PlayerWhereInput;
+    orderBy?: PlayerOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+}
+
+export interface PouleEdge {
+  node: Poule;
+  cursor: String;
+}
+
+export interface PouleEdgePromise extends Promise<PouleEdge>, Fragmentable {
+  node: <T = PoulePromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface PouleEdgeSubscription
+  extends Promise<AsyncIterator<PouleEdge>>,
+    Fragmentable {
+  node: <T = PouleSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface PlayerSubscriptionPayload {
+  mutation: MutationType;
+  node: Player;
+  updatedFields: String[];
+  previousValues: PlayerPreviousValues;
+}
+
+export interface PlayerSubscriptionPayloadPromise
+  extends Promise<PlayerSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = PlayerPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = PlayerPreviousValuesPromise>() => T;
+}
+
+export interface PlayerSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<PlayerSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = PlayerSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = PlayerPreviousValuesSubscription>() => T;
+}
+
+export interface PlayerConnection {
+  pageInfo: PageInfo;
+  edges: PlayerEdge[];
+}
+
+export interface PlayerConnectionPromise
+  extends Promise<PlayerConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<PlayerEdge>>() => T;
+  aggregate: <T = AggregatePlayerPromise>() => T;
+}
+
+export interface PlayerConnectionSubscription
+  extends Promise<AsyncIterator<PlayerConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<PlayerEdgeSubscription>>>() => T;
+  aggregate: <T = AggregatePlayerSubscription>() => T;
+}
+
+export interface PlayerPreviousValues {
+  familyName: String;
+  id: ID_Output;
+  name: String;
+  nickname: String;
+}
+
+export interface PlayerPreviousValuesPromise
+  extends Promise<PlayerPreviousValues>,
+    Fragmentable {
+  familyName: () => Promise<String>;
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  nickname: () => Promise<String>;
+}
+
+export interface PlayerPreviousValuesSubscription
+  extends Promise<AsyncIterator<PlayerPreviousValues>>,
+    Fragmentable {
+  familyName: () => Promise<AsyncIterator<String>>;
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  nickname: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AggregateForm {
+  count: Int;
+}
+
+export interface AggregateFormPromise
+  extends Promise<AggregateForm>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateFormSubscription
+  extends Promise<AsyncIterator<AggregateForm>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface Match {
+  duration?: Int;
+  id: ID_Output;
+  order: Int;
+  resultPlayer1?: Int;
+  resultPlayer2?: Int;
+}
+
+export interface MatchPromise extends Promise<Match>, Fragmentable {
+  assaults: <T = FragmentableArray<Assault>>(args?: {
+    where?: AssaultWhereInput;
+    orderBy?: AssaultOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  createdBy: <T = UserPromise>() => T;
+  duration: () => Promise<Int>;
+  id: () => Promise<ID_Output>;
+  order: () => Promise<Int>;
+  player1: <T = PlayerPromise>() => T;
+  player2: <T = PlayerPromise>() => T;
+  resultPlayer1: () => Promise<Int>;
+  resultPlayer2: () => Promise<Int>;
+}
+
+export interface MatchSubscription
+  extends Promise<AsyncIterator<Match>>,
+    Fragmentable {
+  assaults: <T = Promise<AsyncIterator<AssaultSubscription>>>(args?: {
+    where?: AssaultWhereInput;
+    orderBy?: AssaultOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  createdBy: <T = UserSubscription>() => T;
+  duration: () => Promise<AsyncIterator<Int>>;
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  order: () => Promise<AsyncIterator<Int>>;
+  player1: <T = PlayerSubscription>() => T;
+  player2: <T = PlayerSubscription>() => T;
+  resultPlayer1: () => Promise<AsyncIterator<Int>>;
+  resultPlayer2: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface MatchNullablePromise
+  extends Promise<Match | null>,
+    Fragmentable {
+  assaults: <T = FragmentableArray<Assault>>(args?: {
+    where?: AssaultWhereInput;
+    orderBy?: AssaultOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  createdBy: <T = UserPromise>() => T;
+  duration: () => Promise<Int>;
+  id: () => Promise<ID_Output>;
+  order: () => Promise<Int>;
+  player1: <T = PlayerPromise>() => T;
+  player2: <T = PlayerPromise>() => T;
+  resultPlayer1: () => Promise<Int>;
+  resultPlayer2: () => Promise<Int>;
+}
+
+export interface ClanEdge {
+  node: Clan;
+  cursor: String;
+}
+
+export interface ClanEdgePromise extends Promise<ClanEdge>, Fragmentable {
+  node: <T = ClanPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface ClanEdgeSubscription
+  extends Promise<AsyncIterator<ClanEdge>>,
+    Fragmentable {
+  node: <T = ClanSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface PouleSubscriptionPayload {
+  mutation: MutationType;
+  node: Poule;
+  updatedFields: String[];
+  previousValues: PoulePreviousValues;
+}
+
+export interface PouleSubscriptionPayloadPromise
+  extends Promise<PouleSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = PoulePromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = PoulePreviousValuesPromise>() => T;
+}
+
+export interface PouleSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<PouleSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = PouleSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = PoulePreviousValuesSubscription>() => T;
+}
+
+export interface CardConnection {
+  pageInfo: PageInfo;
+  edges: CardEdge[];
+}
+
+export interface CardConnectionPromise
+  extends Promise<CardConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<CardEdge>>() => T;
+  aggregate: <T = AggregateCardPromise>() => T;
+}
+
+export interface CardConnectionSubscription
+  extends Promise<AsyncIterator<CardConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<CardEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateCardSubscription>() => T;
+}
+
+export interface PoulePreviousValues {
+  id: ID_Output;
+  name: String;
+}
+
+export interface PoulePreviousValuesPromise
+  extends Promise<PoulePreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+}
+
+export interface PoulePreviousValuesSubscription
+  extends Promise<AsyncIterator<PoulePreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+}
+
+export interface AggregateAcademy {
+  count: Int;
+}
+
+export interface AggregateAcademyPromise
+  extends Promise<AggregateAcademy>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateAcademySubscription
+  extends Promise<AsyncIterator<AggregateAcademy>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface Card {
+  id: ID_Output;
+  reason?: String;
+  type: CardsType;
+}
+
+export interface CardPromise extends Promise<Card>, Fragmentable {
+  assault: <T = AssaultPromise>() => T;
+  id: () => Promise<ID_Output>;
+  reason: () => Promise<String>;
+  type: () => Promise<CardsType>;
+  player: <T = PlayerPromise>() => T;
+}
+
+export interface CardSubscription
+  extends Promise<AsyncIterator<Card>>,
+    Fragmentable {
+  assault: <T = AssaultSubscription>() => T;
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  reason: () => Promise<AsyncIterator<String>>;
+  type: () => Promise<AsyncIterator<CardsType>>;
+  player: <T = PlayerSubscription>() => T;
+}
+
+export interface CardNullablePromise
+  extends Promise<Card | null>,
+    Fragmentable {
+  assault: <T = AssaultPromise>() => T;
+  id: () => Promise<ID_Output>;
+  reason: () => Promise<String>;
+  type: () => Promise<CardsType>;
+  player: <T = PlayerPromise>() => T;
+}
+
+export interface SchoolEdge {
+  node: School;
+  cursor: String;
+}
+
+export interface SchoolEdgePromise extends Promise<SchoolEdge>, Fragmentable {
+  node: <T = SchoolPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface SchoolEdgeSubscription
+  extends Promise<AsyncIterator<SchoolEdge>>,
+    Fragmentable {
+  node: <T = SchoolSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface RoundSubscriptionPayload {
+  mutation: MutationType;
+  node: Round;
+  updatedFields: String[];
+  previousValues: RoundPreviousValues;
+}
+
+export interface RoundSubscriptionPayloadPromise
+  extends Promise<RoundSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = RoundPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = RoundPreviousValuesPromise>() => T;
+}
+
+export interface RoundSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<RoundSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = RoundSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = RoundPreviousValuesSubscription>() => T;
+}
+
+export interface AggregatePlayer {
+  count: Int;
+}
+
+export interface AggregatePlayerPromise
+  extends Promise<AggregatePlayer>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregatePlayerSubscription
+  extends Promise<AsyncIterator<AggregatePlayer>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface RoundPreviousValues {
+  id: ID_Output;
+  roundType: RoundsType;
+}
+
+export interface RoundPreviousValuesPromise
+  extends Promise<RoundPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  roundType: () => Promise<RoundsType>;
+}
+
+export interface RoundPreviousValuesSubscription
+  extends Promise<AsyncIterator<RoundPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  roundType: () => Promise<AsyncIterator<RoundsType>>;
+}
+
+export interface FormConnection {
+  pageInfo: PageInfo;
+  edges: FormEdge[];
+}
+
+export interface FormConnectionPromise
+  extends Promise<FormConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<FormEdge>>() => T;
+  aggregate: <T = AggregateFormPromise>() => T;
+}
+
+export interface FormConnectionSubscription
+  extends Promise<AsyncIterator<FormConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<FormEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateFormSubscription>() => T;
+}
+
+export interface AssaultEdge {
+  node: Assault;
+  cursor: String;
+}
+
+export interface AssaultEdgePromise extends Promise<AssaultEdge>, Fragmentable {
+  node: <T = AssaultPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface AssaultEdgeSubscription
+  extends Promise<AsyncIterator<AssaultEdge>>,
+    Fragmentable {
+  node: <T = AssaultSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface TournamentPreviousValues {
+  id: ID_Output;
+  name: String;
+  poulesType: PoulesType;
+}
+
+export interface TournamentPreviousValuesPromise
+  extends Promise<TournamentPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+  poulesType: () => Promise<PoulesType>;
+}
+
+export interface TournamentPreviousValuesSubscription
+  extends Promise<AsyncIterator<TournamentPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+  poulesType: () => Promise<AsyncIterator<PoulesType>>;
+}
+
+export interface SchoolPreviousValues {
+  id: ID_Output;
+  name: String;
+}
+
+export interface SchoolPreviousValuesPromise
+  extends Promise<SchoolPreviousValues>,
+    Fragmentable {
+  id: () => Promise<ID_Output>;
+  name: () => Promise<String>;
+}
+
+export interface SchoolPreviousValuesSubscription
+  extends Promise<AsyncIterator<SchoolPreviousValues>>,
+    Fragmentable {
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  name: () => Promise<AsyncIterator<String>>;
+}
+
+export interface SchoolSubscriptionPayload {
+  mutation: MutationType;
+  node: School;
+  updatedFields: String[];
+  previousValues: SchoolPreviousValues;
+}
+
+export interface SchoolSubscriptionPayloadPromise
+  extends Promise<SchoolSubscriptionPayload>,
+    Fragmentable {
+  mutation: () => Promise<MutationType>;
+  node: <T = SchoolPromise>() => T;
+  updatedFields: () => Promise<String[]>;
+  previousValues: <T = SchoolPreviousValuesPromise>() => T;
+}
+
+export interface SchoolSubscriptionPayloadSubscription
+  extends Promise<AsyncIterator<SchoolSubscriptionPayload>>,
+    Fragmentable {
+  mutation: () => Promise<AsyncIterator<MutationType>>;
+  node: <T = SchoolSubscription>() => T;
+  updatedFields: () => Promise<AsyncIterator<String[]>>;
+  previousValues: <T = SchoolPreviousValuesSubscription>() => T;
+}
+
+export interface Assault {
+  doppio?: Boolean;
+  id: ID_Output;
+  nullo?: Boolean;
+  number: Int;
+}
+
+export interface AssaultPromise extends Promise<Assault>, Fragmentable {
+  cards: <T = FragmentableArray<Card>>(args?: {
+    where?: CardWhereInput;
+    orderBy?: CardOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  doppio: () => Promise<Boolean>;
+  id: () => Promise<ID_Output>;
+  match: <T = MatchPromise>() => T;
+  nullo: () => Promise<Boolean>;
+  number: () => Promise<Int>;
+  winner: <T = PlayerPromise>() => T;
+}
+
+export interface AssaultSubscription
+  extends Promise<AsyncIterator<Assault>>,
+    Fragmentable {
+  cards: <T = Promise<AsyncIterator<CardSubscription>>>(args?: {
+    where?: CardWhereInput;
+    orderBy?: CardOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  doppio: () => Promise<AsyncIterator<Boolean>>;
+  id: () => Promise<AsyncIterator<ID_Output>>;
+  match: <T = MatchSubscription>() => T;
+  nullo: () => Promise<AsyncIterator<Boolean>>;
+  number: () => Promise<AsyncIterator<Int>>;
+  winner: <T = PlayerSubscription>() => T;
+}
+
+export interface AssaultNullablePromise
+  extends Promise<Assault | null>,
+    Fragmentable {
+  cards: <T = FragmentableArray<Card>>(args?: {
+    where?: CardWhereInput;
+    orderBy?: CardOrderByInput;
+    skip?: Int;
+    after?: String;
+    before?: String;
+    first?: Int;
+    last?: Int;
+  }) => T;
+  doppio: () => Promise<Boolean>;
+  id: () => Promise<ID_Output>;
+  match: <T = MatchPromise>() => T;
+  nullo: () => Promise<Boolean>;
+  number: () => Promise<Int>;
+  winner: <T = PlayerPromise>() => T;
+}
+
+export interface TournamentConnection {
+  pageInfo: PageInfo;
+  edges: TournamentEdge[];
+}
+
+export interface TournamentConnectionPromise
+  extends Promise<TournamentConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<TournamentEdge>>() => T;
+  aggregate: <T = AggregateTournamentPromise>() => T;
+}
+
+export interface TournamentConnectionSubscription
+  extends Promise<AsyncIterator<TournamentConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<TournamentEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateTournamentSubscription>() => T;
+}
+
+export interface AggregateCard {
+  count: Int;
+}
+
+export interface AggregateCardPromise
+  extends Promise<AggregateCard>,
+    Fragmentable {
+  count: () => Promise<Int>;
+}
+
+export interface AggregateCardSubscription
+  extends Promise<AsyncIterator<AggregateCard>>,
+    Fragmentable {
+  count: () => Promise<AsyncIterator<Int>>;
+}
+
+export interface MatchEdge {
+  node: Match;
+  cursor: String;
+}
+
+export interface MatchEdgePromise extends Promise<MatchEdge>, Fragmentable {
+  node: <T = MatchPromise>() => T;
+  cursor: () => Promise<String>;
+}
+
+export interface MatchEdgeSubscription
+  extends Promise<AsyncIterator<MatchEdge>>,
+    Fragmentable {
+  node: <T = MatchSubscription>() => T;
+  cursor: () => Promise<AsyncIterator<String>>;
+}
+
+export interface RoundConnection {
+  pageInfo: PageInfo;
+  edges: RoundEdge[];
+}
+
+export interface RoundConnectionPromise
+  extends Promise<RoundConnection>,
+    Fragmentable {
+  pageInfo: <T = PageInfoPromise>() => T;
+  edges: <T = FragmentableArray<RoundEdge>>() => T;
+  aggregate: <T = AggregateRoundPromise>() => T;
+}
+
+export interface RoundConnectionSubscription
+  extends Promise<AsyncIterator<RoundConnection>>,
+    Fragmentable {
+  pageInfo: <T = PageInfoSubscription>() => T;
+  edges: <T = Promise<AsyncIterator<RoundEdgeSubscription>>>() => T;
+  aggregate: <T = AggregateRoundSubscription>() => T;
+}
+
+/*
+The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+*/
+export type String = string;
+
 /*
 The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. 
 */
 export type Int = number;
+
+export type Long = string;
 
 /*
 The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
 */
 export type ID_Input = string | number;
 export type ID_Output = string;
-
-export type Long = string;
-
-/*
-The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
-*/
-export type String = string;
 
 /*
 The `Boolean` scalar type represents `true` or `false`.
@@ -6253,6 +6937,10 @@ export const models: Model[] = [
   },
   {
     name: "PoulesType",
+    embedded: false
+  },
+  {
+    name: "RoundsType",
     embedded: false
   },
   {
@@ -6280,11 +6968,15 @@ export const models: Model[] = [
     embedded: false
   },
   {
+    name: "Player",
+    embedded: false
+  },
+  {
     name: "Poule",
     embedded: false
   },
   {
-    name: "Player",
+    name: "Round",
     embedded: false
   },
   {

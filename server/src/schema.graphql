@@ -10,6 +10,17 @@ enum PoulesType {
   QUALIFICATION
 }
 
+enum RoundsType {
+	ROUND_OF_64
+	ROUND_OF_32
+	ROUND_OF_16
+	QUARTERFINALS
+	SEMIFINALS
+	THIRD_PLACE_PLAYOFFS
+	FINAL
+}
+
+
 type Academy {
     id: ID!
     name: String!
@@ -110,6 +121,7 @@ type Player {
     name: String!
     nickname: String!
 	poules: [Poule!]
+	rounds: [Round!]
 	tournaments: [Tournament!]
 }
 
@@ -147,6 +159,15 @@ type Query {
 	tournament(id: ID!): Tournament
 }
 
+type Round {
+	createdBy: User
+	id: ID!
+	matches: [Match!]
+	players: [Player!]!
+	roundType: RoundsType!
+	tournament: Tournament!
+}
+
 type School {
     academy: Academy!
 	clans: [Clan!]
@@ -166,6 +187,7 @@ type Tournament {
 	players: [Player!]
 	poules: [Poule!]
 	poulesType: PoulesType!
+	rounds: [Round!]
 }
 
 type User {
@@ -178,6 +200,7 @@ type User {
     password: String!
     players: [Player!]
     poules: [Poule!]
+	rounds: [Round!]
     schools: [School!]
     tournaments: [Tournament!]
 }
