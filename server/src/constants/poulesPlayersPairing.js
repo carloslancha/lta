@@ -1,4 +1,23 @@
-module.exports = {
+const POULE_NAMES = [
+	'A',
+	'B',
+	'C',
+	'D',
+	'E',
+	'F',
+	'G',
+	'H',
+	'I',
+	'J',
+	'K',
+	'L',
+	'M',
+	'N',
+	'O',
+	'P'
+]
+
+const POULES_PLAYERS_PAIRING = {
 	7: [
 		{
 			player1Position: 1,
@@ -199,4 +218,9 @@ module.exports = {
 			player2Position: 3,
 		},
 	],
-};
+}
+
+module.exports = {
+	POULE_NAMES,
+	POULES_PLAYERS_PAIRING
+}

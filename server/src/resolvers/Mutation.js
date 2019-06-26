@@ -1,7 +1,7 @@
 const { APP_SECRET, getUserId, shuffleArray } = require('../utils')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const poulesPlayersPairing = require('../constants/poulesPlayersPairing')
+const { POULE_NAMES, POULES_PLAYERS_PAIRING} = require('../constants/poulesPlayersPairing')
 
 async function signup(parent, args, context, info) {
 	const password = await bcrypt.hash(args.password, 10)
@@ -206,25 +206,6 @@ async function deleteTournament(parent, args, context, info) {
 async function generateTournamentPoules(parent, args, context, info) {
 	const userId = getUserId(context)
 
-	const POULE_NAMES = [
-		'A',
-		'B',
-		'C',
-		'D',
-		'E',
-		'F',
-		'G',
-		'H',
-		'I',
-		'J',
-		'K',
-		'L',
-		'M',
-		'N',
-		'O',
-		'P'
-	];
-
 	const fragment = `
 		fragment TournamentWithPlayers on Tournament {
 			id
@@ -316,7 +297,7 @@ async function generateTournamentPoules(parent, args, context, info) {
 
 		let matches = []
 
-		poulesPlayersPairing[players.length].map((matchConfig, index) => {
+		POULES_PLAYERS_PAIRING[players.length].map((matchConfig, index) => {
 			let match = {
 				order: index+1,
 				player1: { id: players[matchConfig.player1Position - 1].id },
