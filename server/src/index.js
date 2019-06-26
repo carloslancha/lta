@@ -4,6 +4,7 @@ const { prisma } = require('./generated/prisma-client')
 const Academy = require('./resolvers/Academy')
 const Clan = require('./resolvers/Clan')
 const Form = require('./resolvers/Form')
+const Match = require('./resolvers/Match')
 const Mutation = require('./resolvers/Mutation')
 const Query = require('./resolvers/Query')
 const Player = require('./resolvers/Player')
@@ -18,6 +19,7 @@ const resolvers = {
 	Academy,
 	Clan,
 	Form,
+	Match,
 	Mutation,
 	Player,
 	Poule,
