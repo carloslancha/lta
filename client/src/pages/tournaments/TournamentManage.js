@@ -73,6 +73,26 @@ const GENERATE_TOURNAMENT_POULES_MUTATION = gql`
 			name
 			poules {
 				id
+				matches {
+					id
+					order
+					player1 {
+						name
+						familyName
+						nickname
+						clan {
+							name
+						}
+					}
+					player2 {
+						name
+						familyName
+						nickname
+						clan {
+							name
+						}
+					}
+				}
 				name
 				players {
 					id
@@ -107,7 +127,7 @@ function Poule(props) {
 	const [expanded, setExpanded] = React.useState(false);
 
 	return (
-		<Grid item xs={12} key={poule.id}>
+		<Grid item xs={12}>
 			<Grid container spacing={3}>
 				<Grid item xs={12}>
 					<Typography component="h2" variant="h6" align="center">
@@ -243,7 +263,7 @@ export default function TournamentManage(props) {
 								</Grid>
 								:
 								tournament.poules.map(poule => (
-									<Poule poule={poule} />
+									<Poule poule={poule} key={poule.id} />
 								))
 							}
 						</Grid>
