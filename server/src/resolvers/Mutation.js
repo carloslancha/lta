@@ -278,20 +278,34 @@ async function generateTournamentPoules(parent, args, context, info) {
 
 		poules[pouleName] = poule
 	}
-
-	/** GROUP PLAYERS BY NUMBER OF KNOWN FORMS */
-	const playersGroupedByNumberOfForms = players.reduce((prev, curr) => {
-		(prev[curr['forms'].length] = prev[curr['forms'].length] || []).push(curr)
+	
+	/** GROUP PLAYERS BY FORMULA */
+	const playersGroupedByFormula = players.reduce((prev, curr) => {
+		prev[curr['forms'].length] = prev[curr['forms'].length] || {}  
+		prev[curr['forms'].length][curr.clan.school.academy.name] = prev[curr['forms'].length][curr.clan.school.academy.name] || {}
+		prev[curr['forms'].length][curr.clan.school.academy.name][curr.clan.school.name] = prev[curr['forms'].length][curr.clan.school.academy.name][curr.clan.school.name] || {}
+		prev[curr['forms'].length][curr.clan.school.academy.name][curr.clan.school.name][curr.clan.name] = prev[curr['forms'].length][curr.clan.school.academy.name][curr.clan.school.name][curr.clan.name] || []
+		prev[curr['forms'].length][curr.clan.school.academy.name][curr.clan.school.name][curr.clan.name].push(curr)
 		return prev
 	}, {})
 
-
-	/** ASSIGN PLAYERS TO POULES */
+	/** ASSIGN PLAYERS TO POULES **/
 	let currentPoule = 0
-	Object.keys(playersGroupedByNumberOfForms).map(key => {
-		playersGroupedByNumberOfForms[key].map(player => {
-			poules[POULE_NAMES[currentPoule]].players.push({ id: player.id })
-			currentPoule = (currentPoule === numberOfPoules - 1) ? 0 : currentPoule +1
+	Object.keys(playersGroupedByFormula).map(key => {
+		const byForm = playersGroupedByFormula[key]
+		Object.keys(byForm).map(key => {
+			const byAcademy = byForm[key]
+			Object.keys(byAcademy).map(key => {
+				const bySchool = byAcademy[key]
+				Object.keys(bySchool).map(key => {
+					const byClan = bySchool[key]
+					byClan.map(player => {
+						poules[POULE_NAMES[currentPoule]].players.push({ id: player.id})
+						currentPoule = (currentPoule === numberOfPoules - 1) ? 0 : currentPoule +1
+					})
+				})
+			})
+
 		})
 	})
 
