@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter } from 'react-router-dom'
+import { HashRouter as Router } from 'react-router-dom'
 import './styles/index.css'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
@@ -24,6 +24,7 @@ const authLink = setContext((_, { headers }) => {
 })
 
 const httpLink = createHttpLink({
+	//uri: 'https://tokyo-dynamo-245009.appspot.com/'
 	uri: 'http://localhost:4000'
 })
 
@@ -33,13 +34,13 @@ const client = new ApolloClient({
 })
 
 ReactDOM.render(
-	<BrowserRouter>
+	<Router>
 		<ApolloProvider client={client}>
 			<ApolloHooksProvider client={client}>
 				<App />
 			</ApolloHooksProvider>
 		</ApolloProvider>
-	</BrowserRouter>,
+	</Router>,
 	document.getElementById('root')
 )
 

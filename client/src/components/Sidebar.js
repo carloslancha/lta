@@ -23,92 +23,6 @@ import React from 'react'
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart'
 import styles from '../styles/styles'
 
-export const mainListItems = (
-	<div>
-		<ListItem button component={Link} to="/">
-			<ListItemIcon>
-				<DashboardIcon />
-			</ListItemIcon>
-			<ListItemText primary="Dashboard" />
-		</ListItem>
-
-		<ListItem button component={Link} to="/">
-			<ListItemIcon>
-				<ShoppingCartIcon />
-			</ListItemIcon>
-			<ListItemText primary="Orders" />
-		</ListItem>
-
-		<ListItem button component={Link} to="/">
-			<ListItemIcon>
-				<PeopleIcon />
-			</ListItemIcon>
-			<ListItemText primary="Customers" />
-		</ListItem>
-
-		<ListItem button component={Link} to="/">
-			<ListItemIcon>
-				<BarChartIcon />
-			</ListItemIcon>
-			<ListItemText primary="Reports" />
-		</ListItem>
-
-		<ListItem button component={Link} to="/">
-			<ListItemIcon>
-				<LayersIcon />
-			</ListItemIcon>
-			<ListItemText primary="Integrations" />
-		</ListItem>
-	</div>
-)
-
-export const adminListItems = (
-	<div>
-		<ListSubheader inset>Admin</ListSubheader>
-
-		<ListItem button component={Link} to="/academies">
-			<ListItemIcon>
-				<FlagIcon />
-			</ListItemIcon>
-			<ListItemText primary="Academies" />
-		</ListItem>
-
-		<ListItem button component={Link} to="/schools">
-			<ListItemIcon>
-				<SchoolIcon />
-			</ListItemIcon>
-			<ListItemText primary="Schools" />
-		</ListItem>
-
-		<ListItem button component={Link} to="/clans">
-			<ListItemIcon>
-				<AssignmentIcon />
-			</ListItemIcon>
-			<ListItemText primary="Clans" />
-		</ListItem>
-
-		<ListItem button component={Link} to="/forms">
-			<ListItemIcon>
-				<Filter9Icon />
-			</ListItemIcon>
-			<ListItemText primary="Forms" />
-		</ListItem>
-
-		<ListItem button component={Link} to="/players">
-			<ListItemIcon>
-				<PersonIcon />
-			</ListItemIcon>
-			<ListItemText primary="Players" />
-		</ListItem>
-
-		<ListItem button component={Link} to="/tournaments">
-			<ListItemIcon>
-				<GolfCourseIcon />
-			</ListItemIcon>
-			<ListItemText primary="Tournaments" />
-		</ListItem>
-	</div>
-)
 
 export default function Sidebar(props) {
 	const classes = styles()
@@ -117,7 +31,6 @@ export default function Sidebar(props) {
 
 	return (
 		<Drawer
-			variant="permanent"
 			classes={{
 				paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
 			}}
@@ -131,11 +44,90 @@ export default function Sidebar(props) {
 
 			<Divider />
 
-			<List>{mainListItems}</List>
+			<List>
+				<ListItem button component={Link} to="/" onClick={props.onLinkClick}>
+					<ListItemIcon>
+						<DashboardIcon />
+					</ListItemIcon>
+					<ListItemText primary="Dashboard" />
+				</ListItem>
+
+				<ListItem button component={Link} to="/" onClick={props.onLinkClick}>
+					<ListItemIcon>
+						<ShoppingCartIcon />
+					</ListItemIcon>
+					<ListItemText primary="Orders" />
+				</ListItem>
+
+				<ListItem button component={Link} to="/" onClick={props.onLinkClick}>
+					<ListItemIcon>
+						<PeopleIcon />
+					</ListItemIcon>
+					<ListItemText primary="Customers" />
+				</ListItem>
+
+				<ListItem button component={Link} to="/" onClick={props.onLinkClick}>
+					<ListItemIcon>
+						<BarChartIcon />
+					</ListItemIcon>
+					<ListItemText primary="Reports" />
+				</ListItem>
+
+				<ListItem button component={Link} to="/" onClick={props.onLinkClick}>
+					<ListItemIcon>
+						<LayersIcon />
+					</ListItemIcon>
+					<ListItemText primary="Integrations" />
+				</ListItem>
+			</List>
 
 			<Divider />
 		
-			<List>{adminListItems}</List>
+			<List>
+				<ListSubheader inset>Admin</ListSubheader>
+
+				<ListItem button component={Link} to="/academies" onClick={props.onLinkClick}>
+					<ListItemIcon>
+						<FlagIcon />
+					</ListItemIcon>
+					<ListItemText primary="Academies" />
+				</ListItem>
+
+				<ListItem button component={Link} to="/schools" onClick={props.onLinkClick}>
+					<ListItemIcon>
+						<SchoolIcon />
+					</ListItemIcon>
+					<ListItemText primary="Schools" />
+				</ListItem>
+
+				<ListItem button component={Link} to="/clans" onClick={props.onLinkClick}>
+					<ListItemIcon>
+						<AssignmentIcon />
+					</ListItemIcon>
+					<ListItemText primary="Clans" />
+				</ListItem>
+
+				<ListItem button component={Link} to="/forms" onClick={props.onLinkClick}>
+					<ListItemIcon>
+						<Filter9Icon />
+					</ListItemIcon>
+					<ListItemText primary="Forms" />
+				</ListItem>
+
+				<ListItem button component={Link} to="/players" onClick={props.onLinkClick}>
+					<ListItemIcon>
+						<PersonIcon />
+					</ListItemIcon>
+					<ListItemText primary="Players" />
+				</ListItem>
+
+				<ListItem button component={Link} to="/tournaments" onClick={props.onLinkClick}>
+					<ListItemIcon>
+						<GolfCourseIcon />
+					</ListItemIcon>
+					<ListItemText primary="Tournaments" />
+				</ListItem>
+			</List>
 		</Drawer>
 	)
 }
