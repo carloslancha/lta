@@ -62,12 +62,6 @@ export default function Header(props) {
 				<Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
 					LTA - LudoSport Tournament App
 				</Typography>
-
-				<IconButton color="inherit">
-					<Badge badgeContent={4} color="secondary">
-						<NotificationsIcon />
-					</Badge>
-				</IconButton>
 			</Toolbar>
 		</AppBar>
 	)
