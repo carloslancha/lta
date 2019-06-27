@@ -64,6 +64,9 @@ export default makeStyles(theme => ({
 		overflow: 'auto',
 		flexDirection: 'column',
 	},
+	matchResultButton: {
+		margin: theme.spacing(3)
+	}
 }))
 
 /*
