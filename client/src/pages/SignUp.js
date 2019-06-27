@@ -135,12 +135,6 @@ export default function SignUp(props) {
 					</Grid>
 				</form>
 			</div>
-
-			<Box mt={5}>
-				<Typography variant="body2" color="textSecondary" align="center">
-					{'Built with love by @carloslancha'}
-				</Typography>
-			</Box>
 		</Container>
 	)
 }
