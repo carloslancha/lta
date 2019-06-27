@@ -24,6 +24,10 @@ function forms(parent, args, context, info) {
 	return context.prisma.forms()
 }
 	
+function match(parent, args, context, info) {
+	return context.prisma.match({id: args.id})
+}
+	
 function player(parent, args, context, info) {
 	return context.prisma.player({id: args.id})
 }
@@ -64,6 +68,7 @@ module.exports = {
 	clans,
 	form,
 	forms,
+	match,
 	player,
 	players,
 	poule,

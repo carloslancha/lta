@@ -100,6 +100,8 @@ type Mutation {
 	deleteForm(id: ID!): Form
 	updateForm(id: ID!, name: String): Form
 
+	updateMatch(id: ID!, resultPlayer1: Int!, resultPlayer2: Int!): Match
+
 	createPlayer(name: String!, familyName: String!, nickname: String!, formIds: [ID!], clanId: ID!): Player!
 	deletePlayer(id: ID!): Player
 	updatePlayer(id: ID!, name: String, familyName: String, nickname: String, formIds: [ID!], clanId: ID): Player
@@ -145,6 +147,8 @@ type Query {
 
 	clans: [Clan!]!
 	clan(id: ID!): Clan
+	
+	match(id: ID!): Match
 
 	player(id: ID!): Player
 	players: [Player!]!

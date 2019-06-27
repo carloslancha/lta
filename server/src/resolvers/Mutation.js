@@ -392,6 +392,23 @@ async function updateForm(parent, args, context, info) {
 	)
 }
 
+async function updateMatch(parent, args, context, info) {
+	const userId = getUserId(context)
+
+	return context.prisma.updateMatch(
+		{
+			data: {
+				resultPlayer1: args.resultPlayer1,
+				resultPlayer2: args.resultPlayer2,
+			},
+			where: {
+				id: args.id
+			}
+		},
+		info
+	)
+}
+
 async function updateSchool(parent, args, context, info) {
 	const userId = getUserId(context)
 
@@ -496,6 +513,7 @@ module.exports = {
 	updateAcademy,
 	updateClan,
 	updateForm,
+	updateMatch,
 	updatePlayer,
 	updateSchool,
 	updateTournament,
