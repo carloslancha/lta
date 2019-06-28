@@ -42,12 +42,37 @@ const QUERY = gql`
 				}
 				name
 			}
+            rounds {
+                id
+                matches {
+					id
+					order
+					player1 {
+						name
+						familyName
+						nickname
+						clan {
+							name
+						}
+					}
+					player2 {
+						name
+						familyName
+						nickname
+						clan {
+							name
+						}
+					}
+				}
+                roundType
+            }
 		}
 	}
 `
 
-function Match(props) {
-    const matches = props.poule.matches
+function MatchesList(props) {
+    debugger
+    const matches = props.matches
 
     return (
         <Grid item xs={12}>
@@ -59,6 +84,7 @@ function Match(props) {
                     value={props.selectedMatch}
                 >
                     {matches.map(match => (
+                        match.player1 && match.player2 &&
                         <MenuItem 
                             key={match.id}
                             value={match.id}
@@ -85,7 +111,7 @@ export default function TournamentPlay(props) {
 	
     const id = props.match.params.id
     
-    const [selectedPoule, setSelectedPoule] = useState('')
+    const [selectedRound, setSelectedRound] = useState('')
     const [selectedMatch, setSelectedMatch] = useState('')
 
 	const {
@@ -124,10 +150,10 @@ export default function TournamentPlay(props) {
 
                                     <Select
                                         onChange={(e) => {
-                                            setSelectedPoule(e.target.value)
+                                            setSelectedRound(e.target.value)
                                             setSelectedMatch('')
                                         }}
-                                        value={selectedPoule}
+                                        value={selectedRound}
                                     >
                                         {tournament.poules.map(poule => (
                                             <MenuItem 
@@ -137,16 +163,25 @@ export default function TournamentPlay(props) {
                                                 {poule.name}
                                             </MenuItem>
                                         ))}
+
+                                        {tournament.rounds.map(round => (
+                                            <MenuItem 
+                                                key={round.id}
+                                                value={round.id}
+                                            >
+                                                {round.roundType}
+                                            </MenuItem>
+                                        ))}
                                     </Select>
                                 </FormControl>
                             </Grid>
 
-                            {selectedPoule ?
-                                <Match 
+                            {selectedRound ?
+                                <MatchesList
                                     onSelectedMatch={(e) => {
                                         setSelectedMatch(e.target.value)
                                     }}
-                                    poule={tournament.poules.find(poule => poule.id === selectedPoule)}
+                                    matches={(tournament.poules.find(poule => poule.id === selectedRound) || tournament.rounds.find(round => round.id === selectedRound)).matches}
                                     selectedMatch={selectedMatch}
                                 />
                                 :
