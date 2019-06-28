@@ -571,7 +571,7 @@ export default function TournamentManage(props) {
 														{round.matches.slice(0, round.matches.length/2).map(match => (
 															<Grid container spacing={3} key={match.id}>
 																<Grid item xs={12}>
-																	{match.player1 && `${match.player1.name} ${match.player1.familyName}` || `BYE`} VS {match.player2 && `${match.player2.name} ${match.player2.familyName}` || `BYE`}
+																	{match.player1 && `${match.player1.name} ${match.player1.familyName} (${match.resultPlayer1})` || `BYE`} VS {match.player2 && `${match.player2.name} ${match.player2.familyName} (${match.resultPlayer2})` || `BYE`}
 																</Grid>
 															</Grid>
 														))}
@@ -581,7 +581,7 @@ export default function TournamentManage(props) {
 														{round.matches.slice(round.matches.length/2, round.matches.length).map(match => (
 															<Grid container spacing={3} key={match.id}>
 																<Grid item xs={12} align="right">
-																	{match.player1 && `${match.player1.name} ${match.player1.familyName}` || `BYE`} VS {match.player2 && `${match.player2.name} ${match.player2.familyName}` || `BYE`}
+																	{match.player1 && `${match.player1.name} ${match.player1.familyName} (${match.resultPlayer1})` || `BYE`} VS {match.player2 && `${match.player2.name} ${match.player2.familyName} (${match.resultPlayer2})` || `BYE`}
 																</Grid>
 															</Grid>
 														))}
@@ -594,7 +594,7 @@ export default function TournamentManage(props) {
 													{round.matches.map(match => (
 														<Grid container spacing={3} key={match.id}>
 															<Grid item xs={12} align="center">
-																{match.player1 && `${match.player1.name} ${match.player1.familyName}` || `BYE`} VS {match.player2 && `${match.player2.name} ${match.player2.familyName}` || `BYE`}
+																{match.player1 && `${match.player1.name} ${match.player1.familyName} (${match.resultPlayer1})` || `BYE`} VS {match.player2 && `${match.player2.name} ${match.player2.familyName} (${match.resultPlayer2})` || `BYE`}
 															</Grid>
 														</Grid>
 													))}
