@@ -579,6 +579,24 @@ async function generateNextTournamentPhase(parent, args, context, info) {
 		}
 	}
 	else if (tournamentWithPoulesAndRounds.currentRound === 'ROUND_OF_64') {
+		const currentRound = tournamentWithPoulesAndRounds.rounds.find(round => {
+			return round.roundType === 'ROUND_OF_64'
+		})
+
+		let matches = []
+		
+		for (let i=0; i < currentRound.matches.length; i=i+2) {
+			matches.push({
+				order: matches.length+1,
+				player1: (!currentRound.matches[i].player2 || (currentRound.matches[i].player1 && currentRound.matches[i].resultPlayer1 > currentRound.matches[i].resultPlayer2)) ? currentRound.matches[i].player1 : currentRound.matches[i].player2,
+				player2: (!currentRound.matches[i].player2 || (currentRound.matches[i].player1 && currentRound.matches[i+1].resultPlayer1 > currentRound.matches[i+1].resultPlayer2)) ? currentRound.matches[i+1].player1 : currentRound.matches[i+1].player2
+			})
+		}
+
+		round = {
+			matches,
+			roundType: 'ROUND_OF_32'
+		}
 	}
 	else if (tournamentWithPoulesAndRounds.currentRound === 'ROUND_OF_32') {
 		const currentRound = tournamentWithPoulesAndRounds.rounds.find(round => {
@@ -590,8 +608,8 @@ async function generateNextTournamentPhase(parent, args, context, info) {
 		for (let i=0; i < currentRound.matches.length; i=i+2) {
 			matches.push({
 				order: matches.length+1,
-				player1: (currentRound.matches[i].resultPlayer1 > currentRound.matches[i].resultPlayer2) ? currentRound.matches[i].player1 : currentRound.matches[i].player2,
-				player2: (currentRound.matches[i+1].resultPlayer1 > currentRound.matches[i+1].resultPlayer2) ? currentRound.matches[i+1].player1 : currentRound.matches[i+1].player2
+				player1: (!currentRound.matches[i].player2 || (currentRound.matches[i].player1 && currentRound.matches[i].resultPlayer1 > currentRound.matches[i].resultPlayer2)) ? currentRound.matches[i].player1 : currentRound.matches[i].player2,
+				player2: (!currentRound.matches[i].player2 || (currentRound.matches[i].player1 && currentRound.matches[i+1].resultPlayer1 > currentRound.matches[i+1].resultPlayer2)) ? currentRound.matches[i+1].player1 : currentRound.matches[i+1].player2
 			})
 		}
 
@@ -610,8 +628,8 @@ async function generateNextTournamentPhase(parent, args, context, info) {
 		for (let i=0; i < currentRound.matches.length; i=i+2) {
 			matches.push({
 				order: matches.length+1,
-				player1: (currentRound.matches[i].resultPlayer1 > currentRound.matches[i].resultPlayer2) ? currentRound.matches[i].player1 : currentRound.matches[i].player2,
-				player2: (currentRound.matches[i+1].resultPlayer1 > currentRound.matches[i+1].resultPlayer2) ? currentRound.matches[i+1].player1 : currentRound.matches[i+1].player2
+				player1: (!currentRound.matches[i].player2 || (currentRound.matches[i].player1 && currentRound.matches[i].resultPlayer1 > currentRound.matches[i].resultPlayer2)) ? currentRound.matches[i].player1 : currentRound.matches[i].player2,
+				player2: (!currentRound.matches[i].player2 || (currentRound.matches[i].player1 && currentRound.matches[i+1].resultPlayer1 > currentRound.matches[i+1].resultPlayer2)) ? currentRound.matches[i+1].player1 : currentRound.matches[i+1].player2
 			})
 		}
 
@@ -630,8 +648,8 @@ async function generateNextTournamentPhase(parent, args, context, info) {
 		for (let i=0; i < currentRound.matches.length; i=i+2) {
 			matches.push({
 				order: matches.length+1,
-				player1: (currentRound.matches[i].resultPlayer1 > currentRound.matches[i].resultPlayer2) ? currentRound.matches[i].player1 : currentRound.matches[i].player2,
-				player2: (currentRound.matches[i+1].resultPlayer1 > currentRound.matches[i+1].resultPlayer2) ? currentRound.matches[i+1].player1 : currentRound.matches[i+1].player2
+				player1: (!currentRound.matches[i].player2 || (currentRound.matches[i].player1 && currentRound.matches[i].resultPlayer1 > currentRound.matches[i].resultPlayer2)) ? currentRound.matches[i].player1 : currentRound.matches[i].player2,
+				player2: (!currentRound.matches[i].player2 || (currentRound.matches[i].player1 && currentRound.matches[i+1].resultPlayer1 > currentRound.matches[i+1].resultPlayer2)) ? currentRound.matches[i+1].player1 : currentRound.matches[i+1].player2
 			})
 		}
 
