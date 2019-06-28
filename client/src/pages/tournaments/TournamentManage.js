@@ -165,6 +165,124 @@ const GENERATE_TOURNAMENT_POULES_MUTATION = gql`
 					}
 				}
 			}
+			rounds {
+				id
+				matches {
+					id
+					order
+					player1 {
+						id
+						name
+						familyName
+						nickname
+						clan {
+							name
+						}
+					}
+					player2 {
+						id
+						name
+						familyName
+						nickname
+						clan {
+							name
+						}
+					}
+					resultPlayer1
+					resultPlayer2
+				}
+				roundType
+			}
+		}
+	}
+`
+
+const GENERATE_NEXT_TOURNAMENT_PHASE_MUTATION = gql`
+	mutation GenerateNextTournamentPhase($tournamentId: ID!) {
+		generateNextTournamentPhase(tournamentId: $tournamentId) {
+			id
+			name
+			poules {
+				id
+				matches {
+					id
+					order
+					player1 {
+						id
+						name
+						familyName
+						nickname
+						clan {
+							name
+						}
+					}
+					player2 {
+						id
+						name
+						familyName
+						nickname
+						clan {
+							name
+						}
+					}
+					resultPlayer1
+					resultPlayer2
+				}
+				name
+				players {
+					id
+					name
+					familyName
+					matches {
+						id
+						player1 {
+							id
+						}
+						player2 {
+							id
+						}
+						resultPlayer1
+						resultPlayer2
+					}
+					nickname
+					clan {
+						name
+						school {
+							academy {
+								name
+							}
+						}
+					}
+				}
+			}
+			rounds {
+				id
+				matches {
+					id
+					order
+					player1 {
+						id
+						name
+						familyName
+						nickname
+						clan {
+							name
+						}
+					}
+					player2 {
+						id
+						name
+						familyName
+						nickname
+						clan {
+							name
+						}
+					}
+					resultPlayer1
+					resultPlayer2
+				}
+				roundType
+			}
 		}
 	}
 `
@@ -267,6 +385,16 @@ export default function TournamentManage(props) {
 	const [poules, setPoules] = useState([])
 	
 	const generateTournamentPoules = useMutation(GENERATE_TOURNAMENT_POULES_MUTATION, {
+		update: () => {
+			setGenerating(false)
+		},
+
+		variables: {
+			tournamentId: id,
+		},
+	})
+
+	const generateNextTournamentPhase = useMutation(GENERATE_NEXT_TOURNAMENT_PHASE_MUTATION, {
 		update: () => {
 			setGenerating(false)
 		},
@@ -396,10 +524,6 @@ export default function TournamentManage(props) {
 			<Grid container>
 				<Grid item xs={12}>
 					<Paper className={classes.paper}>
-						<Typography component="h1" variant="h5" align="center">
-							Phase
-						</Typography>
-
 						<Grid container spacing={3}>
 							{poules.length === 0 ?
 								<Grid item xs={12} align="center">
@@ -423,7 +547,7 @@ export default function TournamentManage(props) {
 												color="primary"
 												onClick={() => {
 													setGenerating(true)
-													generateTournamentPoules()
+													generateNextTournamentPhase()
 												}}
 												type="button"
 												variant="contained"
@@ -433,7 +557,7 @@ export default function TournamentManage(props) {
 										</Grid>
 									</Grid>
 
-									{tournament.rounds && tournament.rounds.reverse().map(round => (
+									{tournament.rounds && tournament.rounds.map(round => (
 										<Grid container spacing={3} key={round.id}>
 											<Grid item xs={12}>
 												<Typography component="h1" variant="h5" align="center">
@@ -478,6 +602,8 @@ export default function TournamentManage(props) {
 											}
 										</Grid>
 									))}
+
+									<div className={classes.gridSpacer} />
 
 									{poules.map(poule => (
 										<Poule poule={poule} key={poule.id} />
