@@ -11,6 +11,7 @@ enum PoulesType {
 }
 
 enum RoundsType {
+	POULES
 	ROUND_OF_64
 	ROUND_OF_32
 	ROUND_OF_16
@@ -67,8 +68,8 @@ type Match {
 	duration: Int
 	id: ID! @id
 	order: Int!
-	player1: Player! @relation(name: "Player1OnMatch", onDelete: SET_NULL)
-	player2: Player! @relation(name: "Player2OnMatch", onDelete: SET_NULL)
+	player1: Player @relation(name: "Player1OnMatch", onDelete: SET_NULL)
+	player2: Player @relation(name: "Player2OnMatch", onDelete: SET_NULL)
 	resultPlayer1: Int @default(value: 0)
 	resultPlayer2: Int @default(value: 0)
 }
@@ -117,10 +118,11 @@ type School {
 
 type Tournament {
 	createdBy: User @relation(name: "TournamentOnUser", onDelete: SET_NULL)
+	currentRound: RoundsType
 	id: ID! @id
 	name: String!
 	players: [Player!] @relation(name: "PlayerOnTournament", onDelete: SET_NULL)
-	poulesType: PoulesType!
+	poulesType: PoulesType! 
 	poules: [Poule!] @relation(name: "PouleOnTournament", onDelete: CASCADE)
 	rounds: [Round!] @relation(name: "RoundOnTournament", onDelete: CASCADE)
 }

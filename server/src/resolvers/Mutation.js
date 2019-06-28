@@ -313,6 +313,7 @@ async function generateTournamentPoules(parent, args, context, info) {
 	return context.prisma.updateTournament(
 		{
 			data: {
+				currentRound: 'POULES',
 				poules: {
 					create: Object.keys(poules).map(key => { 
 						return {
@@ -336,6 +337,257 @@ async function generateTournamentPoules(parent, args, context, info) {
 			},
 			where: {
 				id: tournamentWithPlayers.id
+			}
+		},
+		info
+	)
+}
+
+async function generateNextTournamentPhase(parent, args, context, info) {
+	const userId = getUserId(context)
+
+	const fragment = `
+		fragment TournamentWithPoules on Tournament {
+			currentRound
+			id
+			name
+			players {
+				id
+			}
+			poulesType
+			poules {
+				id
+				name
+				matches {
+					id
+					player1 {
+						id
+					}
+					player2 {
+						id
+					}
+					resultPlayer1
+					resultPlayer2
+				}
+				players {
+					id
+				}
+			}
+		}
+	`
+
+	const tournamentWithPoules = await context.prisma.tournament({id: args.tournamentId}).$fragment(fragment)
+
+	let round
+
+	if (tournamentWithPoules.currentRound === 'POULES') {
+		tournamentWithPoules.poules.map(poule => {
+			poule.players.map(player => {
+				poule.matches.map(match => {
+					if (match.player1.id === player.id) {
+						player.pointsWin = (player.pointsWin || 0) + match.resultPlayer1 
+						player.pointsAgainst = (player.pointsAgainst || 0) + match.resultPlayer2
+						player.winCount = (player.winCount || 0) + ((match.resultPlayer1 > match.resultPlayer2) * 1)
+						player.lostCount = (player.lostCount || 0) + ((match.resultPlayer1 < match.resultPlayer2) * 1)
+						player.tieCount = (player.tieCount || 0) + ((match.resultPlayer1 === match.resultPlayer2) * 1)
+					}
+					else if (match.player2.id === player.id) {
+						player.pointsWin = (player.pointsWin || 0) + match.resultPlayer2 
+						player.pointsAgainst = (player.pointsAgainst || 0) + match.resultPlayer1
+						player.winCount = (player.winCount || 0) + ((match.resultPlayer2 > match.resultPlayer1) * 1)
+						player.lostCount = (player.lostCount || 0) + ((match.resultPlayer2 < match.resultPlayer1) * 1)
+						player.tieCount = (player.tieCount || 0) + ((match.resultPlayer1 === match.resultPlayer2) * 1)
+					}
+
+					
+					return match
+				})
+				return player
+			})
+
+			poule.players.sort((a, b) => {
+				if (a.pointsWin > b.pointsWin)
+					return -1
+				if (a.pointsWin < b.pointsWin)
+					return 1
+
+				if (a.pointsAgainst < b.pointsAgainst)
+					return -1
+				if (a.pointsAgainst > b.pointsAgainst)
+					return 1
+
+				if (a.winCount > b.winCount)
+					return -1
+				if (a.winCount < b.winCount)
+					return 1
+
+				if (a.lostCount < b.lostCount)
+					return -1
+				if (a.lostCount > b.lostCount)
+					return 1
+
+				if (a.tieCount > b.tieCount)
+					return -1
+				if (a.tieCount < b.tieCount)
+					return 1
+
+				const tiedMatch = poule.matches.find(match => {
+					return match.player1.id === a.id && match.player2.id === b.id ||
+						match.player1.id === b.id && match.player2.id === a.id
+				})
+
+				if (tiedMatch) {
+					if (tiedMatch.player1.id === a.id) {
+						if (tiedMatch.resultPlayer1 > tiedMatch.resultPlayer2) {
+							return -1
+						}
+						if (tiedMatch.resultPlayer1 < tiedMatch.resultPlayer2) {
+							return 1
+						}
+					}
+
+					if (tiedMatch.player1.id === b.id) {
+						if (tiedMatch.resultPlayer2 > tiedMatch.resultPlayer1) {
+							return -1
+						}
+						if (tiedMatch.resultPlayer2 < tiedMatch.resultPlayer1) {
+							return 1
+						}
+					}
+				} 
+
+				return 0					
+			})
+
+			return poule
+		})
+		
+		if (tournamentWithPoules.players.length > 32) {
+			//newCurrentRound = 'ROUND_OF_64'
+		}
+		else if (tournamentWithPoules.players.length > 16) {
+			//newCurrentRound = 'ROUND_OF_32'
+
+			const matches = [
+				{
+					order: 1,
+					player1: tournamentWithPoules.poules[0].players[1-1],	//A1
+					player2: tournamentWithPoules.poules[3].players[8-1],	//D8
+				},
+				{
+					order: 2,
+					player1: tournamentWithPoules.poules[2].players[3-1],	//C3
+					player2: tournamentWithPoules.poules[1].players[6-1],	//B6
+				},
+				{
+					order: 3,
+					player1: tournamentWithPoules.poules[1].players[2-1],	//B2
+					player2: tournamentWithPoules.poules[2].players[7-1],	//C7
+				},
+				{
+					order: 4,
+					player1: tournamentWithPoules.poules[3].players[4-1],	//D4
+					player2: tournamentWithPoules.poules[0].players[5-1],	//A5
+				},
+				{
+					order: 5,
+					player1: tournamentWithPoules.poules[1].players[1-1],	//B1
+					player2: tournamentWithPoules.poules[0].players[8-1],	//A8
+				},
+				{
+					order: 6,
+					player1: tournamentWithPoules.poules[3].players[3-1],	//D3
+					player2: tournamentWithPoules.poules[2].players[6-1],	//C6
+				},
+				{
+					order: 7,
+					player1: tournamentWithPoules.poules[2].players[2-1],	//C2
+					player2: tournamentWithPoules.poules[3].players[7-1],	//D7
+				},
+				{
+					order: 8,
+					player1: tournamentWithPoules.poules[0].players[4-1],	//A4
+					player2: tournamentWithPoules.poules[1].players[5-1],	//B5
+				},
+				{
+					order: 9,
+					player1: tournamentWithPoules.poules[2].players[1-1],	//C1
+					player2: tournamentWithPoules.poules[1].players[8-1],	//B8
+				},
+				{
+					order: 10,
+					player1: tournamentWithPoules.poules[0].players[3-1],	//A3
+					player2: tournamentWithPoules.poules[3].players[6-1],	//D6
+				},
+				{
+					order: 11,
+					player1: tournamentWithPoules.poules[3].players[2-1],	//D2
+					player2: tournamentWithPoules.poules[0].players[7-1],	//A7
+				},
+				{
+					order: 12,
+					player1: tournamentWithPoules.poules[1].players[4-1],	//B4
+					player2: tournamentWithPoules.poules[2].players[5-1],	//C5
+				},
+				{
+					order: 13,
+					player1: tournamentWithPoules.poules[3].players[1-1],	//D1
+					player2: tournamentWithPoules.poules[2].players[8-1],	//C8
+				},
+				{
+					order: 14,
+					player1: tournamentWithPoules.poules[1].players[3-1],	//B3
+					player2: tournamentWithPoules.poules[0].players[6-1],	//A6
+				},
+				{
+					order: 15,
+					player1: tournamentWithPoules.poules[0].players[2-1],	//A2
+					player2: tournamentWithPoules.poules[1].players[7-1],	//B7
+				},
+				{
+					order: 16,
+					player1: tournamentWithPoules.poules[2].players[4-1],	//C4
+					player2: tournamentWithPoules.poules[3].players[5-1],	//D5
+				},
+			]
+
+			round = {
+				matches,
+				roundType: 'ROUND_OF_32'
+			}
+		}
+		else if (tournamentWithPoules.players.length > 8) {
+			//newCurrentRound = 'ROUND_OF_16'
+		}
+	}
+
+	/** SAVE TO DB */
+	return context.prisma.updateTournament(
+		{
+			data: {
+				currentRound: round.roundType,
+				rounds: {
+					create: {
+						createdBy: { connect: { id: userId }},
+						matches: {
+							create: round.matches.map(match => {
+								const player1 = match.player1 ? { connect: { id: match.player1.id } } : null
+								const player2 = match.player2 ? { connect: { id: match.player2.id } } : null
+
+								return {
+									createdBy: { connect: { id: userId }},
+									order: match.order,
+									player1,
+									player2,
+								}
+							})
+						},
+						roundType: round.roundType
+					}
+				}
+			},
+			where: {
+				id: tournamentWithPoules.id
 			}
 		},
 		info
@@ -510,6 +762,7 @@ module.exports = {
 	deleteSchool,
 	deleteTournament,
 	generateTournamentPoules,
+	generateNextTournamentPhase,
 	updateAcademy,
 	updateClan,
 	updateForm,

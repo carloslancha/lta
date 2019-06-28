@@ -9,9 +9,14 @@ function players(parent, args, context) {
 function poules(parent, args, context) {
     return context.prisma.tournament({ id: parent.id }).poules()
 }
+
+function rounds(parent, args, context) {
+    return context.prisma.tournament({ id: parent.id }).rounds()
+}
   
 module.exports = {
     createdBy,
     players,
     poules,
+    rounds
 }

@@ -11,6 +11,7 @@ enum PoulesType {
 }
 
 enum RoundsType {
+	POULES
 	ROUND_OF_64
 	ROUND_OF_32
 	ROUND_OF_16
@@ -73,8 +74,8 @@ type Match {
     duration: Int
     id: ID!
     order: Int!
-    player1: Player!
-    player2: Player!
+    player1: Player
+    player2: Player
     poule: Poule!
     resultPlayer1: Int
     resultPlayer2: Int
@@ -110,6 +111,7 @@ type Mutation {
 	deleteTournament(id: ID!): Tournament
 	updateTournament(id: ID!, name: String, playerIds: [ID!], poulesType: PoulesType!): Tournament
 	generateTournamentPoules(tournamentId: ID!): Tournament!
+	generateNextTournamentPhase(tournamentId: ID!): Tournament!
 
 }
 
@@ -156,6 +158,9 @@ type Query {
 	poule(id: ID!): Poule
 	poules: [Poule!]!
 
+	round(id: ID!): Round
+	rounds: [Round!]!
+
 	schools: [School!]!
 	school(id: ID!): School
 
@@ -186,6 +191,7 @@ type Subscription {
 
 type Tournament {
     createdBy: User
+	currentRound: RoundsType
 	id: ID!
     name: String!
 	players: [Player!]

@@ -1358,8 +1358,8 @@ type Match {
   duration: Int
   id: ID!
   order: Int!
-  player1: Player!
-  player2: Player!
+  player1: Player
+  player2: Player
   resultPlayer1: Int
   resultPlayer2: Int
 }
@@ -1376,8 +1376,8 @@ input MatchCreateInput {
   duration: Int
   id: ID
   order: Int!
-  player1: PlayerCreateOneInput!
-  player2: PlayerCreateOneInput!
+  player1: PlayerCreateOneInput
+  player2: PlayerCreateOneInput
   resultPlayer1: Int
   resultPlayer2: Int
 }
@@ -1397,8 +1397,8 @@ input MatchCreateWithoutAssaultsInput {
   duration: Int
   id: ID
   order: Int!
-  player1: PlayerCreateOneInput!
-  player2: PlayerCreateOneInput!
+  player1: PlayerCreateOneInput
+  player2: PlayerCreateOneInput
   resultPlayer1: Int
   resultPlayer2: Int
 }
@@ -1504,8 +1504,8 @@ input MatchUpdateDataInput {
   createdBy: UserUpdateOneInput
   duration: Int
   order: Int
-  player1: PlayerUpdateOneRequiredInput
-  player2: PlayerUpdateOneRequiredInput
+  player1: PlayerUpdateOneInput
+  player2: PlayerUpdateOneInput
   resultPlayer1: Int
   resultPlayer2: Int
 }
@@ -1515,8 +1515,8 @@ input MatchUpdateInput {
   createdBy: UserUpdateOneInput
   duration: Int
   order: Int
-  player1: PlayerUpdateOneRequiredInput
-  player2: PlayerUpdateOneRequiredInput
+  player1: PlayerUpdateOneInput
+  player2: PlayerUpdateOneInput
   resultPlayer1: Int
   resultPlayer2: Int
 }
@@ -1565,8 +1565,8 @@ input MatchUpdateWithoutAssaultsDataInput {
   createdBy: UserUpdateOneInput
   duration: Int
   order: Int
-  player1: PlayerUpdateOneRequiredInput
-  player2: PlayerUpdateOneRequiredInput
+  player1: PlayerUpdateOneInput
+  player2: PlayerUpdateOneInput
   resultPlayer1: Int
   resultPlayer2: Int
 }
@@ -2166,10 +2166,12 @@ input PlayerUpdateManyWithWhereNestedInput {
   data: PlayerUpdateManyDataInput!
 }
 
-input PlayerUpdateOneRequiredInput {
+input PlayerUpdateOneInput {
   create: PlayerCreateInput
   update: PlayerUpdateDataInput
   upsert: PlayerUpsertNestedInput
+  delete: Boolean
+  disconnect: Boolean
   connect: PlayerWhereUniqueInput
 }
 
@@ -2910,6 +2912,7 @@ input RoundScalarWhereInput {
 }
 
 enum RoundsType {
+  POULES
   ROUND_OF_64
   ROUND_OF_32
   ROUND_OF_16
@@ -3367,6 +3370,7 @@ type Subscription {
 
 type Tournament {
   createdBy: User
+  currentRound: RoundsType
   id: ID!
   name: String!
   players(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Player!]
@@ -3383,6 +3387,7 @@ type TournamentConnection {
 
 input TournamentCreateInput {
   createdBy: UserCreateOneWithoutTournamentsInput
+  currentRound: RoundsType
   id: ID
   name: String!
   players: PlayerCreateManyWithoutTournamentsInput
@@ -3412,6 +3417,7 @@ input TournamentCreateOneWithoutRoundsInput {
 }
 
 input TournamentCreateWithoutCreatedByInput {
+  currentRound: RoundsType
   id: ID
   name: String!
   players: PlayerCreateManyWithoutTournamentsInput
@@ -3422,6 +3428,7 @@ input TournamentCreateWithoutCreatedByInput {
 
 input TournamentCreateWithoutPlayersInput {
   createdBy: UserCreateOneWithoutTournamentsInput
+  currentRound: RoundsType
   id: ID
   name: String!
   poulesType: PoulesType!
@@ -3431,6 +3438,7 @@ input TournamentCreateWithoutPlayersInput {
 
 input TournamentCreateWithoutPoulesInput {
   createdBy: UserCreateOneWithoutTournamentsInput
+  currentRound: RoundsType
   id: ID
   name: String!
   players: PlayerCreateManyWithoutTournamentsInput
@@ -3440,6 +3448,7 @@ input TournamentCreateWithoutPoulesInput {
 
 input TournamentCreateWithoutRoundsInput {
   createdBy: UserCreateOneWithoutTournamentsInput
+  currentRound: RoundsType
   id: ID
   name: String!
   players: PlayerCreateManyWithoutTournamentsInput
@@ -3453,6 +3462,8 @@ type TournamentEdge {
 }
 
 enum TournamentOrderByInput {
+  currentRound_ASC
+  currentRound_DESC
   id_ASC
   id_DESC
   name_ASC
@@ -3462,12 +3473,17 @@ enum TournamentOrderByInput {
 }
 
 type TournamentPreviousValues {
+  currentRound: RoundsType
   id: ID!
   name: String!
   poulesType: PoulesType!
 }
 
 input TournamentScalarWhereInput {
+  currentRound: RoundsType
+  currentRound_not: RoundsType
+  currentRound_in: [RoundsType!]
+  currentRound_not_in: [RoundsType!]
   id: ID
   id_not: ID
   id_in: [ID!]
@@ -3525,6 +3541,7 @@ input TournamentSubscriptionWhereInput {
 
 input TournamentUpdateInput {
   createdBy: UserUpdateOneWithoutTournamentsInput
+  currentRound: RoundsType
   name: String
   players: PlayerUpdateManyWithoutTournamentsInput
   poulesType: PoulesType
@@ -3533,11 +3550,13 @@ input TournamentUpdateInput {
 }
 
 input TournamentUpdateManyDataInput {
+  currentRound: RoundsType
   name: String
   poulesType: PoulesType
 }
 
 input TournamentUpdateManyMutationInput {
+  currentRound: RoundsType
   name: String
   poulesType: PoulesType
 }
@@ -3586,6 +3605,7 @@ input TournamentUpdateOneRequiredWithoutRoundsInput {
 }
 
 input TournamentUpdateWithoutCreatedByDataInput {
+  currentRound: RoundsType
   name: String
   players: PlayerUpdateManyWithoutTournamentsInput
   poulesType: PoulesType
@@ -3595,6 +3615,7 @@ input TournamentUpdateWithoutCreatedByDataInput {
 
 input TournamentUpdateWithoutPlayersDataInput {
   createdBy: UserUpdateOneWithoutTournamentsInput
+  currentRound: RoundsType
   name: String
   poulesType: PoulesType
   poules: PouleUpdateManyWithoutTournamentInput
@@ -3603,6 +3624,7 @@ input TournamentUpdateWithoutPlayersDataInput {
 
 input TournamentUpdateWithoutPoulesDataInput {
   createdBy: UserUpdateOneWithoutTournamentsInput
+  currentRound: RoundsType
   name: String
   players: PlayerUpdateManyWithoutTournamentsInput
   poulesType: PoulesType
@@ -3611,6 +3633,7 @@ input TournamentUpdateWithoutPoulesDataInput {
 
 input TournamentUpdateWithoutRoundsDataInput {
   createdBy: UserUpdateOneWithoutTournamentsInput
+  currentRound: RoundsType
   name: String
   players: PlayerUpdateManyWithoutTournamentsInput
   poulesType: PoulesType
@@ -3651,6 +3674,10 @@ input TournamentUpsertWithWhereUniqueWithoutPlayersInput {
 
 input TournamentWhereInput {
   createdBy: UserWhereInput
+  currentRound: RoundsType
+  currentRound_not: RoundsType
+  currentRound_in: [RoundsType!]
+  currentRound_not_in: [RoundsType!]
   id: ID
   id_not: ID
   id_in: [ID!]
