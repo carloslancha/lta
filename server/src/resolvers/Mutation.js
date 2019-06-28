@@ -490,21 +490,21 @@ async function generateNextTournamentPhase(parent, args, context, info) {
 				{
 					order: 1,
 					player1: tournamentWithPoulesAndRounds.poules[0].players[1-1],	//A1
-					player2: tournamentWithPoulesAndRounds.poules[3].players[8-1],	//D8
+					player2: tournamentWithPoulesAndRounds.poules[1].players[8-1],	//B8
 				},
 				{
 					order: 2,
 					player1: tournamentWithPoulesAndRounds.poules[2].players[3-1],	//C3
-					player2: tournamentWithPoulesAndRounds.poules[1].players[6-1],	//B6
+					player2: tournamentWithPoulesAndRounds.poules[3].players[6-1],	//D6
 				},
 				{
 					order: 3,
-					player1: tournamentWithPoulesAndRounds.poules[1].players[2-1],	//B2
+					player1: tournamentWithPoulesAndRounds.poules[3].players[2-1],	//D2
 					player2: tournamentWithPoulesAndRounds.poules[2].players[7-1],	//C7
 				},
 				{
 					order: 4,
-					player1: tournamentWithPoulesAndRounds.poules[3].players[4-1],	//D4
+					player1: tournamentWithPoulesAndRounds.poules[1].players[4-1],	//B4
 					player2: tournamentWithPoulesAndRounds.poules[0].players[5-1],	//A5
 				},
 				{
@@ -530,21 +530,21 @@ async function generateNextTournamentPhase(parent, args, context, info) {
 				{
 					order: 9,
 					player1: tournamentWithPoulesAndRounds.poules[2].players[1-1],	//C1
-					player2: tournamentWithPoulesAndRounds.poules[1].players[8-1],	//B8
+					player2: tournamentWithPoulesAndRounds.poules[3].players[8-1],	//D8
 				},
 				{
 					order: 10,
 					player1: tournamentWithPoulesAndRounds.poules[0].players[3-1],	//A3
-					player2: tournamentWithPoulesAndRounds.poules[3].players[6-1],	//D6
+					player2: tournamentWithPoulesAndRounds.poules[1].players[6-1],	//B6
 				},
 				{
 					order: 11,
-					player1: tournamentWithPoulesAndRounds.poules[3].players[2-1],	//D2
+					player1: tournamentWithPoulesAndRounds.poules[1].players[2-1],	//B2
 					player2: tournamentWithPoulesAndRounds.poules[0].players[7-1],	//A7
 				},
 				{
 					order: 12,
-					player1: tournamentWithPoulesAndRounds.poules[1].players[4-1],	//B4
+					player1: tournamentWithPoulesAndRounds.poules[3].players[4-1],	//D4
 					player2: tournamentWithPoulesAndRounds.poules[2].players[5-1],	//C5
 				},
 				{
