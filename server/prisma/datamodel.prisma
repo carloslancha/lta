@@ -86,6 +86,7 @@ type Player {
 	name: String!
 	nickname: String!
 	poules: [Poule!] @relation(name: "PlayerOnPoule", onDelete: SET_NULL)
+	rank: Rank! @relation(name: "RankOnPlayer", onDelete: SET_NULL)
 	rounds: [Round!] @relation(name: "PlayerOnRound", onDelete: SET_NULL)
 	tournaments: [Tournament!] @relation(name: "PlayerOnTournament", onDelete: SET_NULL)
 }
@@ -97,6 +98,14 @@ type Poule {
 	name: String!
 	players: [Player!]! @relation(name: "PlayerOnPoule", onDelete: SET_NULL)
 	tournament: Tournament! @relation(name: "PouleOnTournament", onDelete: SET_NULL)
+}
+
+type Rank {
+	createdBy: User @relation(name: "RankOnUser", onDelete: SET_NULL)
+	id: ID! @id
+	name: String!
+	players: [Player!] @relation(name: "RankOnPlayer", onDelete: SET_NULL)
+	value: Int!
 }
 
 type Round {
@@ -137,6 +146,7 @@ type User {
 	password: String!
 	players: [Player!] @relation(name: "PlayerOnUser", onDelete: SET_NULL)
 	poules: [Poule!] @relation(name: "PouleOnUser", onDelete: SET_NULL)
+	ranks: [Rank!] @relation(name: "RankOnUser", onDelete: SET_NULL)
 	rounds: [Round!] @relation(name: "RoundOnUser", onDelete: SET_NULL)
 	schools: [School!] @relation(name: "SchoolOnUser", onDelete: SET_NULL)
 	tournaments: [Tournament!] @relation(name: "TournamentOnUser", onDelete: SET_NULL)

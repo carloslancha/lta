@@ -49,6 +49,10 @@ var models = [
     embedded: false
   },
   {
+    name: "Rank",
+    embedded: false
+  },
+  {
     name: "Round",
     embedded: false
   },
@@ -68,6 +72,6 @@ var models = [
 exports.Prisma = prisma_lib_1.makePrismaClientClass({
   typeDefs,
   models,
-  endpoint: `https://eu1.prisma.sh/carlos-lancha-d5132f/test1/dev`
+  endpoint: `https://eu1.prisma.sh/lta/lta/dev`
 });
 exports.prisma = new exports.Prisma();

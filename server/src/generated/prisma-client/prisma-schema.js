@@ -293,6 +293,10 @@ type AggregatePoule {
   count: Int!
 }
 
+type AggregateRank {
+  count: Int!
+}
+
 type AggregateRound {
   count: Int!
 }
@@ -1698,6 +1702,12 @@ type Mutation {
   upsertPoule(where: PouleWhereUniqueInput!, create: PouleCreateInput!, update: PouleUpdateInput!): Poule!
   deletePoule(where: PouleWhereUniqueInput!): Poule
   deleteManyPoules(where: PouleWhereInput): BatchPayload!
+  createRank(data: RankCreateInput!): Rank!
+  updateRank(data: RankUpdateInput!, where: RankWhereUniqueInput!): Rank
+  updateManyRanks(data: RankUpdateManyMutationInput!, where: RankWhereInput): BatchPayload!
+  upsertRank(where: RankWhereUniqueInput!, create: RankCreateInput!, update: RankUpdateInput!): Rank!
+  deleteRank(where: RankWhereUniqueInput!): Rank
+  deleteManyRanks(where: RankWhereInput): BatchPayload!
   createRound(data: RoundCreateInput!): Round!
   updateRound(data: RoundUpdateInput!, where: RoundWhereUniqueInput!): Round
   updateManyRounds(data: RoundUpdateManyMutationInput!, where: RoundWhereInput): BatchPayload!
@@ -1753,6 +1763,7 @@ type Player {
   name: String!
   nickname: String!
   poules(where: PouleWhereInput, orderBy: PouleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Poule!]
+  rank: Rank!
   rounds(where: RoundWhereInput, orderBy: RoundOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Round!]
   tournaments(where: TournamentWhereInput, orderBy: TournamentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Tournament!]
 }
@@ -1775,6 +1786,7 @@ input PlayerCreateInput {
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
+  rank: RankCreateOneWithoutPlayersInput!
   rounds: RoundCreateManyWithoutPlayersInput
   tournaments: TournamentCreateManyWithoutPlayersInput
 }
@@ -1796,6 +1808,11 @@ input PlayerCreateManyWithoutFormsInput {
 
 input PlayerCreateManyWithoutPoulesInput {
   create: [PlayerCreateWithoutPoulesInput!]
+  connect: [PlayerWhereUniqueInput!]
+}
+
+input PlayerCreateManyWithoutRankInput {
+  create: [PlayerCreateWithoutRankInput!]
   connect: [PlayerWhereUniqueInput!]
 }
 
@@ -1835,6 +1852,7 @@ input PlayerCreateWithoutAssaultsWonInput {
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
+  rank: RankCreateOneWithoutPlayersInput!
   rounds: RoundCreateManyWithoutPlayersInput
   tournaments: TournamentCreateManyWithoutPlayersInput
 }
@@ -1850,6 +1868,7 @@ input PlayerCreateWithoutCardsInput {
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
+  rank: RankCreateOneWithoutPlayersInput!
   rounds: RoundCreateManyWithoutPlayersInput
   tournaments: TournamentCreateManyWithoutPlayersInput
 }
@@ -1865,6 +1884,7 @@ input PlayerCreateWithoutClanInput {
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
+  rank: RankCreateOneWithoutPlayersInput!
   rounds: RoundCreateManyWithoutPlayersInput
   tournaments: TournamentCreateManyWithoutPlayersInput
 }
@@ -1880,6 +1900,7 @@ input PlayerCreateWithoutCreatedByInput {
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
+  rank: RankCreateOneWithoutPlayersInput!
   rounds: RoundCreateManyWithoutPlayersInput
   tournaments: TournamentCreateManyWithoutPlayersInput
 }
@@ -1895,6 +1916,7 @@ input PlayerCreateWithoutFormsInput {
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
+  rank: RankCreateOneWithoutPlayersInput!
   rounds: RoundCreateManyWithoutPlayersInput
   tournaments: TournamentCreateManyWithoutPlayersInput
 }
@@ -1910,6 +1932,23 @@ input PlayerCreateWithoutPoulesInput {
   matches: MatchCreateManyInput
   name: String!
   nickname: String!
+  rank: RankCreateOneWithoutPlayersInput!
+  rounds: RoundCreateManyWithoutPlayersInput
+  tournaments: TournamentCreateManyWithoutPlayersInput
+}
+
+input PlayerCreateWithoutRankInput {
+  assaultsWon: AssaultCreateManyWithoutWinnerInput
+  cards: CardCreateManyWithoutPlayerInput
+  clan: ClanCreateOneWithoutPlayersInput!
+  createdBy: UserCreateOneWithoutPlayersInput
+  familyName: String!
+  forms: FormCreateManyWithoutPlayersInput
+  id: ID
+  matches: MatchCreateManyInput
+  name: String!
+  nickname: String!
+  poules: PouleCreateManyWithoutPlayersInput
   rounds: RoundCreateManyWithoutPlayersInput
   tournaments: TournamentCreateManyWithoutPlayersInput
 }
@@ -1926,6 +1965,7 @@ input PlayerCreateWithoutRoundsInput {
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
+  rank: RankCreateOneWithoutPlayersInput!
   tournaments: TournamentCreateManyWithoutPlayersInput
 }
 
@@ -1941,6 +1981,7 @@ input PlayerCreateWithoutTournamentsInput {
   name: String!
   nickname: String!
   poules: PouleCreateManyWithoutPlayersInput
+  rank: RankCreateOneWithoutPlayersInput!
   rounds: RoundCreateManyWithoutPlayersInput
 }
 
@@ -2058,6 +2099,7 @@ input PlayerUpdateDataInput {
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
+  rank: RankUpdateOneRequiredWithoutPlayersInput
   rounds: RoundUpdateManyWithoutPlayersInput
   tournaments: TournamentUpdateManyWithoutPlayersInput
 }
@@ -2073,6 +2115,7 @@ input PlayerUpdateInput {
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
+  rank: RankUpdateOneRequiredWithoutPlayersInput
   rounds: RoundUpdateManyWithoutPlayersInput
   tournaments: TournamentUpdateManyWithoutPlayersInput
 }
@@ -2133,6 +2176,18 @@ input PlayerUpdateManyWithoutPoulesInput {
   disconnect: [PlayerWhereUniqueInput!]
   update: [PlayerUpdateWithWhereUniqueWithoutPoulesInput!]
   upsert: [PlayerUpsertWithWhereUniqueWithoutPoulesInput!]
+  deleteMany: [PlayerScalarWhereInput!]
+  updateMany: [PlayerUpdateManyWithWhereNestedInput!]
+}
+
+input PlayerUpdateManyWithoutRankInput {
+  create: [PlayerCreateWithoutRankInput!]
+  delete: [PlayerWhereUniqueInput!]
+  connect: [PlayerWhereUniqueInput!]
+  set: [PlayerWhereUniqueInput!]
+  disconnect: [PlayerWhereUniqueInput!]
+  update: [PlayerUpdateWithWhereUniqueWithoutRankInput!]
+  upsert: [PlayerUpsertWithWhereUniqueWithoutRankInput!]
   deleteMany: [PlayerScalarWhereInput!]
   updateMany: [PlayerUpdateManyWithWhereNestedInput!]
 }
@@ -2201,6 +2256,7 @@ input PlayerUpdateWithoutAssaultsWonDataInput {
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
+  rank: RankUpdateOneRequiredWithoutPlayersInput
   rounds: RoundUpdateManyWithoutPlayersInput
   tournaments: TournamentUpdateManyWithoutPlayersInput
 }
@@ -2215,6 +2271,7 @@ input PlayerUpdateWithoutCardsDataInput {
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
+  rank: RankUpdateOneRequiredWithoutPlayersInput
   rounds: RoundUpdateManyWithoutPlayersInput
   tournaments: TournamentUpdateManyWithoutPlayersInput
 }
@@ -2229,6 +2286,7 @@ input PlayerUpdateWithoutClanDataInput {
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
+  rank: RankUpdateOneRequiredWithoutPlayersInput
   rounds: RoundUpdateManyWithoutPlayersInput
   tournaments: TournamentUpdateManyWithoutPlayersInput
 }
@@ -2243,6 +2301,7 @@ input PlayerUpdateWithoutCreatedByDataInput {
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
+  rank: RankUpdateOneRequiredWithoutPlayersInput
   rounds: RoundUpdateManyWithoutPlayersInput
   tournaments: TournamentUpdateManyWithoutPlayersInput
 }
@@ -2257,6 +2316,7 @@ input PlayerUpdateWithoutFormsDataInput {
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
+  rank: RankUpdateOneRequiredWithoutPlayersInput
   rounds: RoundUpdateManyWithoutPlayersInput
   tournaments: TournamentUpdateManyWithoutPlayersInput
 }
@@ -2271,6 +2331,22 @@ input PlayerUpdateWithoutPoulesDataInput {
   matches: MatchUpdateManyInput
   name: String
   nickname: String
+  rank: RankUpdateOneRequiredWithoutPlayersInput
+  rounds: RoundUpdateManyWithoutPlayersInput
+  tournaments: TournamentUpdateManyWithoutPlayersInput
+}
+
+input PlayerUpdateWithoutRankDataInput {
+  assaultsWon: AssaultUpdateManyWithoutWinnerInput
+  cards: CardUpdateManyWithoutPlayerInput
+  clan: ClanUpdateOneRequiredWithoutPlayersInput
+  createdBy: UserUpdateOneWithoutPlayersInput
+  familyName: String
+  forms: FormUpdateManyWithoutPlayersInput
+  matches: MatchUpdateManyInput
+  name: String
+  nickname: String
+  poules: PouleUpdateManyWithoutPlayersInput
   rounds: RoundUpdateManyWithoutPlayersInput
   tournaments: TournamentUpdateManyWithoutPlayersInput
 }
@@ -2286,6 +2362,7 @@ input PlayerUpdateWithoutRoundsDataInput {
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
+  rank: RankUpdateOneRequiredWithoutPlayersInput
   tournaments: TournamentUpdateManyWithoutPlayersInput
 }
 
@@ -2300,6 +2377,7 @@ input PlayerUpdateWithoutTournamentsDataInput {
   name: String
   nickname: String
   poules: PouleUpdateManyWithoutPlayersInput
+  rank: RankUpdateOneRequiredWithoutPlayersInput
   rounds: RoundUpdateManyWithoutPlayersInput
 }
 
@@ -2321,6 +2399,11 @@ input PlayerUpdateWithWhereUniqueWithoutFormsInput {
 input PlayerUpdateWithWhereUniqueWithoutPoulesInput {
   where: PlayerWhereUniqueInput!
   data: PlayerUpdateWithoutPoulesDataInput!
+}
+
+input PlayerUpdateWithWhereUniqueWithoutRankInput {
+  where: PlayerWhereUniqueInput!
+  data: PlayerUpdateWithoutRankDataInput!
 }
 
 input PlayerUpdateWithWhereUniqueWithoutRoundsInput {
@@ -2370,6 +2453,12 @@ input PlayerUpsertWithWhereUniqueWithoutPoulesInput {
   where: PlayerWhereUniqueInput!
   update: PlayerUpdateWithoutPoulesDataInput!
   create: PlayerCreateWithoutPoulesInput!
+}
+
+input PlayerUpsertWithWhereUniqueWithoutRankInput {
+  where: PlayerWhereUniqueInput!
+  update: PlayerUpdateWithoutRankDataInput!
+  create: PlayerCreateWithoutRankInput!
 }
 
 input PlayerUpsertWithWhereUniqueWithoutRoundsInput {
@@ -2458,6 +2547,7 @@ input PlayerWhereInput {
   poules_every: PouleWhereInput
   poules_some: PouleWhereInput
   poules_none: PouleWhereInput
+  rank: RankWhereInput
   rounds_every: RoundWhereInput
   rounds_some: RoundWhereInput
   rounds_none: RoundWhereInput
@@ -2792,6 +2882,9 @@ type Query {
   poule(where: PouleWhereUniqueInput!): Poule
   poules(where: PouleWhereInput, orderBy: PouleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Poule]!
   poulesConnection(where: PouleWhereInput, orderBy: PouleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): PouleConnection!
+  rank(where: RankWhereUniqueInput!): Rank
+  ranks(where: RankWhereInput, orderBy: RankOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Rank]!
+  ranksConnection(where: RankWhereInput, orderBy: RankOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): RankConnection!
   round(where: RoundWhereUniqueInput!): Round
   rounds(where: RoundWhereInput, orderBy: RoundOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Round]!
   roundsConnection(where: RoundWhereInput, orderBy: RoundOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): RoundConnection!
@@ -2805,6 +2898,251 @@ type Query {
   users(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [User]!
   usersConnection(where: UserWhereInput, orderBy: UserOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): UserConnection!
   node(id: ID!): Node
+}
+
+type Rank {
+  createdBy: User
+  id: ID!
+  name: String!
+  players(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Player!]
+  value: Int!
+}
+
+type RankConnection {
+  pageInfo: PageInfo!
+  edges: [RankEdge]!
+  aggregate: AggregateRank!
+}
+
+input RankCreateInput {
+  createdBy: UserCreateOneWithoutRanksInput
+  id: ID
+  name: String!
+  players: PlayerCreateManyWithoutRankInput
+  value: Int!
+}
+
+input RankCreateManyWithoutCreatedByInput {
+  create: [RankCreateWithoutCreatedByInput!]
+  connect: [RankWhereUniqueInput!]
+}
+
+input RankCreateOneWithoutPlayersInput {
+  create: RankCreateWithoutPlayersInput
+  connect: RankWhereUniqueInput
+}
+
+input RankCreateWithoutCreatedByInput {
+  id: ID
+  name: String!
+  players: PlayerCreateManyWithoutRankInput
+  value: Int!
+}
+
+input RankCreateWithoutPlayersInput {
+  createdBy: UserCreateOneWithoutRanksInput
+  id: ID
+  name: String!
+  value: Int!
+}
+
+type RankEdge {
+  node: Rank!
+  cursor: String!
+}
+
+enum RankOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  value_ASC
+  value_DESC
+}
+
+type RankPreviousValues {
+  id: ID!
+  name: String!
+  value: Int!
+}
+
+input RankScalarWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  value: Int
+  value_not: Int
+  value_in: [Int!]
+  value_not_in: [Int!]
+  value_lt: Int
+  value_lte: Int
+  value_gt: Int
+  value_gte: Int
+  AND: [RankScalarWhereInput!]
+  OR: [RankScalarWhereInput!]
+  NOT: [RankScalarWhereInput!]
+}
+
+type RankSubscriptionPayload {
+  mutation: MutationType!
+  node: Rank
+  updatedFields: [String!]
+  previousValues: RankPreviousValues
+}
+
+input RankSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: RankWhereInput
+  AND: [RankSubscriptionWhereInput!]
+  OR: [RankSubscriptionWhereInput!]
+  NOT: [RankSubscriptionWhereInput!]
+}
+
+input RankUpdateInput {
+  createdBy: UserUpdateOneWithoutRanksInput
+  name: String
+  players: PlayerUpdateManyWithoutRankInput
+  value: Int
+}
+
+input RankUpdateManyDataInput {
+  name: String
+  value: Int
+}
+
+input RankUpdateManyMutationInput {
+  name: String
+  value: Int
+}
+
+input RankUpdateManyWithoutCreatedByInput {
+  create: [RankCreateWithoutCreatedByInput!]
+  delete: [RankWhereUniqueInput!]
+  connect: [RankWhereUniqueInput!]
+  set: [RankWhereUniqueInput!]
+  disconnect: [RankWhereUniqueInput!]
+  update: [RankUpdateWithWhereUniqueWithoutCreatedByInput!]
+  upsert: [RankUpsertWithWhereUniqueWithoutCreatedByInput!]
+  deleteMany: [RankScalarWhereInput!]
+  updateMany: [RankUpdateManyWithWhereNestedInput!]
+}
+
+input RankUpdateManyWithWhereNestedInput {
+  where: RankScalarWhereInput!
+  data: RankUpdateManyDataInput!
+}
+
+input RankUpdateOneRequiredWithoutPlayersInput {
+  create: RankCreateWithoutPlayersInput
+  update: RankUpdateWithoutPlayersDataInput
+  upsert: RankUpsertWithoutPlayersInput
+  connect: RankWhereUniqueInput
+}
+
+input RankUpdateWithoutCreatedByDataInput {
+  name: String
+  players: PlayerUpdateManyWithoutRankInput
+  value: Int
+}
+
+input RankUpdateWithoutPlayersDataInput {
+  createdBy: UserUpdateOneWithoutRanksInput
+  name: String
+  value: Int
+}
+
+input RankUpdateWithWhereUniqueWithoutCreatedByInput {
+  where: RankWhereUniqueInput!
+  data: RankUpdateWithoutCreatedByDataInput!
+}
+
+input RankUpsertWithoutPlayersInput {
+  update: RankUpdateWithoutPlayersDataInput!
+  create: RankCreateWithoutPlayersInput!
+}
+
+input RankUpsertWithWhereUniqueWithoutCreatedByInput {
+  where: RankWhereUniqueInput!
+  update: RankUpdateWithoutCreatedByDataInput!
+  create: RankCreateWithoutCreatedByInput!
+}
+
+input RankWhereInput {
+  createdBy: UserWhereInput
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  players_every: PlayerWhereInput
+  players_some: PlayerWhereInput
+  players_none: PlayerWhereInput
+  value: Int
+  value_not: Int
+  value_in: [Int!]
+  value_not_in: [Int!]
+  value_lt: Int
+  value_lte: Int
+  value_gt: Int
+  value_gte: Int
+  AND: [RankWhereInput!]
+  OR: [RankWhereInput!]
+  NOT: [RankWhereInput!]
+}
+
+input RankWhereUniqueInput {
+  id: ID
 }
 
 type Round {
@@ -3362,6 +3700,7 @@ type Subscription {
   match(where: MatchSubscriptionWhereInput): MatchSubscriptionPayload
   player(where: PlayerSubscriptionWhereInput): PlayerSubscriptionPayload
   poule(where: PouleSubscriptionWhereInput): PouleSubscriptionPayload
+  rank(where: RankSubscriptionWhereInput): RankSubscriptionPayload
   round(where: RoundSubscriptionWhereInput): RoundSubscriptionPayload
   school(where: SchoolSubscriptionWhereInput): SchoolSubscriptionPayload
   tournament(where: TournamentSubscriptionWhereInput): TournamentSubscriptionPayload
@@ -3738,6 +4077,7 @@ type User {
   password: String!
   players(where: PlayerWhereInput, orderBy: PlayerOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Player!]
   poules(where: PouleWhereInput, orderBy: PouleOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Poule!]
+  ranks(where: RankWhereInput, orderBy: RankOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Rank!]
   rounds(where: RoundWhereInput, orderBy: RoundOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Round!]
   schools(where: SchoolWhereInput, orderBy: SchoolOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [School!]
   tournaments(where: TournamentWhereInput, orderBy: TournamentOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Tournament!]
@@ -3759,6 +4099,7 @@ input UserCreateInput {
   password: String!
   players: PlayerCreateManyWithoutCreatedByInput
   poules: PouleCreateManyWithoutCreatedByInput
+  ranks: RankCreateManyWithoutCreatedByInput
   rounds: RoundCreateManyWithoutCreatedByInput
   schools: SchoolCreateManyWithoutCreatedByInput
   tournaments: TournamentCreateManyWithoutCreatedByInput
@@ -3794,6 +4135,11 @@ input UserCreateOneWithoutPoulesInput {
   connect: UserWhereUniqueInput
 }
 
+input UserCreateOneWithoutRanksInput {
+  create: UserCreateWithoutRanksInput
+  connect: UserWhereUniqueInput
+}
+
 input UserCreateOneWithoutRoundsInput {
   create: UserCreateWithoutRoundsInput
   connect: UserWhereUniqueInput
@@ -3818,6 +4164,7 @@ input UserCreateWithoutAcademiesInput {
   password: String!
   players: PlayerCreateManyWithoutCreatedByInput
   poules: PouleCreateManyWithoutCreatedByInput
+  ranks: RankCreateManyWithoutCreatedByInput
   rounds: RoundCreateManyWithoutCreatedByInput
   schools: SchoolCreateManyWithoutCreatedByInput
   tournaments: TournamentCreateManyWithoutCreatedByInput
@@ -3832,6 +4179,7 @@ input UserCreateWithoutClansInput {
   password: String!
   players: PlayerCreateManyWithoutCreatedByInput
   poules: PouleCreateManyWithoutCreatedByInput
+  ranks: RankCreateManyWithoutCreatedByInput
   rounds: RoundCreateManyWithoutCreatedByInput
   schools: SchoolCreateManyWithoutCreatedByInput
   tournaments: TournamentCreateManyWithoutCreatedByInput
@@ -3846,6 +4194,7 @@ input UserCreateWithoutFormsInput {
   password: String!
   players: PlayerCreateManyWithoutCreatedByInput
   poules: PouleCreateManyWithoutCreatedByInput
+  ranks: RankCreateManyWithoutCreatedByInput
   rounds: RoundCreateManyWithoutCreatedByInput
   schools: SchoolCreateManyWithoutCreatedByInput
   tournaments: TournamentCreateManyWithoutCreatedByInput
@@ -3860,6 +4209,7 @@ input UserCreateWithoutPlayersInput {
   name: String!
   password: String!
   poules: PouleCreateManyWithoutCreatedByInput
+  ranks: RankCreateManyWithoutCreatedByInput
   rounds: RoundCreateManyWithoutCreatedByInput
   schools: SchoolCreateManyWithoutCreatedByInput
   tournaments: TournamentCreateManyWithoutCreatedByInput
@@ -3874,6 +4224,22 @@ input UserCreateWithoutPoulesInput {
   name: String!
   password: String!
   players: PlayerCreateManyWithoutCreatedByInput
+  ranks: RankCreateManyWithoutCreatedByInput
+  rounds: RoundCreateManyWithoutCreatedByInput
+  schools: SchoolCreateManyWithoutCreatedByInput
+  tournaments: TournamentCreateManyWithoutCreatedByInput
+}
+
+input UserCreateWithoutRanksInput {
+  academies: AcademyCreateManyWithoutCreatedByInput
+  clans: ClanCreateManyWithoutCreatedByInput
+  email: String!
+  forms: FormCreateManyWithoutCreatedByInput
+  id: ID
+  name: String!
+  password: String!
+  players: PlayerCreateManyWithoutCreatedByInput
+  poules: PouleCreateManyWithoutCreatedByInput
   rounds: RoundCreateManyWithoutCreatedByInput
   schools: SchoolCreateManyWithoutCreatedByInput
   tournaments: TournamentCreateManyWithoutCreatedByInput
@@ -3889,6 +4255,7 @@ input UserCreateWithoutRoundsInput {
   password: String!
   players: PlayerCreateManyWithoutCreatedByInput
   poules: PouleCreateManyWithoutCreatedByInput
+  ranks: RankCreateManyWithoutCreatedByInput
   schools: SchoolCreateManyWithoutCreatedByInput
   tournaments: TournamentCreateManyWithoutCreatedByInput
 }
@@ -3903,6 +4270,7 @@ input UserCreateWithoutSchoolsInput {
   password: String!
   players: PlayerCreateManyWithoutCreatedByInput
   poules: PouleCreateManyWithoutCreatedByInput
+  ranks: RankCreateManyWithoutCreatedByInput
   rounds: RoundCreateManyWithoutCreatedByInput
   tournaments: TournamentCreateManyWithoutCreatedByInput
 }
@@ -3917,6 +4285,7 @@ input UserCreateWithoutTournamentsInput {
   password: String!
   players: PlayerCreateManyWithoutCreatedByInput
   poules: PouleCreateManyWithoutCreatedByInput
+  ranks: RankCreateManyWithoutCreatedByInput
   rounds: RoundCreateManyWithoutCreatedByInput
   schools: SchoolCreateManyWithoutCreatedByInput
 }
@@ -3971,6 +4340,7 @@ input UserUpdateDataInput {
   password: String
   players: PlayerUpdateManyWithoutCreatedByInput
   poules: PouleUpdateManyWithoutCreatedByInput
+  ranks: RankUpdateManyWithoutCreatedByInput
   rounds: RoundUpdateManyWithoutCreatedByInput
   schools: SchoolUpdateManyWithoutCreatedByInput
   tournaments: TournamentUpdateManyWithoutCreatedByInput
@@ -3985,6 +4355,7 @@ input UserUpdateInput {
   password: String
   players: PlayerUpdateManyWithoutCreatedByInput
   poules: PouleUpdateManyWithoutCreatedByInput
+  ranks: RankUpdateManyWithoutCreatedByInput
   rounds: RoundUpdateManyWithoutCreatedByInput
   schools: SchoolUpdateManyWithoutCreatedByInput
   tournaments: TournamentUpdateManyWithoutCreatedByInput
@@ -4050,6 +4421,15 @@ input UserUpdateOneWithoutPoulesInput {
   connect: UserWhereUniqueInput
 }
 
+input UserUpdateOneWithoutRanksInput {
+  create: UserCreateWithoutRanksInput
+  update: UserUpdateWithoutRanksDataInput
+  upsert: UserUpsertWithoutRanksInput
+  delete: Boolean
+  disconnect: Boolean
+  connect: UserWhereUniqueInput
+}
+
 input UserUpdateOneWithoutRoundsInput {
   create: UserCreateWithoutRoundsInput
   update: UserUpdateWithoutRoundsDataInput
@@ -4085,6 +4465,7 @@ input UserUpdateWithoutAcademiesDataInput {
   password: String
   players: PlayerUpdateManyWithoutCreatedByInput
   poules: PouleUpdateManyWithoutCreatedByInput
+  ranks: RankUpdateManyWithoutCreatedByInput
   rounds: RoundUpdateManyWithoutCreatedByInput
   schools: SchoolUpdateManyWithoutCreatedByInput
   tournaments: TournamentUpdateManyWithoutCreatedByInput
@@ -4098,6 +4479,7 @@ input UserUpdateWithoutClansDataInput {
   password: String
   players: PlayerUpdateManyWithoutCreatedByInput
   poules: PouleUpdateManyWithoutCreatedByInput
+  ranks: RankUpdateManyWithoutCreatedByInput
   rounds: RoundUpdateManyWithoutCreatedByInput
   schools: SchoolUpdateManyWithoutCreatedByInput
   tournaments: TournamentUpdateManyWithoutCreatedByInput
@@ -4111,6 +4493,7 @@ input UserUpdateWithoutFormsDataInput {
   password: String
   players: PlayerUpdateManyWithoutCreatedByInput
   poules: PouleUpdateManyWithoutCreatedByInput
+  ranks: RankUpdateManyWithoutCreatedByInput
   rounds: RoundUpdateManyWithoutCreatedByInput
   schools: SchoolUpdateManyWithoutCreatedByInput
   tournaments: TournamentUpdateManyWithoutCreatedByInput
@@ -4124,6 +4507,7 @@ input UserUpdateWithoutPlayersDataInput {
   name: String
   password: String
   poules: PouleUpdateManyWithoutCreatedByInput
+  ranks: RankUpdateManyWithoutCreatedByInput
   rounds: RoundUpdateManyWithoutCreatedByInput
   schools: SchoolUpdateManyWithoutCreatedByInput
   tournaments: TournamentUpdateManyWithoutCreatedByInput
@@ -4137,6 +4521,21 @@ input UserUpdateWithoutPoulesDataInput {
   name: String
   password: String
   players: PlayerUpdateManyWithoutCreatedByInput
+  ranks: RankUpdateManyWithoutCreatedByInput
+  rounds: RoundUpdateManyWithoutCreatedByInput
+  schools: SchoolUpdateManyWithoutCreatedByInput
+  tournaments: TournamentUpdateManyWithoutCreatedByInput
+}
+
+input UserUpdateWithoutRanksDataInput {
+  academies: AcademyUpdateManyWithoutCreatedByInput
+  clans: ClanUpdateManyWithoutCreatedByInput
+  email: String
+  forms: FormUpdateManyWithoutCreatedByInput
+  name: String
+  password: String
+  players: PlayerUpdateManyWithoutCreatedByInput
+  poules: PouleUpdateManyWithoutCreatedByInput
   rounds: RoundUpdateManyWithoutCreatedByInput
   schools: SchoolUpdateManyWithoutCreatedByInput
   tournaments: TournamentUpdateManyWithoutCreatedByInput
@@ -4151,6 +4550,7 @@ input UserUpdateWithoutRoundsDataInput {
   password: String
   players: PlayerUpdateManyWithoutCreatedByInput
   poules: PouleUpdateManyWithoutCreatedByInput
+  ranks: RankUpdateManyWithoutCreatedByInput
   schools: SchoolUpdateManyWithoutCreatedByInput
   tournaments: TournamentUpdateManyWithoutCreatedByInput
 }
@@ -4164,6 +4564,7 @@ input UserUpdateWithoutSchoolsDataInput {
   password: String
   players: PlayerUpdateManyWithoutCreatedByInput
   poules: PouleUpdateManyWithoutCreatedByInput
+  ranks: RankUpdateManyWithoutCreatedByInput
   rounds: RoundUpdateManyWithoutCreatedByInput
   tournaments: TournamentUpdateManyWithoutCreatedByInput
 }
@@ -4177,6 +4578,7 @@ input UserUpdateWithoutTournamentsDataInput {
   password: String
   players: PlayerUpdateManyWithoutCreatedByInput
   poules: PouleUpdateManyWithoutCreatedByInput
+  ranks: RankUpdateManyWithoutCreatedByInput
   rounds: RoundUpdateManyWithoutCreatedByInput
   schools: SchoolUpdateManyWithoutCreatedByInput
 }
@@ -4209,6 +4611,11 @@ input UserUpsertWithoutPlayersInput {
 input UserUpsertWithoutPoulesInput {
   update: UserUpdateWithoutPoulesDataInput!
   create: UserCreateWithoutPoulesInput!
+}
+
+input UserUpsertWithoutRanksInput {
+  update: UserUpdateWithoutRanksDataInput!
+  create: UserCreateWithoutRanksInput!
 }
 
 input UserUpsertWithoutRoundsInput {
@@ -4298,6 +4705,9 @@ input UserWhereInput {
   poules_every: PouleWhereInput
   poules_some: PouleWhereInput
   poules_none: PouleWhereInput
+  ranks_every: RankWhereInput
+  ranks_some: RankWhereInput
+  ranks_none: RankWhereInput
   rounds_every: RoundWhereInput
   rounds_some: RoundWhereInput
   rounds_none: RoundWhereInput

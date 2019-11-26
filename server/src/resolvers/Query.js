@@ -44,6 +44,14 @@ function poules(parent, args, context, info) {
 	return context.prisma.poules()
 }
 
+function rank(parent, args, context, info) {
+	return context.prisma.rank({id: args.id})
+}
+
+function ranks(parent, args, context, info) {
+	return context.prisma.ranks()
+}
+
 function school(parent, args, context, info) {
 	return context.prisma.school({id: args.id})
 }
@@ -73,6 +81,8 @@ module.exports = {
 	players,
 	poule,
 	poules,
+	rank,
+	ranks,
 	school,
 	schools,
 	tournament,

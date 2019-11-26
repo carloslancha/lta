@@ -9,6 +9,7 @@ const Mutation = require('./resolvers/Mutation')
 const Query = require('./resolvers/Query')
 const Player = require('./resolvers/Player')
 const Poule = require('./resolvers/Poule')
+const Rank = require('./resolvers/Rank')
 const Round = require('./resolvers/Round')
 const School = require('./resolvers/School')
 const Tournament = require('./resolvers/Tournament')
@@ -24,6 +25,7 @@ const resolvers = {
 	Mutation,
 	Player,
 	Poule,
+	Rank,
 	Round,
 	Query,
 	School,

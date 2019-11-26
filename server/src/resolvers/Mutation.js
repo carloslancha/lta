@@ -100,6 +100,16 @@ async function createPlayer(parent, args, context, info) {
 	})
 }
 
+function createRank(parent, args, context, info) {
+	const userId = getUserId(context)
+
+	return context.prisma.createRank({
+		name: args.name,
+		createdBy: { connect: { id: userId } },
+		value: args.value
+	})
+}
+
 async function createSchool(parent, args, context, info) {
 	const userId = getUserId(context)
 
@@ -174,6 +184,17 @@ async function deletePlayer(parent, args, context, info) {
 	const userId = getUserId(context)
 
 	return context.prisma.deletePlayer(
+		{
+			id: args.id
+		},
+		info
+	)
+}
+
+async function deleteRank(parent, args, context, info) {
+	const userId = getUserId(context)
+
+	return context.prisma.deleteRank(
 		{
 			id: args.id
 		},
@@ -856,6 +877,23 @@ async function updatePlayer(parent, args, context, info) {
 	)
 }
 
+async function updateRank(parent, args, context, info) {
+	const userId = getUserId(context)
+
+	return context.prisma.updateRank(
+		{
+			data: {
+				name: args.name,
+				value: args.value
+			},
+			where: {
+				id: args.id
+			}
+		},
+		info
+	)
+}
+
 async function updateTournament(parent, args, context, info) {
 	const userId = getUserId(context)
 
@@ -887,12 +925,14 @@ module.exports = {
 	createForm,
 	createClan,
 	createPlayer,
+	createRank,
 	createSchool,
 	createTournament,
 	deleteAcademy,
 	deleteClan,
 	deleteForm,
 	deletePlayer,
+	deleteRank,
 	deleteSchool,
 	deleteTournament,
 	generateTournamentPoules,
@@ -902,6 +942,7 @@ module.exports = {
 	updateForm,
 	updateMatch,
 	updatePlayer,
+	updateRank,
 	updateSchool,
 	updateTournament,
 	login,

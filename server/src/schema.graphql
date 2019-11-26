@@ -100,6 +100,10 @@ type Mutation {
 	createForm(name: String!): Form!
 	deleteForm(id: ID!): Form
 	updateForm(id: ID!, name: String): Form
+	
+	createRank(name: String!, value: Int!): Rank!
+	deleteRank(id: ID!): Rank
+	updateRank(id: ID!, name: String, value: Int!): Rank
 
 	updateMatch(id: ID!, resultPlayer1: Int!, resultPlayer2: Int!): Match
 
@@ -125,6 +129,7 @@ type Player {
     name: String!
     nickname: String!
 	poules: [Poule!]
+	rank: Rank!
 	rounds: [Round!]
 	tournaments: [Tournament!]
 }
@@ -158,6 +163,9 @@ type Query {
 	poule(id: ID!): Poule
 	poules: [Poule!]!
 
+	ranks: [Rank!]!
+	rank(id: ID!): Rank
+
 	round(id: ID!): Round
 	rounds: [Round!]!
 
@@ -166,6 +174,14 @@ type Query {
 
 	tournaments: [Tournament!]!
 	tournament(id: ID!): Tournament
+}
+
+type Rank {
+    createdBy: User
+    id: ID!
+    name: String!
+	players: [Player!]
+	value: Int!
 }
 
 type Round {
@@ -210,6 +226,7 @@ type User {
     password: String!
     players: [Player!]
     poules: [Poule!]
+	ranks: [Rank!]
 	rounds: [Round!]
     schools: [School!]
     tournaments: [Tournament!]
