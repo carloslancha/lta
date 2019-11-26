@@ -75,6 +75,13 @@ export default function Sidebar(props) {
 					<ListItemText primary="Forms" />
 				</ListItem>
 
+				<ListItem button component={Link} to="/ranks" onClick={props.onLinkClick}>
+					<ListItemIcon>
+						<Filter9Icon />
+					</ListItemIcon>
+					<ListItemText primary="Ranks" />
+				</ListItem>
+
 				<ListItem button component={Link} to="/players" onClick={props.onLinkClick}>
 					<ListItemIcon>
 						<PersonIcon />

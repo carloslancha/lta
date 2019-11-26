@@ -18,6 +18,8 @@ import Schools from './pages/schools/Schools'
 import SchoolEdit from './pages/schools/SchoolEdit'
 import Players from './pages/players/Players'
 import PlayerEdit from './pages/players/PlayerEdit'
+import Ranks from './pages/ranks/Ranks'
+import RankEdit from './pages/ranks/RankEdit'
 import SignIn from './pages/SignIn'
 import SignUp from './pages/SignUp'
 import Tournaments from './pages/tournaments/Tournaments'
@@ -71,6 +73,8 @@ export default function App() {
 					<Route exact path="/forms/edit/:id" component={FormEdit} />
 					<Route exact path="/players" component={Players} />
 					<Route exact path="/players/edit/:id" component={PlayerEdit} />
+					<Route exact path="/ranks" component={Ranks} />
+					<Route exact path="/ranks/edit/:id" component={RankEdit} />
 					<Route exact path="/tournaments" component={Tournaments} />
 					<Route exact path="/tournaments/edit/:id" component={TournamentEdit} />
 					<Route exact path="/tournaments/manage/:id" component={TournamentManage} />
