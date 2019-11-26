@@ -82,12 +82,22 @@ async function createPlayer(parent, args, context, info) {
 		throw new Error(`The clan doesn't exists`)
 	}
 
-	const formsExists = await context.prisma.$exists.form({
-		id_in: args.formIds
+	if (args.formIds) {
+		const formsExists = await context.prisma.$exists.form({
+			id_in: args.formIds
+		})
+
+		if(!formsExists) {
+			throw new Error(`The form doesn't exists`)
+		}
+	}
+
+	const rankExists = await context.prisma.$exists.rank({
+		id: args.rankId
 	})
 
-	if(!formsExists) {
-		throw new Error(`The clan doesn't exists`)
+	if(!rankExists) {
+		throw new Error(`The rank doesn't exists`)
 	}
 
 	return context.prisma.createPlayer({
@@ -97,6 +107,7 @@ async function createPlayer(parent, args, context, info) {
 		forms: args.formIds ? { connect: args.formIds.map(formId => { return { id: formId } } ) } : null,
 		name: args.name,
 		nickname: args.nickname,
+		rank: { connect: { id: args.rankId } },
 	})
 }
 
@@ -857,7 +868,15 @@ async function updatePlayer(parent, args, context, info) {
 	})
 
 	if(args.formIds && !formsExists) {
-		throw new Error(`The clan doesn't exists`)
+		throw new Error(`The form doesn't exists`)
+	}
+
+	const rankExists = await context.prisma.$exists.rank({
+		id: args.rankId
+	})
+
+	if(args.rankId && !rankExists) {
+		throw new Error(`The rank doesn't exists`)
 	}
 
 	return context.prisma.updatePlayer(
@@ -867,7 +886,8 @@ async function updatePlayer(parent, args, context, info) {
 				familyName: args.familyName,
 				forms: args.formIds ? { connect: args.formIds.map(formId => { return { id: formId } } ) } : null,
 				name: args.name,
-				nickname: args.nickname
+				nickname: args.nickname,
+				rank: args.rankId ? { connect: { id: args.rankId } } : null,
 			},
 			where: {
 				id: args.id

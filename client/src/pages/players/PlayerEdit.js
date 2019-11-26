@@ -29,9 +29,10 @@ const QUERY = gql`
 			}
 		}
 
-		forms {
+		ranks {
 			id
 			name
+			value
 		}
 
 		player(id: $id) {
@@ -52,17 +53,18 @@ const QUERY = gql`
 					}
 				}
 			}
-			forms {
+			rank {
 				id
 				name
+				value
 			}
 	}
 }
 `
 
 const UPDATE_PLAYER_MUTATION = gql`
-	mutation UpdatePlayerMutation($id: ID!, $name: String!, $familyName: String!, $nickname: String!, $clanId: ID!, $formIds: [ID!]) {
-		updatePlayer(id: $id, name: $name, familyName: $familyName, nickname: $nickname, clanId: $clanId , formIds: $formIds ) {
+	mutation UpdatePlayerMutation($id: ID!, $name: String!, $familyName: String!, $nickname: String!, $clanId: ID!, $rankId: ID!) {
+		updatePlayer(id: $id, name: $name, familyName: $familyName, nickname: $nickname, clanId: $clanId , rankId: $rankId ) {
 			id
 			name
 			familyName
@@ -75,9 +77,10 @@ const UPDATE_PLAYER_MUTATION = gql`
 					name
 				}
 			}
-			forms {
+			rank {
 				id
 				name
+				value
 			}
 		}
 	}
@@ -89,26 +92,26 @@ export default function PlayerEdit(props) {
 	const id = props.match.params.id
 	const [playerClan, setPlayerClan] = useState('')
 	const [playerFamilyName, setPlayerFamilyName] = useState('')
-	const [playerForms, setPlayerForms] = useState([])
 	const [playerName, setPlayerName] = useState('')
 	const [playerNickname, setPlayerNickname] = useState('')
+	const [playerRank, setPlayerRank] = useState([])
 
 	const UpdatePlayerMutation = useMutation(UPDATE_PLAYER_MUTATION, {
 		variables: {
 			id,
 			clanId: playerClan,
 			familyName: playerFamilyName,
-			formIds: playerForms,
 			name: playerName,
 			nickname: playerNickname,
+			rankId: playerRank,
 		},
 	})
 
 	const { 
 		data: {
 			clans,
-			forms,
 			player,
+			ranks,
 		},
 		error,
 		loading,
@@ -119,7 +122,7 @@ export default function PlayerEdit(props) {
 			setPlayerName(player.name)
 			setPlayerFamilyName(player.familyName)
 			setPlayerNickname(player.nickname)
-			setPlayerForms(player.forms.map((form) => { return form.id }))
+			setPlayerRank(player.rank.id)
 			setPlayerClan(player.clan.id)
 		}
 	}, [player])
@@ -186,23 +189,22 @@ export default function PlayerEdit(props) {
 
 								<Grid item xs={6}>
 									<FormControl fullWidth>
-										<InputLabel htmlFor="playerForms">Forms</InputLabel>
+										<InputLabel htmlFor="playerRank">Ranks</InputLabel>
 
 										<Select
 											inputProps={{
-												name: 'playerForms',
-												id: 'playerForms',
+												name: 'playerRank',
+												id: 'playerRank',
 											}}
-											multiple
-											onChange={(e) => {setPlayerForms(e.target.value)}}
-											value={playerForms}
+											onChange={(e) => {setPlayerRank(e.target.value)}}
+											value={playerRank}
 										>
-											{forms.map(form => (
+											{ranks.map(rank => (
 												<MenuItem 
-													key={form.id}
-													value={form.id}
+													key={rank.id}
+													value={rank.id}
 												>
-													{form.name}
+													{rank.name}
 												</MenuItem>
 											))}
 										</Select>

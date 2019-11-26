@@ -38,9 +38,10 @@ const QUERY = gql`
 			}
 		}
 
-		forms {
+		ranks {
 			id
 			name
+			value
 		}
 
 		players {
@@ -61,17 +62,18 @@ const QUERY = gql`
 					}
 				}
 			}
-			forms {
+			rank {
 				id
 				name
+				value
 			}
 		}
 	}
 `
 
 const CREATE_PLAYER_MUTATION = gql`
-	mutation CreatePlayerMutation($name: String!, $familyName: String!, $nickname: String!, $clanId: ID!, $formIds: [ID!]) {
-		createPlayer(name: $name, familyName: $familyName, nickname: $nickname, clanId: $clanId , formIds: $formIds ) {
+	mutation CreatePlayerMutation($name: String!, $familyName: String!, $nickname: String!, $clanId: ID!, $rankId: ID!) {
+		createPlayer(name: $name, familyName: $familyName, nickname: $nickname, clanId: $clanId , rankId: $rankId ) {
 			id
 			name
 			familyName
@@ -84,9 +86,10 @@ const CREATE_PLAYER_MUTATION = gql`
 					name
 				}
 			}
-			forms {
+			rank {
 				id
 				name
+				value
 			}
 		}
 	}
@@ -105,18 +108,18 @@ export default function Players(props) {
 
 	const [playerClan, setPlayerClan] = useState('')
 	const [playerFamilyName, setPlayerFamilyName] = useState('')
-	const [playerForms, setPlayerForms] = useState([])
 	const [playerName, setPlayerName] = useState('')
 	const [playerNickname, setPlayerNickname] = useState('')
+	const [playerRank, setPlayerRank] = useState('')
 
 	const createPlayerMutation = useMutation(CREATE_PLAYER_MUTATION, {
 		update: (cache, { data: { createPlayer } }) => {
-			const { clans, forms, players } = cache.readQuery({ query: QUERY })
+			const { clans, players } = cache.readQuery({ query: QUERY })
 
 			cache.writeQuery({
 				data: { 
 					clans,
-					forms,
+					ranks,
 					players: players.concat([createPlayer])
 				},
 				query: QUERY,
@@ -125,30 +128,30 @@ export default function Players(props) {
 			setPlayerName('')
 			setPlayerFamilyName('')
 			setPlayerNickname('')
-			setPlayerForms([])
 			setPlayerClan('')
+			setPlayerRank('')
 		},
 
 		variables: { 
 			clanId: playerClan,
 			familyName: playerFamilyName,
-			formIds: playerForms,
 			name: playerName,
 			nickname: playerNickname,
+			rankId: playerRank
 		},
 	})
 
 	const deletePlayerMutation = useMutation(DELETE_PLAYER_MUTATION, {
 		update: (cache, { data: { deletePlayer } } ) => {
-			const { clans, forms, players } = cache.readQuery({ query: QUERY })
+			const { clans, players } = cache.readQuery({ query: QUERY })
 
 			cache.writeQuery({
 				data: {
 					clans,
-					forms,
 					players: players.filter((player) => {
 						return player.id !== deletePlayer.id
-					})
+					}),
+					ranks,
 				},
 				query: QUERY,
 			})
@@ -158,8 +161,8 @@ export default function Players(props) {
 	const { 
 		data: {
 			clans,
-			forms,
 			players,
+			ranks,
 		},
 		error,
 		loading,
@@ -225,23 +228,22 @@ export default function Players(props) {
 
 								<Grid item xs={6}>
 									<FormControl fullWidth>
-										<InputLabel htmlFor="playerForms">Forms</InputLabel>
+										<InputLabel htmlFor="playerRank">Rank</InputLabel>
 
 										<Select
 											inputProps={{
-												name: 'playerForms',
-												id: 'playerForms',
+												name: 'playerRank',
+												id: 'playerRank',
 											}}
-											multiple
-											onChange={(e) => {setPlayerForms(e.target.value)}}
-											value={playerForms}
+											onChange={(e) => {setPlayerRank(e.target.value)}}
+											value={playerRank}
 										>
-											{forms.map(form => (
+											{ranks.map(rank => (
 												<MenuItem 
-													key={form.id}
-													value={form.id}
+													key={rank.id}
+													value={rank.id}
 												>
-													{form.name}
+													{rank.name}
 												</MenuItem>
 											))}
 										</Select>
@@ -303,7 +305,7 @@ export default function Players(props) {
 									<TableCell align="center">Family Name</TableCell>
 									<TableCell align="center">Nickname</TableCell>
 									<TableCell align="center">Clan</TableCell>
-									<TableCell align="center">Forms</TableCell>
+									<TableCell align="center">Rank</TableCell>
 									<TableCell align="right">Operations</TableCell>
 								</TableRow>
 							</TableHead>
@@ -316,9 +318,7 @@ export default function Players(props) {
 										<TableCell align="center">{player.nickname}</TableCell>
 										<TableCell align="center">{player.clan.name}</TableCell>
 										<TableCell align="center">
-											{player.forms.map((form, i) => (
-												`${form.name}${i + 1 < player.forms.length ? ', ' : ''}`
-											))}
+											{player.rank.name}
 										</TableCell>
 
 										<TableCell align="right">

@@ -107,9 +107,9 @@ type Mutation {
 
 	updateMatch(id: ID!, resultPlayer1: Int!, resultPlayer2: Int!): Match
 
-	createPlayer(name: String!, familyName: String!, nickname: String!, formIds: [ID!], clanId: ID!): Player!
+	createPlayer(name: String!, familyName: String!, nickname: String!, formIds: [ID!], clanId: ID!, rankId: ID!): Player!
 	deletePlayer(id: ID!): Player
-	updatePlayer(id: ID!, name: String, familyName: String, nickname: String, formIds: [ID!], clanId: ID): Player
+	updatePlayer(id: ID!, name: String, familyName: String, nickname: String, formIds: [ID!], clanId: ID, rankId: ID): Player
 
 	createTournament(name: String!, playerIds: [ID!], poulesType: PoulesType!): Tournament!
 	deleteTournament(id: ID!): Tournament
