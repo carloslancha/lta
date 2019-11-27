@@ -20,17 +20,27 @@ import Players from './pages/players/Players'
 import PlayerEdit from './pages/players/PlayerEdit'
 import Ranks from './pages/ranks/Ranks'
 import RankEdit from './pages/ranks/RankEdit'
-import SignIn from './pages/SignIn'
+import Login from './pages/Login'
 import SignUp from './pages/SignUp'
 import Tournaments from './pages/tournaments/Tournaments'
 import TournamentEdit from './pages/tournaments/TournamentEdit'
 import TournamentManage from './pages/tournaments/TournamentManage'
 import TournamentPlay from './pages/tournaments/TournamentPlay'
 import Home from './pages/Home'
+import PrivateRoute from './PrivateRoute';
+import { AuthContext } from "./context/auth";
+import { ApolloProvider } from 'react-apollo'
+import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks'
+import { BrowserRouter as Router } from 'react-router-dom'
+import { ApolloClient } from 'apollo-client'
+import { InMemoryCache } from 'apollo-cache-inmemory'
+import { setContext } from 'apollo-link-context'
+import { AUTH_TOKEN, HTTP_LINK } from './constants'
 
 export default function App() {
 	const classes = styles()
 
+	const [authToken, setAuthToken] = useState(JSON.parse(localStorage.getItem(AUTH_TOKEN)));
 	const [open, setOpen] = useState(false)
 
 	const handleDrawerClose = () => {
@@ -41,49 +51,76 @@ export default function App() {
 		setOpen(true)
 	}
 
+	const setToken = (data) => {
+		localStorage.setItem(AUTH_TOKEN, JSON.stringify(data));
+		setAuthToken(data);
+	}
+
+	const authLink = setContext((_, { headers }) => {
+		return {
+			headers: {
+				...headers,
+				authorization: authToken ? `Bearer ${authToken.token}` : ''
+			}
+		}
+	})
+
+	const client = new ApolloClient({
+		link: authLink.concat(HTTP_LINK),
+		cache: new InMemoryCache()
+	})
+
 	return (
-		<div className={classes.root}>
-			<CssBaseline />
+		<AuthContext.Provider value={{ authToken, setToken }}>
+			<Router>
+				<ApolloProvider client={client}>
+					<ApolloHooksProvider client={client}>
+						<div className={classes.root}>
+							<CssBaseline />
 
-			<Header 
-				open={open}
-				handleTogglerClick={handleDrawerOpen}
-			/>
+							<Header 
+								open={open}
+								handleTogglerClick={handleDrawerOpen}
+							/>
 
-			<Sidebar
-				open={open}
-				handleTogglerClick={handleDrawerClose}
-				onLinkClick={handleDrawerClose}
-			/>
+							<Sidebar
+								open={open}
+								handleTogglerClick={handleDrawerClose}
+								onLinkClick={handleDrawerClose}
+							/>
 
-			<main className={classes.content}>
-				<div className={classes.appBarSpacer} />
+							<main className={classes.content}>
+								<div className={classes.appBarSpacer} />
 
-				<Container maxWidth="lg" className={classes.container}>
-					<Route exact path="/" component={Home} />
-					<Route exact path="/login" component={SignIn} />
-					<Route exact path="/signup" component={SignUp} />
-					<Route exact path="/academies" component={Academies} />
-					<Route exact path="/academies/edit/:id" component={AcademyEdit} />
-					<Route exact path="/schools" component={Schools} />
-					<Route exact path="/schools/edit/:id" component={SchoolEdit} />
-					<Route exact path="/clans" component={Clans} />
-					<Route exact path="/clans/edit/:id" component={ClanEdit} />
-					<Route exact path="/forms" component={Forms} />
-					<Route exact path="/forms/edit/:id" component={FormEdit} />
-					<Route exact path="/players" component={Players} />
-					<Route exact path="/players/edit/:id" component={PlayerEdit} />
-					<Route exact path="/ranks" component={Ranks} />
-					<Route exact path="/ranks/edit/:id" component={RankEdit} />
-					<Route exact path="/tournaments" component={Tournaments} />
-					<Route exact path="/tournaments/edit/:id" component={TournamentEdit} />
-					<Route exact path="/tournaments/manage/:id" component={TournamentManage} />
-					<Route exact path="/tournaments/play/:id" component={TournamentPlay} />
-					<Route exact path="/matches/:id" component={Match} />
-				</Container>
+								<Container maxWidth="lg" className={classes.container}>
+									<Route exact path="/" component={Home} />
+									<Route exact path="/login" component={Login} />
+									<Route exact path="/signup" component={SignUp} />
+									<PrivateRoute exact path="/academies" component={Academies} />
+									<PrivateRoute exact path="/academies/edit/:id" component={AcademyEdit} />
+									<PrivateRoute exact path="/schools" component={Schools} />
+									<PrivateRoute exact path="/schools/edit/:id" component={SchoolEdit} />
+									<PrivateRoute exact path="/clans" component={Clans} />
+									<PrivateRoute exact path="/clans/edit/:id" component={ClanEdit} />
+									<PrivateRoute exact path="/forms" component={Forms} />
+									<PrivateRoute exact path="/forms/edit/:id" component={FormEdit} />
+									<PrivateRoute exact path="/players" component={Players} />
+									<PrivateRoute exact path="/players/edit/:id" component={PlayerEdit} />
+									<PrivateRoute exact path="/ranks" component={Ranks} />
+									<PrivateRoute exact path="/ranks/edit/:id" component={RankEdit} />
+									<PrivateRoute exact path="/tournaments" component={Tournaments} />
+									<PrivateRoute exact path="/tournaments/edit/:id" component={TournamentEdit} />
+									<PrivateRoute exact path="/tournaments/manage/:id" component={TournamentManage} />
+									<PrivateRoute exact path="/tournaments/play/:id" component={TournamentPlay} />
+									<PrivateRoute exact path="/matches/:id" component={Match} />
+								</Container>
 
-				<Footer />
-			</main>
-		</div>
+								<Footer />
+							</main>
+						</div>
+					</ApolloHooksProvider>
+			</ApolloProvider>
+		</Router>
+	</AuthContext.Provider>
 	)
 }

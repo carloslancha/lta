@@ -1,4 +1,3 @@
-import { AUTH_TOKEN } from '../constants'
 import { makeStyles } from '@material-ui/core/styles'
 import { Mutation } from 'react-apollo'
 import Avatar from '@material-ui/core/Avatar'
@@ -12,11 +11,16 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import React, { useState } from 'react'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
+import { useAuth } from "../context/auth";
+import { Redirect } from "react-router-dom";
 
 const SIGNUP_MUTATION = gql`
 	mutation SignUpMutation($name: String!, $email: String!, $password: String!) {
 		signup(name: $name, email: $email, password: $password) {
-			token
+			token,
+			user {
+				name
+			}
 		}
 	}
 `
@@ -49,9 +53,16 @@ const useStyles = makeStyles(theme => ({
 export default function SignUp(props) {
 	const classes = useStyles()
 
+	const { authToken, setToken } = useAuth();
+
 	const [name, setName] = useState('')
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
+	const [isLoggedIn, setLoggedIn] = useState(!!authToken);
+
+	if (isLoggedIn) {
+		return <Redirect to="/" />;
+	}
 
 	return (
 		<Container component="main" maxWidth="xs">
@@ -106,19 +117,24 @@ export default function SignUp(props) {
 						mutation={SIGNUP_MUTATION}
 						variables={{ name, email, password }}
 						onCompleted={data => {
-							const { token } = data.signup 
-							localStorage.setItem(AUTH_TOKEN, token)
-							props.history.push(`/`)
+							setToken({
+								token:data.signup.token,
+								userName: data.signup.user.name
+							});
+							setLoggedIn(true);
 						}}
 					>
 						{mutation => (
 							<Button
-								type="button"
+								type="submit"
 								fullWidth
 								variant="contained"
 								color="primary"
 								className={classes.submit}
-								onClick={mutation}
+								onClick={(e) => {
+									e.preventDefault()
+									mutation()
+								}}
 							>
 								Sign Up
 							</Button>

@@ -1,4 +1,3 @@
-import { AUTH_TOKEN } from '../constants'
 import { makeStyles } from '@material-ui/core/styles'
 import Avatar from '@material-ui/core/Avatar'
 import Button from '@material-ui/core/Button'
@@ -14,11 +13,16 @@ import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
+import { useAuth } from "../context/auth";
+import { Redirect } from "react-router-dom";
 
-const SIGNIN_MUTATION = gql`
-	mutation SignInMutation($email: String!, $password: String!) {
+const LOGIN_MUTATION = gql`
+	mutation LoginMutation($email: String!, $password: String!) {
 		login(email: $email, password: $password) {
-			token
+			token,
+			user {
+				name
+			}
 		}
 	}
 `
@@ -48,12 +52,20 @@ const useStyles = makeStyles(theme => ({
 	},
 }))
 
-export default function SignIn(props) {
+export default function Login(props) {
 	const classes = useStyles()
 
+	const { authToken, setToken } = useAuth();
+
 	const [email, setEmail] = useState('')
+	const [isLoggedIn, setLoggedIn] = useState(!!authToken);
+	const [isError, setError] = useState(false)
 	const [password, setPassword] = useState('')
 
+	if (isLoggedIn) {
+		return <Redirect to="/" />;
+	}
+	
 	return (
 		<Container component="main" maxWidth="xs">
 			<CssBaseline />
@@ -64,11 +76,12 @@ export default function SignIn(props) {
 				</Avatar>
 
 				<Typography component="h1" variant="h5">
-					Sign in
+					Login
 				</Typography>
 
 				<form className={classes.form} noValidate>
 					<TextField
+						error={isError}
 						autoComplete="email"
 						autoFocus
 						fullWidth
@@ -82,6 +95,7 @@ export default function SignIn(props) {
 						/>
 
 					<TextField
+						error={isError}
 						fullWidth
 						id="password"
 						label="Password"
@@ -99,24 +113,32 @@ export default function SignIn(props) {
 					/>
 
 					<Mutation
-						mutation={SIGNIN_MUTATION}
+						mutation={LOGIN_MUTATION}
 						variables={{ email, password }}
 						onCompleted={data => {
-							const { token } = data.login 
-							localStorage.setItem(AUTH_TOKEN, token)
-							props.history.push(`/`)
+							setToken({
+								token:data.login.token,
+								userName: data.login.user.name
+							});
+							setLoggedIn(true);
+						}}
+						onError={() => {
+							setError(true)
 						}}
 					>
 						{mutation => (
 							<Button
-								type="button"
+								type="submit"
 								fullWidth
 								variant="contained"
 								color="primary"
 								className={classes.submit}
-								onClick={mutation}
+								onClick={(e) => {
+									e.preventDefault()
+									mutation()
+								}}
 							>
-								Sign In
+								Login
 							</Button>
 						)}
 					</Mutation>
