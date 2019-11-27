@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react'
 import RemoveIcon from '@material-ui/icons/Remove';
 import styles from '../../styles/styles'
 import Typography from '@material-ui/core/Typography'
+import TextField from '@material-ui/core/TextField'
 
 const QUERY = gql`
 	query Match($id: ID!) {
@@ -37,13 +38,15 @@ const QUERY = gql`
 			}
 			resultPlayer1
 			resultPlayer2
+			styleResultPlayer1
+			styleResultPlayer2
 	}
 }
 `
 
 const UPDATE_MATCH_MUTATION = gql`
-	mutation UpdateMatchMutation($id: ID!, $resultPlayer1: Int!, $resultPlayer2: Int!) {
-		updateMatch(id: $id, resultPlayer1: $resultPlayer1, resultPlayer2: $resultPlayer2) {
+	mutation UpdateMatchMutation($id: ID!, $resultPlayer1: Int!, $resultPlayer2: Int!, $styleResultPlayer1: Float!, $styleResultPlayer2: Float!) {
+		updateMatch(id: $id, resultPlayer1: $resultPlayer1, resultPlayer2: $resultPlayer2, styleResultPlayer1: $styleResultPlayer1, styleResultPlayer2: $styleResultPlayer2) {
 			duration
 			id
 			player1 {
@@ -68,6 +71,8 @@ const UPDATE_MATCH_MUTATION = gql`
 			}
 			resultPlayer1
 			resultPlayer2
+			styleResultPlayer1
+			styleResultPlayer2
 		}
 	}
 `
@@ -79,6 +84,8 @@ export default function Match(props) {
 
 	const [resultPlayer1, setResultPlayer1] = useState()
 	const [resultPlayer2, setResultPlayer2] = useState()
+	const [styleResultPlayer1, setStyleResultPlayer1] = useState('')
+	const [styleResultPlayer2, setStyleResultPlayer2] = useState('')
 
 	const UpdateMatchMutation = useMutation(UPDATE_MATCH_MUTATION, {
 		update: () => {
@@ -89,6 +96,8 @@ export default function Match(props) {
 			id,
 			resultPlayer1: resultPlayer1,
 			resultPlayer2: resultPlayer2,
+			styleResultPlayer1: parseFloat(styleResultPlayer1),
+			styleResultPlayer2: parseFloat(styleResultPlayer2)
 		},
 	})
 
@@ -108,6 +117,8 @@ export default function Match(props) {
 		if (match) {
 			setResultPlayer1(match.resultPlayer1)
 			setResultPlayer2(match.resultPlayer2)
+			setStyleResultPlayer1(match.styleResultPlayer1)
+			setStyleResultPlayer2(match.styleResultPlayer2)
 		}
 	}, [match])
 
@@ -129,7 +140,7 @@ export default function Match(props) {
 						</Typography>
 
 						<form onSubmit={(e) => {
-							e.preventDefault() 
+							e.preventDefault()
 							UpdateMatchMutation()
 						}}>
 
@@ -217,6 +228,41 @@ export default function Match(props) {
 											<AddIcon />
 										</Button>
 									</Typography>
+								</Grid>
+
+								<Grid item xs={5}>
+									<Typography component="h2" variant="h5" align="center">
+										Style
+									</Typography>
+
+									<TextField
+										fullWidth
+										id="styleResultPlayer1"
+										name="styleResultPlayer1"
+										onChange={event => { setStyleResultPlayer1(event.target.value.replace(',','.'))}}
+										required
+										type="number"
+										value={styleResultPlayer1}
+									/>
+								</Grid>
+
+								<Grid item xs={2}>
+								</Grid>
+
+								<Grid item xs={5}>
+									<Typography component="h2" variant="h5" align="center">
+										Style
+									</Typography>
+
+									<TextField
+										fullWidth
+										id="styleResultPlayer2"
+										name="styleResultPlayer2"
+										onChange={event => { setStyleResultPlayer2(event.target.value.replace(',','.'))}}
+										required
+										type="number"
+										value={styleResultPlayer2}
+									/>
 								</Grid>
 
 								<Grid item xs={12} align="center">
