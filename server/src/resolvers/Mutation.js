@@ -346,8 +346,6 @@ async function generateTournamentPoules(parent, args, context, info) {
 		return prev
 	}, {})
 
-	console.log(playersGroupedByFormula)
-
 	/** ASSIGN PLAYERS TO POULES **/
 	let currentPoule = 0
 	Object.keys(playersGroupedByFormula).map(key => {
