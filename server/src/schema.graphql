@@ -73,6 +73,7 @@ type Match {
     createdBy: User
     duration: Int
     id: ID!
+	nextMatch: Match
     order: Int!
     player1: Player
     player2: Player
