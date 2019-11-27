@@ -481,6 +481,8 @@ async function generateNextTournamentPhase(parent, args, context, info) {
 				poule.matches.map(match => {
 					if (match.player1.id === player.id) {
 						player.pointsWin = (player.pointsWin || 0) + match.resultPlayer1 
+						player.playedCount = (player.playedCount || 0) + (match.styleResultPlayer1 !== 0 ? 1 : 0)
+						player.stylePoints = (player.stylePoints || 0) + match.styleResultPlayer1
 						player.pointsAgainst = (player.pointsAgainst || 0) + match.resultPlayer2
 						player.winCount = (player.winCount || 0) + ((match.resultPlayer1 > match.resultPlayer2) * 1)
 						player.lostCount = (player.lostCount || 0) + ((match.resultPlayer1 < match.resultPlayer2) * 1)
@@ -488,6 +490,8 @@ async function generateNextTournamentPhase(parent, args, context, info) {
 					}
 					else if (match.player2.id === player.id) {
 						player.pointsWin = (player.pointsWin || 0) + match.resultPlayer2 
+						player.playedCount = (player.playedCount || 0) + (match.styleResultPlayer2 !== 0 ? 1 : 0)
+						player.stylePoints = (player.stylePoints || 0) + match.styleResultPlayer2
 						player.pointsAgainst = (player.pointsAgainst || 0) + match.resultPlayer1
 						player.winCount = (player.winCount || 0) + ((match.resultPlayer2 > match.resultPlayer1) * 1)
 						player.lostCount = (player.lostCount || 0) + ((match.resultPlayer2 < match.resultPlayer1) * 1)
@@ -497,6 +501,10 @@ async function generateNextTournamentPhase(parent, args, context, info) {
 					
 					return match
 				})
+
+				player.stylePoints = (player.stylePoints / player.playedCount) || 0 
+				player.stylePoints = player.stylePoints.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
+
 				return player
 			})
 
@@ -506,6 +514,11 @@ async function generateNextTournamentPhase(parent, args, context, info) {
 				if (a.pointsWin < b.pointsWin)
 					return 1
 
+				if (a.stylePoints > b.stylePoints) 
+					return -1
+				if (a.stylePoints < b.stylePoints) 
+					return 1
+/*
 				if (a.pointsAgainst < b.pointsAgainst)
 					return -1
 				if (a.pointsAgainst > b.pointsAgainst)
@@ -525,7 +538,7 @@ async function generateNextTournamentPhase(parent, args, context, info) {
 					return -1
 				if (a.tieCount < b.tieCount)
 					return 1
-
+*/
 				const tiedMatch = poule.matches.find(match => {
 					return match.player1.id === a.id && match.player2.id === b.id ||
 						match.player1.id === b.id && match.player2.id === a.id
@@ -559,6 +572,174 @@ async function generateNextTournamentPhase(parent, args, context, info) {
 		
 		if (tournamentWithPoulesAndRounds.players.length > 32) {
 			//newCurrentRound = 'ROUND_OF_64'
+
+			const matches = [
+				{
+					order: 1,
+					player1: tournamentWithPoulesAndRounds.poules[0].players[1-1], //A1
+					player2: tournamentWithPoulesAndRounds.poules[7].players[8-1], //H8
+				},
+				{
+					order: 2,
+					player1: tournamentWithPoulesAndRounds.poules[2].players[3-1], //C3
+					player2: tournamentWithPoulesAndRounds.poules[5].players[6-1], //F6
+				},
+				{
+					order: 3,
+					player1: tournamentWithPoulesAndRounds.poules[1].players[2-1], //B2
+					player2: tournamentWithPoulesAndRounds.poules[6].players[7-1], //G7
+				},
+				{
+					order: 4,
+					player1: tournamentWithPoulesAndRounds.poules[3].players[4-1], //D4
+					player2: tournamentWithPoulesAndRounds.poules[4].players[5-1], //E5
+				},
+				{
+					order: 5,
+					player1: tournamentWithPoulesAndRounds.poules[4].players[1-1], //E1
+					player2: tournamentWithPoulesAndRounds.poules[3].players[8-1], //D8
+				},
+				{
+					order: 6,
+					player1: tournamentWithPoulesAndRounds.poules[6].players[3-1], //G3
+					player2: tournamentWithPoulesAndRounds.poules[1].players[6-1], //B6
+				},
+				{
+					order: 7,
+					player1: tournamentWithPoulesAndRounds.poules[5].players[2-1], //F2
+					player2: tournamentWithPoulesAndRounds.poules[2].players[7-1], //C7
+				},
+				{
+					order: 8,
+					player1: tournamentWithPoulesAndRounds.poules[7].players[4-1], //H4
+					player2: tournamentWithPoulesAndRounds.poules[0].players[5-1], //A5
+				},
+				{
+					order: 9,
+					player1: tournamentWithPoulesAndRounds.poules[2].players[1-1], //C1
+					player2: tournamentWithPoulesAndRounds.poules[1].players[8-1], //B8
+				},
+				{
+					order: 10,
+					player1: tournamentWithPoulesAndRounds.poules[4].players[3-1], //E3
+					player2: tournamentWithPoulesAndRounds.poules[7].players[6-1], //H6
+				},
+				{
+					order: 11,
+					player1: tournamentWithPoulesAndRounds.poules[3].players[2-1], //D2
+					player2: tournamentWithPoulesAndRounds.poules[0].players[7-1], //A7
+				},
+				{
+					order: 12,
+					player1: tournamentWithPoulesAndRounds.poules[5].players[4-1], //F4
+					player2: tournamentWithPoulesAndRounds.poules[6].players[5-1], //G5
+				},
+				{
+					order: 13,
+					player1: tournamentWithPoulesAndRounds.poules[6].players[1-1], //G1
+					player2: tournamentWithPoulesAndRounds.poules[5].players[8-1], //F8
+				},
+				{
+					order: 14,
+					player1: tournamentWithPoulesAndRounds.poules[0].players[3-1], //A3
+					player2: tournamentWithPoulesAndRounds.poules[3].players[6-1], //D6
+				},
+				{
+					order: 15,
+					player1: tournamentWithPoulesAndRounds.poules[7].players[2-1], //H2
+					player2: tournamentWithPoulesAndRounds.poules[4].players[7-1], //E7
+				},
+				{
+					order: 16,
+					player1: tournamentWithPoulesAndRounds.poules[1].players[4-1], //B4
+					player2: tournamentWithPoulesAndRounds.poules[2].players[5-1], //C5
+				},
+				{
+					order: 17,
+					player1: tournamentWithPoulesAndRounds.poules[1].players[1-1], //B1
+					player2: tournamentWithPoulesAndRounds.poules[0].players[8-1], //A8
+				},
+				{
+					order: 18,
+					player1: tournamentWithPoulesAndRounds.poules[3].players[3-1], //D3
+					player2: tournamentWithPoulesAndRounds.poules[6].players[6-1], //G6
+				},
+				{
+					order: 19,
+					player1: tournamentWithPoulesAndRounds.poules[2].players[2-1], //C2
+					player2: tournamentWithPoulesAndRounds.poules[7].players[7-1], //H7
+				},
+				{
+					order: 20,
+					player1: tournamentWithPoulesAndRounds.poules[4].players[4-1], //E4
+					player2: tournamentWithPoulesAndRounds.poules[5].players[5-1], //F5
+				},
+				{
+					order: 21,
+					player1: tournamentWithPoulesAndRounds.poules[5].players[1-1], //F1
+					player2: tournamentWithPoulesAndRounds.poules[4].players[8-1], //E8
+				},
+				{
+					order: 22,
+					player1: tournamentWithPoulesAndRounds.poules[7].players[3-1], //H3
+					player2: tournamentWithPoulesAndRounds.poules[2].players[6-1], //C6
+				},
+				{
+					order: 23,
+					player1: tournamentWithPoulesAndRounds.poules[6].players[2-1], //G2
+					player2: tournamentWithPoulesAndRounds.poules[3].players[7-1], //D7
+				},
+				{
+					order: 24,
+					player1: tournamentWithPoulesAndRounds.poules[0].players[4-1], //A4
+					player2: tournamentWithPoulesAndRounds.poules[1].players[5-1], //B5
+				},
+				{
+					order: 25,
+					player1: tournamentWithPoulesAndRounds.poules[3].players[1-1], //D1
+					player2: tournamentWithPoulesAndRounds.poules[2].players[8-1], //C8
+				},
+				{
+					order: 26,
+					player1: tournamentWithPoulesAndRounds.poules[5].players[3-1], //F3
+					player2: tournamentWithPoulesAndRounds.poules[0].players[6-1], //A6
+				},
+				{
+					order: 27,
+					player1: tournamentWithPoulesAndRounds.poules[4].players[2-1], //E2
+					player2: tournamentWithPoulesAndRounds.poules[1].players[7-1], //B7
+				},
+				{
+					order: 28,
+					player1: tournamentWithPoulesAndRounds.poules[6].players[4-1], //G4
+					player2: tournamentWithPoulesAndRounds.poules[7].players[5-1], //H5
+				},
+				{
+					order: 29,
+					player1: tournamentWithPoulesAndRounds.poules[7].players[1-1], //H1
+					player2: tournamentWithPoulesAndRounds.poules[6].players[8-1], //G8
+				},
+				{
+					order: 30,
+					player1: tournamentWithPoulesAndRounds.poules[1].players[3-1], //B3
+					player2: tournamentWithPoulesAndRounds.poules[4].players[6-1], //E6
+				},
+				{
+					order: 31,
+					player1: tournamentWithPoulesAndRounds.poules[0].players[2-1], //A2
+					player2: tournamentWithPoulesAndRounds.poules[5].players[7-1], //F7
+				},
+				{
+					order: 32,
+					player1: tournamentWithPoulesAndRounds.poules[2].players[4-1], //C4
+					player2: tournamentWithPoulesAndRounds.poules[3].players[5-1], //D5
+				},
+			]
+
+			round = {
+				matches,
+				roundType: 'ROUND_OF_64'
+			}
 		}
 		else if (tournamentWithPoulesAndRounds.players.length > 16) {
 			//newCurrentRound = 'ROUND_OF_32'
