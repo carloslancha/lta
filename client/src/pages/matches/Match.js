@@ -16,6 +16,7 @@ const QUERY = gql`
 		match(id: $id) {
 			duration
 			id
+			order
 			player1 {
 				id
 				name
@@ -40,6 +41,9 @@ const QUERY = gql`
 			resultPlayer2
 			styleResultPlayer1
 			styleResultPlayer2
+			nextMatch {
+				id
+			}
 	}
 }
 `
@@ -49,6 +53,7 @@ const UPDATE_MATCH_MUTATION = gql`
 		updateMatch(id: $id, resultPlayer1: $resultPlayer1, resultPlayer2: $resultPlayer2, styleResultPlayer1: $styleResultPlayer1, styleResultPlayer2: $styleResultPlayer2) {
 			duration
 			id
+			order
 			player1 {
 				id
 				name
@@ -73,6 +78,9 @@ const UPDATE_MATCH_MUTATION = gql`
 			resultPlayer2
 			styleResultPlayer1
 			styleResultPlayer2
+			nextMatch {
+				id
+			}
 		}
 	}
 `
@@ -82,6 +90,8 @@ export default function Match(props) {
 
 	const id = props.match.params.id
 
+	const [matchNumber, setMatchNumber] = useState('')
+	const [nextMatch, setNextMatch] = useState('')
 	const [resultPlayer1, setResultPlayer1] = useState()
 	const [resultPlayer2, setResultPlayer2] = useState()
 	const [styleResultPlayer1, setStyleResultPlayer1] = useState('')
@@ -89,7 +99,12 @@ export default function Match(props) {
 
 	const UpdateMatchMutation = useMutation(UPDATE_MATCH_MUTATION, {
 		update: () => {
-			props.history.goBack()
+			if (nextMatch){
+				props.history.push(`/matches/${nextMatch.id}`)
+			}
+			else {
+				props.history.push(`/tournaments/play/${nextMatch.id}`)
+			}
 		},
 
 		variables: { 
@@ -115,6 +130,8 @@ export default function Match(props) {
 
 	useEffect(() => {
 		if (match) {
+			setMatchNumber(match.order)
+			setNextMatch(match.nextMatch)
 			setResultPlayer1(match.resultPlayer1)
 			setResultPlayer2(match.resultPlayer2)
 			setStyleResultPlayer1(match.styleResultPlayer1)
@@ -136,7 +153,7 @@ export default function Match(props) {
 				<Grid item xs={12}>
 					<Paper className={classes.paper}>
 						<Typography component="h1" variant="h5" align="center">
-							
+							Match #{matchNumber}
 						</Typography>
 
 						<form onSubmit={(e) => {
