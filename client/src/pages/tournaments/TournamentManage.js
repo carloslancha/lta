@@ -47,6 +47,8 @@ const QUERY = gql`
 					}
 					resultPlayer1
 					resultPlayer2
+					styleResultPlayer1
+					styleResultPlayer2
 				}
 				name
 				players {
@@ -63,6 +65,8 @@ const QUERY = gql`
 						}
 						resultPlayer1
 						resultPlayer2
+						styleResultPlayer1
+						styleResultPlayer2
 					}
 					nickname
 					clan {
@@ -141,6 +145,8 @@ const GENERATE_TOURNAMENT_POULES_MUTATION = gql`
 					}
 					resultPlayer1
 					resultPlayer2
+					styleResultPlayer1
+					styleResultPlayer2
 				}
 				name
 				players {
@@ -157,6 +163,8 @@ const GENERATE_TOURNAMENT_POULES_MUTATION = gql`
 						}
 						resultPlayer1
 						resultPlayer2
+						styleResultPlayer1
+						styleResultPlayer2
 					}
 					nickname
 					clan {
@@ -198,6 +206,8 @@ const GENERATE_TOURNAMENT_POULES_MUTATION = gql`
 					}
 					resultPlayer1
 					resultPlayer2
+					styleResultPlayer1
+					styleResultPlayer2
 				}
 				roundType
 			}
@@ -235,6 +245,8 @@ const GENERATE_NEXT_TOURNAMENT_PHASE_MUTATION = gql`
 					}
 					resultPlayer1
 					resultPlayer2
+					styleResultPlayer1
+					styleResultPlayer2
 				}
 				name
 				players {
@@ -251,6 +263,8 @@ const GENERATE_NEXT_TOURNAMENT_PHASE_MUTATION = gql`
 						}
 						resultPlayer1
 						resultPlayer2
+						styleResultPlayer1
+						styleResultPlayer2
 					}
 					nickname
 					clan {
@@ -292,6 +306,8 @@ const GENERATE_NEXT_TOURNAMENT_PHASE_MUTATION = gql`
 					}
 					resultPlayer1
 					resultPlayer2
+					styleResultPlayer1
+					styleResultPlayer2
 				}
 				roundType
 			}
@@ -330,6 +346,7 @@ function Poule(props) {
 							<TableCell>Country</TableCell>
 							<TableCell>Rank</TableCell>
 							<TableCell align="center">PWIN</TableCell>
+							<TableCell align="center">STYLE</TableCell>
 							<TableCell align="center">PLOST</TableCell>
 							<TableCell align="center">WIN</TableCell>
 							<TableCell align="center">LOST</TableCell>
@@ -348,6 +365,7 @@ function Poule(props) {
 								<TableCell>{player.clan.school.academy.country}</TableCell>
 								<TableCell>{player.rank.name}</TableCell>
 								<TableCell align="center">{player.pointsWin}</TableCell>
+								<TableCell align="center">{player.stylePoints}</TableCell>
 								<TableCell align="center">{player.pointsAgainst}</TableCell>
 								<TableCell align="center">{player.winCount}</TableCell>
 								<TableCell align="center">{player.lostCount}</TableCell>
@@ -440,6 +458,8 @@ export default function TournamentManage(props) {
 						poule.matches.map(match => {
 							if (match.player1.id === player.id) {
 								player.pointsWin = (player.pointsWin || 0) + match.resultPlayer1 
+								player.playedCount = (player.playedCount || 0) + (match.styleResultPlayer1 !== 0 ? 1 : 0)
+								player.stylePoints = (player.stylePoints || 0) + match.styleResultPlayer1
 								player.pointsAgainst = (player.pointsAgainst || 0) + match.resultPlayer2
 								player.winCount = (player.winCount || 0) + ((match.resultPlayer1 > match.resultPlayer2) * 1)
 								player.lostCount = (player.lostCount || 0) + ((match.resultPlayer1 < match.resultPlayer2) * 1)
@@ -447,6 +467,8 @@ export default function TournamentManage(props) {
 							}
 							else if (match.player2.id === player.id) {
 								player.pointsWin = (player.pointsWin || 0) + match.resultPlayer2 
+								player.playedCount = (player.playedCount || 0) + (match.styleResultPlayer2 !== 0 ? 1 : 0)
+								player.stylePoints = (player.stylePoints || 0) + match.styleResultPlayer2
 								player.pointsAgainst = (player.pointsAgainst || 0) + match.resultPlayer1
 								player.winCount = (player.winCount || 0) + ((match.resultPlayer2 > match.resultPlayer1) * 1)
 								player.lostCount = (player.lostCount || 0) + ((match.resultPlayer2 < match.resultPlayer1) * 1)
@@ -456,6 +478,9 @@ export default function TournamentManage(props) {
 							
 							return match
 						})
+
+						player.stylePoints = (player.stylePoints / player.playedCount) || 0 
+						player.stylePoints = player.stylePoints.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
 
 						return player
 					})
@@ -467,6 +492,11 @@ export default function TournamentManage(props) {
 						if (a.pointsWin < b.pointsWin)
 							return 1
 
+						if (a.stylePoints > b.stylePoints) 
+							return -1
+						if (a.stylePoints < b.stylePoints) 
+							return 1
+/*
 						if (a.pointsAgainst < b.pointsAgainst)
 							return -1
 						if (a.pointsAgainst > b.pointsAgainst)
@@ -486,7 +516,7 @@ export default function TournamentManage(props) {
 							return -1
 						if (a.tieCount < b.tieCount)
 							return 1
-
+*/
 						const tiedMatch = poule.matches.find(match => {
 							return (match.player1.id === a.id && match.player2.id === b.id) ||
 								(match.player1.id === b.id && match.player2.id === a.id)
