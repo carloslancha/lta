@@ -864,6 +864,8 @@ async function updateMatch(parent, args, context, info) {
 			data: {
 				resultPlayer1: args.resultPlayer1,
 				resultPlayer2: args.resultPlayer2,
+				styleResultPlayer1: args.styleResultPlayer1,
+				styleResultPlayer2: args.styleResultPlayer2,
 			},
 			where: {
 				id: args.id

@@ -79,6 +79,8 @@ type Match {
     poule: Poule!
     resultPlayer1: Int
     resultPlayer2: Int
+    styleResultPlayer1: Float
+    styleResultPlayer2: Float
 }
 
 type Mutation {
@@ -105,7 +107,7 @@ type Mutation {
 	deleteRank(id: ID!): Rank
 	updateRank(id: ID!, name: String, value: Int!): Rank
 
-	updateMatch(id: ID!, resultPlayer1: Int!, resultPlayer2: Int!): Match
+	updateMatch(id: ID!, resultPlayer1: Int!, resultPlayer2: Int!, styleResultPlayer1: Float!, styleResultPlayer2: Float!): Match
 
 	createPlayer(name: String!, familyName: String!, nickname: String!, formIds: [ID!], clanId: ID!, rankId: ID!): Player!
 	deletePlayer(id: ID!): Player

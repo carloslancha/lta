@@ -72,6 +72,8 @@ type Match {
 	player2: Player @relation(name: "Player2OnMatch", onDelete: SET_NULL)
 	resultPlayer1: Int @default(value: 0)
 	resultPlayer2: Int @default(value: 0)
+	styleResultPlayer1: Float @default(value: 0)
+	styleResultPlayer2: Float @default(value: 0)
 }
 
 type Player {

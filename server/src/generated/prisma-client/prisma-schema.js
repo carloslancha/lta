@@ -1366,6 +1366,8 @@ type Match {
   player2: Player
   resultPlayer1: Int
   resultPlayer2: Int
+  styleResultPlayer1: Float
+  styleResultPlayer2: Float
 }
 
 type MatchConnection {
@@ -1384,6 +1386,8 @@ input MatchCreateInput {
   player2: PlayerCreateOneInput
   resultPlayer1: Int
   resultPlayer2: Int
+  styleResultPlayer1: Float
+  styleResultPlayer2: Float
 }
 
 input MatchCreateManyInput {
@@ -1405,6 +1409,8 @@ input MatchCreateWithoutAssaultsInput {
   player2: PlayerCreateOneInput
   resultPlayer1: Int
   resultPlayer2: Int
+  styleResultPlayer1: Float
+  styleResultPlayer2: Float
 }
 
 type MatchEdge {
@@ -1423,6 +1429,10 @@ enum MatchOrderByInput {
   resultPlayer1_DESC
   resultPlayer2_ASC
   resultPlayer2_DESC
+  styleResultPlayer1_ASC
+  styleResultPlayer1_DESC
+  styleResultPlayer2_ASC
+  styleResultPlayer2_DESC
 }
 
 type MatchPreviousValues {
@@ -1431,6 +1441,8 @@ type MatchPreviousValues {
   order: Int!
   resultPlayer1: Int
   resultPlayer2: Int
+  styleResultPlayer1: Float
+  styleResultPlayer2: Float
 }
 
 input MatchScalarWhereInput {
@@ -1480,6 +1492,22 @@ input MatchScalarWhereInput {
   resultPlayer2_lte: Int
   resultPlayer2_gt: Int
   resultPlayer2_gte: Int
+  styleResultPlayer1: Float
+  styleResultPlayer1_not: Float
+  styleResultPlayer1_in: [Float!]
+  styleResultPlayer1_not_in: [Float!]
+  styleResultPlayer1_lt: Float
+  styleResultPlayer1_lte: Float
+  styleResultPlayer1_gt: Float
+  styleResultPlayer1_gte: Float
+  styleResultPlayer2: Float
+  styleResultPlayer2_not: Float
+  styleResultPlayer2_in: [Float!]
+  styleResultPlayer2_not_in: [Float!]
+  styleResultPlayer2_lt: Float
+  styleResultPlayer2_lte: Float
+  styleResultPlayer2_gt: Float
+  styleResultPlayer2_gte: Float
   AND: [MatchScalarWhereInput!]
   OR: [MatchScalarWhereInput!]
   NOT: [MatchScalarWhereInput!]
@@ -1512,6 +1540,8 @@ input MatchUpdateDataInput {
   player2: PlayerUpdateOneInput
   resultPlayer1: Int
   resultPlayer2: Int
+  styleResultPlayer1: Float
+  styleResultPlayer2: Float
 }
 
 input MatchUpdateInput {
@@ -1523,6 +1553,8 @@ input MatchUpdateInput {
   player2: PlayerUpdateOneInput
   resultPlayer1: Int
   resultPlayer2: Int
+  styleResultPlayer1: Float
+  styleResultPlayer2: Float
 }
 
 input MatchUpdateManyDataInput {
@@ -1530,6 +1562,8 @@ input MatchUpdateManyDataInput {
   order: Int
   resultPlayer1: Int
   resultPlayer2: Int
+  styleResultPlayer1: Float
+  styleResultPlayer2: Float
 }
 
 input MatchUpdateManyInput {
@@ -1549,6 +1583,8 @@ input MatchUpdateManyMutationInput {
   order: Int
   resultPlayer1: Int
   resultPlayer2: Int
+  styleResultPlayer1: Float
+  styleResultPlayer2: Float
 }
 
 input MatchUpdateManyWithWhereNestedInput {
@@ -1573,6 +1609,8 @@ input MatchUpdateWithoutAssaultsDataInput {
   player2: PlayerUpdateOneInput
   resultPlayer1: Int
   resultPlayer2: Int
+  styleResultPlayer1: Float
+  styleResultPlayer2: Float
 }
 
 input MatchUpdateWithWhereUniqueNestedInput {
@@ -1644,6 +1682,22 @@ input MatchWhereInput {
   resultPlayer2_lte: Int
   resultPlayer2_gt: Int
   resultPlayer2_gte: Int
+  styleResultPlayer1: Float
+  styleResultPlayer1_not: Float
+  styleResultPlayer1_in: [Float!]
+  styleResultPlayer1_not_in: [Float!]
+  styleResultPlayer1_lt: Float
+  styleResultPlayer1_lte: Float
+  styleResultPlayer1_gt: Float
+  styleResultPlayer1_gte: Float
+  styleResultPlayer2: Float
+  styleResultPlayer2_not: Float
+  styleResultPlayer2_in: [Float!]
+  styleResultPlayer2_not_in: [Float!]
+  styleResultPlayer2_lt: Float
+  styleResultPlayer2_lte: Float
+  styleResultPlayer2_gt: Float
+  styleResultPlayer2_gte: Float
   AND: [MatchWhereInput!]
   OR: [MatchWhereInput!]
   NOT: [MatchWhereInput!]
