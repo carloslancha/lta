@@ -70,8 +70,10 @@ type Match {
 	order: Int!
 	player1: Player @relation(name: "Player1OnMatch", onDelete: SET_NULL)
 	player2: Player @relation(name: "Player2OnMatch", onDelete: SET_NULL)
+	poule: Poule @relation(name: "MatchOnPoule", onDelete: CASCADE)
 	resultPlayer1: Int @default(value: 0)
 	resultPlayer2: Int @default(value: 0)
+	round: Round @relation(name: "MatchOnRound", onDelete: CASCADE)
 	styleResultPlayer1: Float @default(value: 0)
 	styleResultPlayer2: Float @default(value: 0)
 }
