@@ -70,8 +70,12 @@ const QUERY = gql`
 						school {
 							academy {
 								name
+								country
 							}
 						}
+					}
+					rank {
+						name
 					}
 				}
 			}
@@ -160,8 +164,12 @@ const GENERATE_TOURNAMENT_POULES_MUTATION = gql`
 						school {
 							academy {
 								name
+								country
 							}
 						}
+					}
+					rank {
+						name
 					}
 				}
 			}
@@ -250,8 +258,12 @@ const GENERATE_NEXT_TOURNAMENT_PHASE_MUTATION = gql`
 						school {
 							academy {
 								name
+								country
 							}
 						}
+					}
+					rank {
+						name
 					}
 				}
 			}
@@ -315,6 +327,8 @@ function Poule(props) {
 							<TableCell>Combat name</TableCell>
 							<TableCell>Clan</TableCell>
 							<TableCell>Academy</TableCell>
+							<TableCell>Country</TableCell>
+							<TableCell>Rank</TableCell>
 							<TableCell align="center">PWIN</TableCell>
 							<TableCell align="center">PLOST</TableCell>
 							<TableCell align="center">WIN</TableCell>
@@ -331,6 +345,8 @@ function Poule(props) {
 								<TableCell>{player.nickname}</TableCell>
 								<TableCell>{player.clan.name}</TableCell>
 								<TableCell>{player.clan.school.academy.name}</TableCell>
+								<TableCell>{player.clan.school.academy.country}</TableCell>
+								<TableCell>{player.rank.name}</TableCell>
 								<TableCell align="center">{player.pointsWin}</TableCell>
 								<TableCell align="center">{player.pointsAgainst}</TableCell>
 								<TableCell align="center">{player.winCount}</TableCell>
