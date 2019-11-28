@@ -71,7 +71,6 @@ const QUERY = gql`
 `
 
 function MatchesList(props) {
-    debugger
     const matches = props.matches
 
     return (
