@@ -8,6 +8,14 @@ function academies(parent, args, context, info) {
 	return context.prisma.academies()
 }
 
+function arena(parent, args, context, info) {
+	return context.prisma.arena({id: args.id})
+}
+
+function arenas(parent, args, context, info) {
+	return context.prisma.arenas()
+}
+
 function clan(parent, args, context, info) {
 	return context.prisma.clan({id: args.id})
 }
@@ -72,6 +80,8 @@ function tournaments(parent, args, context, info) {
 module.exports = {
 	academies,
 	academy,
+	arena,
+	arenas,
 	clan,
 	clans,
 	form,

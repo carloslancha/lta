@@ -9,6 +9,10 @@ import styles from './styles/styles'
 
 import Academies from './pages/academies/Academies'
 import AcademyEdit from './pages/academies/AcademyEdit'
+import StreamingArenas from './pages/streaming/Arenas'
+import Streaming from './pages/streaming/Streaming'
+import ArenaEdit from './pages/arenas/ArenaEdit'
+import Arenas from './pages/arenas/Arenas'
 import Clans from './pages/clans/Clans'
 import ClanEdit from './pages/clans/ClanEdit'
 import Forms from './pages/forms/Forms'
@@ -36,6 +40,9 @@ import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { setContext } from 'apollo-link-context'
 import { AUTH_TOKEN, HTTP_LINK } from './constants'
+import { split } from 'apollo-link'
+import { WebSocketLink } from 'apollo-link-ws'
+import { getMainDefinition } from 'apollo-utilities'
 
 export default function App() {
 	const classes = styles()
@@ -56,6 +63,16 @@ export default function App() {
 		setAuthToken(data);
 	}
 
+	const wsLink = new WebSocketLink({
+		uri: `ws://localhost:4000`,
+		options: {
+			reconnect: true,
+			connectionParams: {
+				authToken: authToken ? authToken.token : '',
+			}
+		}
+	})
+
 	const authLink = setContext((_, { headers }) => {
 		return {
 			headers: {
@@ -65,8 +82,17 @@ export default function App() {
 		}
 	})
 
+	const link = split(
+		({ query }) => {
+			const { kind, operation } = getMainDefinition(query)
+			return kind === 'OperationDefinition' && operation === 'subscription'
+		},
+		wsLink,
+		authLink.concat(HTTP_LINK)
+	)
+
 	const client = new ApolloClient({
-		link: authLink.concat(HTTP_LINK),
+		link,
 		cache: new InMemoryCache()
 	})
 
@@ -96,8 +122,12 @@ export default function App() {
 									<Route exact path="/" component={Home} />
 									<Route exact path="/login" component={Login} />
 									<Route exact path="/signup" component={SignUp} />
+									<Route exact path="/streaming" component={StreamingArenas} />
+									<Route exact path="/streaming/:id" component={Streaming} />
 									<PrivateRoute exact path="/academies" component={Academies} />
 									<PrivateRoute exact path="/academies/edit/:id" component={AcademyEdit} />
+									<PrivateRoute exact path="/arenas" component={Arenas} />
+									<PrivateRoute exact path="/arenas/edit/:id" component={ArenaEdit} />
 									<PrivateRoute exact path="/schools" component={Schools} />
 									<PrivateRoute exact path="/schools/edit/:id" component={SchoolEdit} />
 									<PrivateRoute exact path="/clans" component={Clans} />

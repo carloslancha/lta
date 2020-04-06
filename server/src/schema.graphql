@@ -30,6 +30,16 @@ type Academy {
 	schools: [School!]
 }
 
+type Arena {
+	id: ID!
+	createdBy: User
+	name: String!
+	player1: Player
+	player2: Player
+	resultPlayer1: Int
+	resultPlayer2: Int
+}
+
 type Assault {
     cards: [Card!]
     doppio: Boolean
@@ -92,6 +102,9 @@ type Mutation {
 	deleteAcademy(id: ID!): Academy
 	updateAcademy(id: ID!, name: String, country: String): Academy
 
+	createArena(name: String!): Arena!
+	updateArena(id: ID!, name: String, player1Id: ID, player2Id: ID, resultPlayer1: Int, resultPlayer2: Int): Arena
+
 	createSchool(name: String!, academyId: ID!): School!
 	deleteSchool(id: ID!): School
 	updateSchool(id: ID!, name: String, academyId: ID): School
@@ -152,6 +165,9 @@ type Query {
 	academies: [Academy!]!
 	academy(id: ID!): Academy
 
+	arena(id: ID!): Arena
+	arenas: [Arena!]!
+
 	forms: [Form!]!
 	form(id: ID!): Form
 
@@ -206,6 +222,7 @@ type School {
 
 type Subscription {
 	newAcademy: Academy
+	arenaUpdated: Arena
 }
 
 type Tournament {

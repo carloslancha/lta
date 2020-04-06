@@ -29,6 +29,16 @@ type Academy {
 	schools: [School!] @relation(name: "SchoolOnAcademy", onDelete: CASCADE)
 }
 
+type Arena {
+	id: ID! @id
+	createdBy: User @relation(name: "ArenasOnUser", onDelete: SET_NULL)
+	name: String! @unique
+	player1: Player @relation(name: "Player1OnArena", onDelete: SET_NULL)
+	player2: Player @relation(name: "Player2OnArena", onDelete: SET_NULL)
+	resultPlayer1: Int @default(value: 0)
+	resultPlayer2: Int @default(value: 0)
+}
+
 type Assault {
 	cards: [Card!] @relation(name: "CardOnMatch", onDelete: CASCADE)
 	doppio: Boolean

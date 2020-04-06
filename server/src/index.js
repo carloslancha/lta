@@ -2,6 +2,7 @@ const { GraphQLServer } = require('graphql-yoga')
 const { prisma } = require('./generated/prisma-client')
 
 const Academy = require('./resolvers/Academy')
+const Arena = require('./resolvers/Arena')
 const Clan = require('./resolvers/Clan')
 const Form = require('./resolvers/Form')
 const Match = require('./resolvers/Match')
@@ -19,6 +20,7 @@ const Subscription = require('./resolvers/Subscription')
 
 const resolvers = {
 	Academy,
+	Arena,
 	Clan,
 	Form,
 	Match,

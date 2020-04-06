@@ -3,6 +3,23 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { POULE_NAMES, POULES_PLAYERS_PAIRING} = require('../constants/poulesPlayersPairing')
 
+async function updateArena(parent, args, context, info) {
+	return context.prisma.updateArena(
+		{
+			data: {
+				player1: { connect: { id: args.player1Id } },
+				player2: { connect: { id: args.player2Id } },
+				resultPlayer1: args.resultPlayer1,
+				resultPlayer2: args.resultPlayer2,
+			},
+			where: {
+				id: args.id
+			}
+		},
+		info
+	)
+}
+
 async function signup(parent, args, context, info) {
 	const password = await bcrypt.hash(args.password, 10)
 	const user = await context.prisma.createUser({ ...args, password })
@@ -40,6 +57,15 @@ async function createAcademy(parent, args, context, info) {
 	return context.prisma.createAcademy({
 		name: args.name,
 		country: args.country,
+		createdBy: { connect: { id: userId } },
+	})
+}
+
+async function createArena(parent, args, context, info) {
+	const userId = getUserId(context)
+
+	return context.prisma.createArena({
+		name: args.name,
 		createdBy: { connect: { id: userId } },
 	})
 }
@@ -1170,6 +1196,7 @@ async function updateTournament(parent, args, context, info) {
 
 module.exports = {
 	createAcademy,
+	createArena,
 	createForm,
 	createClan,
 	createPlayer,
@@ -1186,6 +1213,7 @@ module.exports = {
 	generateTournamentPoules,
 	generateNextTournamentPhase,
 	updateAcademy,
+	updateArena,
 	updateClan,
 	updateForm,
 	updateMatch,

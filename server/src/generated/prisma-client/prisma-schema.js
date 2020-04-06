@@ -265,6 +265,10 @@ type AggregateAcademy {
   count: Int!
 }
 
+type AggregateArena {
+  count: Int!
+}
+
 type AggregateAssault {
   count: Int!
 }
@@ -311,6 +315,146 @@ type AggregateTournament {
 
 type AggregateUser {
   count: Int!
+}
+
+type Arena {
+  id: ID!
+  createdBy: User
+  name: String!
+  player1: Player
+  player2: Player
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+type ArenaConnection {
+  pageInfo: PageInfo!
+  edges: [ArenaEdge]!
+  aggregate: AggregateArena!
+}
+
+input ArenaCreateInput {
+  id: ID
+  createdBy: UserCreateOneInput
+  name: String!
+  player1: PlayerCreateOneInput
+  player2: PlayerCreateOneInput
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+type ArenaEdge {
+  node: Arena!
+  cursor: String!
+}
+
+enum ArenaOrderByInput {
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+  resultPlayer1_ASC
+  resultPlayer1_DESC
+  resultPlayer2_ASC
+  resultPlayer2_DESC
+}
+
+type ArenaPreviousValues {
+  id: ID!
+  name: String!
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+type ArenaSubscriptionPayload {
+  mutation: MutationType!
+  node: Arena
+  updatedFields: [String!]
+  previousValues: ArenaPreviousValues
+}
+
+input ArenaSubscriptionWhereInput {
+  mutation_in: [MutationType!]
+  updatedFields_contains: String
+  updatedFields_contains_every: [String!]
+  updatedFields_contains_some: [String!]
+  node: ArenaWhereInput
+  AND: [ArenaSubscriptionWhereInput!]
+  OR: [ArenaSubscriptionWhereInput!]
+  NOT: [ArenaSubscriptionWhereInput!]
+}
+
+input ArenaUpdateInput {
+  createdBy: UserUpdateOneInput
+  name: String
+  player1: PlayerUpdateOneInput
+  player2: PlayerUpdateOneInput
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+input ArenaUpdateManyMutationInput {
+  name: String
+  resultPlayer1: Int
+  resultPlayer2: Int
+}
+
+input ArenaWhereInput {
+  id: ID
+  id_not: ID
+  id_in: [ID!]
+  id_not_in: [ID!]
+  id_lt: ID
+  id_lte: ID
+  id_gt: ID
+  id_gte: ID
+  id_contains: ID
+  id_not_contains: ID
+  id_starts_with: ID
+  id_not_starts_with: ID
+  id_ends_with: ID
+  id_not_ends_with: ID
+  createdBy: UserWhereInput
+  name: String
+  name_not: String
+  name_in: [String!]
+  name_not_in: [String!]
+  name_lt: String
+  name_lte: String
+  name_gt: String
+  name_gte: String
+  name_contains: String
+  name_not_contains: String
+  name_starts_with: String
+  name_not_starts_with: String
+  name_ends_with: String
+  name_not_ends_with: String
+  player1: PlayerWhereInput
+  player2: PlayerWhereInput
+  resultPlayer1: Int
+  resultPlayer1_not: Int
+  resultPlayer1_in: [Int!]
+  resultPlayer1_not_in: [Int!]
+  resultPlayer1_lt: Int
+  resultPlayer1_lte: Int
+  resultPlayer1_gt: Int
+  resultPlayer1_gte: Int
+  resultPlayer2: Int
+  resultPlayer2_not: Int
+  resultPlayer2_in: [Int!]
+  resultPlayer2_not_in: [Int!]
+  resultPlayer2_lt: Int
+  resultPlayer2_lte: Int
+  resultPlayer2_gt: Int
+  resultPlayer2_gte: Int
+  AND: [ArenaWhereInput!]
+  OR: [ArenaWhereInput!]
+  NOT: [ArenaWhereInput!]
+}
+
+input ArenaWhereUniqueInput {
+  id: ID
+  name: String
 }
 
 type Assault {
@@ -1842,6 +1986,12 @@ type Mutation {
   upsertAcademy(where: AcademyWhereUniqueInput!, create: AcademyCreateInput!, update: AcademyUpdateInput!): Academy!
   deleteAcademy(where: AcademyWhereUniqueInput!): Academy
   deleteManyAcademies(where: AcademyWhereInput): BatchPayload!
+  createArena(data: ArenaCreateInput!): Arena!
+  updateArena(data: ArenaUpdateInput!, where: ArenaWhereUniqueInput!): Arena
+  updateManyArenas(data: ArenaUpdateManyMutationInput!, where: ArenaWhereInput): BatchPayload!
+  upsertArena(where: ArenaWhereUniqueInput!, create: ArenaCreateInput!, update: ArenaUpdateInput!): Arena!
+  deleteArena(where: ArenaWhereUniqueInput!): Arena
+  deleteManyArenas(where: ArenaWhereInput): BatchPayload!
   createAssault(data: AssaultCreateInput!): Assault!
   updateAssault(data: AssaultUpdateInput!, where: AssaultWhereUniqueInput!): Assault
   updateManyAssaults(data: AssaultUpdateManyMutationInput!, where: AssaultWhereInput): BatchPayload!
@@ -3077,6 +3227,9 @@ type Query {
   academy(where: AcademyWhereUniqueInput!): Academy
   academies(where: AcademyWhereInput, orderBy: AcademyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Academy]!
   academiesConnection(where: AcademyWhereInput, orderBy: AcademyOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): AcademyConnection!
+  arena(where: ArenaWhereUniqueInput!): Arena
+  arenas(where: ArenaWhereInput, orderBy: ArenaOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Arena]!
+  arenasConnection(where: ArenaWhereInput, orderBy: ArenaOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): ArenaConnection!
   assault(where: AssaultWhereUniqueInput!): Assault
   assaults(where: AssaultWhereInput, orderBy: AssaultOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): [Assault]!
   assaultsConnection(where: AssaultWhereInput, orderBy: AssaultOrderByInput, skip: Int, after: String, before: String, first: Int, last: Int): AssaultConnection!
@@ -3943,6 +4096,7 @@ input SchoolWhereUniqueInput {
 
 type Subscription {
   academy(where: AcademySubscriptionWhereInput): AcademySubscriptionPayload
+  arena(where: ArenaSubscriptionWhereInput): ArenaSubscriptionPayload
   assault(where: AssaultSubscriptionWhereInput): AssaultSubscriptionPayload
   card(where: CardSubscriptionWhereInput): CardSubscriptionPayload
   clan(where: ClanSubscriptionWhereInput): ClanSubscriptionPayload
